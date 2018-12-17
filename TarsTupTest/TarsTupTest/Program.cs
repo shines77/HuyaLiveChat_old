@@ -203,7 +203,7 @@ namespace TarsTupTest
         {
             Console.Write("\n");
             Console.Write("Press any key to continue ...");
-            Console.ReadKey();
+            Console.ReadKey(true);
             Console.Write("\n\n");
         }
 

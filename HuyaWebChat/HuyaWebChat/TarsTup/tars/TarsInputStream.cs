@@ -97,35 +97,35 @@ namespace Tup.Tars
          * @param bb buffer
          * @return The number of bytes read
          */
-        public static int ReadHead(HeadData hd, BinaryReader bb)
+        public static int ReadHead(HeadData head, BinaryReader binReader)
         {
-            if (bb.BaseStream.Position >= bb.BaseStream.Length)
+            if (binReader.BaseStream.Position >= binReader.BaseStream.Length)
             {
                 throw new TarsDecodeException("read file to end");
             }
-            byte b = bb.ReadByte();
-            hd.type = (byte)(b & 15);
-            hd.tag = ((b & (15 << 4)) >> 4);
-            if (hd.tag == 15)
+            byte ch = binReader.ReadByte();
+            head.type = (byte)(ch & 15);
+            head.tag = ((ch & (15 << 4)) >> 4);
+            if (head.tag == 15)
             {
-                hd.tag = bb.ReadByte();
+                head.tag = binReader.ReadByte();
                 return 2;
             }
             return 1;
         }
 
-        public int ReadHead(HeadData hd)
+        public int ReadHead(HeadData head)
         {
-            return ReadHead(hd, reader);
+            return ReadHead(head, reader);
         }
 
         //
         // Read header information but not move the current offset of the buffer.
         //
-        private int PeakHead(HeadData hd)
+        private int PeakHead(HeadData head)
         {
             long curPos = stream.Position;
-            int len = ReadHead(hd);
+            int len = ReadHead(head);
             stream.Position = curPos;
             return len;
         }
@@ -145,17 +145,17 @@ namespace Tup.Tars
         {
             try
             {
-                HeadData hd = new HeadData();
+                HeadData head = new HeadData();
                 while (true)
                 {
-                    int len = PeakHead(hd);
-                    if (tag <= hd.tag || hd.type == (byte)TarsStructType.STRUCT_END)
+                    int len = PeakHead(head);
+                    if (tag <= head.tag || head.type == (byte)TarsStructType.STRUCT_END)
                     {
-                        return tag == hd.tag;
+                        return ((head.type == (byte)TarsStructType.STRUCT_END) ? false : (tag == head.tag));
                     }
 
                     Skip(len);
-                    SkipField(hd.type);
+                    SkipField(head.type);
                 }
             }
             catch (TarsDecodeException ex)
@@ -170,12 +170,12 @@ namespace Tup.Tars
         //
         public void SkipToStructEnd()
         {
-            HeadData hd = new HeadData();
+            HeadData head = new HeadData();
             do
             {
-                ReadHead(hd);
-                SkipField(hd.type);
-            } while (hd.type != (byte)TarsStructType.STRUCT_END);
+                ReadHead(head);
+                SkipField(head.type);
+            } while (head.type != (byte)TarsStructType.STRUCT_END);
         }
 
         //
@@ -183,9 +183,9 @@ namespace Tup.Tars
         //
         private void SkipField()
         {
-            HeadData hd = new HeadData();
-            ReadHead(hd);
-            SkipField(hd.type);
+            HeadData head = new HeadData();
+            ReadHead(head);
+            SkipField(head.type);
         }
 
         private void SkipField(byte type)
@@ -195,21 +195,27 @@ namespace Tup.Tars
                 case (byte)TarsStructType.BYTE:
                     Skip(1);
                     break;
+
                 case (byte)TarsStructType.SHORT:
                     Skip(2);
                     break;
+
                 case (byte)TarsStructType.INT:
                     Skip(4);
                     break;
+
                 case (byte)TarsStructType.LONG:
                     Skip(8);
                     break;
+
                 case (byte)TarsStructType.FLOAT:
                     Skip(4);
                     break;
+
                 case (byte)TarsStructType.DOUBLE:
                     Skip(8);
                     break;
+
                 case (byte)TarsStructType.STRING1:
                     {
                         int len = reader.ReadByte();
@@ -218,11 +224,13 @@ namespace Tup.Tars
                         Skip(len);
                         break;
                     }
+
                 case (byte)TarsStructType.STRING4:
                     {
                         Skip(ByteConverter.ReverseEndian(reader.ReadInt32()));
                         break;
                     }
+
                 case (byte)TarsStructType.MAP:
                     {
                         int size = Read(0, 0, true);
@@ -232,6 +240,7 @@ namespace Tup.Tars
                         }
                         break;
                     }
+
                 case (byte)TarsStructType.LIST:
                     {
                         int size = Read(0, 0, true);
@@ -241,24 +250,28 @@ namespace Tup.Tars
                         }
                         break;
                     }
+
                 case (byte)TarsStructType.SIMPLE_LIST:
                     {
-                        HeadData hd = new HeadData();
-                        ReadHead(hd);
-                        if (hd.type != (byte)TarsStructType.BYTE)
+                        HeadData head = new HeadData();
+                        ReadHead(head);
+                        if (head.type != (byte)TarsStructType.BYTE)
                         {
-                            throw new TarsDecodeException("skipField with invalid type, type value: " + type + ", " + hd.type);
+                            throw new TarsDecodeException("skipField with invalid type, type value: " + type + ", " + head.type);
                         }
                         int size = Read(0, 0, true);
                         Skip(size);
                         break;
                     }
+
                 case (byte)TarsStructType.STRUCT_BEGIN:
                     SkipToStructEnd();
                     break;
+
                 case (byte)TarsStructType.STRUCT_END:
                 case (byte)TarsStructType.ZERO_TAG:
                     break;
+
                 default:
                     throw new TarsDecodeException("invalid type.");
             }
@@ -279,9 +292,9 @@ namespace Tup.Tars
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:
                         c = 0x0;
@@ -308,23 +321,26 @@ namespace Tup.Tars
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:
                         n = 0;
                         break;
+
                     case (byte)TarsStructType.BYTE:
                         {
                             n = (System.SByte)reader.ReadByte();
                             break;
                         }
+
                     case (byte)TarsStructType.SHORT:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadInt16());
                             break;
                         }
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -340,23 +356,28 @@ namespace Tup.Tars
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:
-                        n = 0;
+                        {
+                            n = 0;
+                        }
                         break;
+
                     case (byte)TarsStructType.BYTE:
                         {
                             n = reader.ReadByte();
                             break;
                         }
+
                     case (byte)TarsStructType.SHORT:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadUInt16());
                             break;
                         }
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -372,26 +393,31 @@ namespace Tup.Tars
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
+                HeadData head = new HeadData();
+                ReadHead(head);
 
-                switch (hd.type)
+                switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:
                         n = 0;
                         break;
+
                     case (byte)TarsStructType.BYTE:
                         n = (System.SByte)reader.ReadByte();
                         break;
+
                     case (byte)TarsStructType.SHORT:
                         n = ByteConverter.ReverseEndian(reader.ReadInt16());
                         break;
+
                     case (byte)TarsStructType.INT:
                         n = ByteConverter.ReverseEndian(reader.ReadInt32());
                         break;
+
                     case (byte)TarsStructType.LONG:
                         n = (int)ByteConverter.ReverseEndian(reader.ReadInt32());
                         break;
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -412,33 +438,40 @@ namespace Tup.Tars
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:
-                        n = 0;
+                        {
+                            n = 0;
+                        }
                         break;
+
                     case (byte)TarsStructType.BYTE:
                         {
                             n = (System.SByte)reader.ReadByte();
                         }
                         break;
+
                     case (byte)TarsStructType.SHORT:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadInt16());
                         }
                         break;
+
                     case (byte)TarsStructType.INT:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadInt32());
                         }
                         break;
+
                     case (byte)TarsStructType.LONG:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadInt64());
                         }
                         break;
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -454,33 +487,40 @@ namespace Tup.Tars
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:
-                        n = 0;
+                        {
+                            n = 0;
+                        }
                         break;
+
                     case (byte)TarsStructType.BYTE:
                         {
                             n = reader.ReadByte();
                         }
                         break;
+
                     case (byte)TarsStructType.SHORT:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadUInt16());
                         }
                         break;
+
                     case (byte)TarsStructType.INT:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadUInt32());
                         }
                         break;
+
                     case (byte)TarsStructType.LONG:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadUInt64());
                         }
                         break;
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -491,24 +531,27 @@ namespace Tup.Tars
             }
             return n;
         }
+
         public float Read(float n, int tag, bool isRequire)
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:
                         {
                             n = 0;
                         }
                         break;
+
                     case (byte)TarsStructType.FLOAT:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadSingle());
                         }
                         break;
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -524,25 +567,28 @@ namespace Tup.Tars
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:
                         {
                             n = 0;
                         }
                         break;
+
                     case (byte)TarsStructType.FLOAT:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadSingle());
                         }
                         break;
+
                     case (byte)TarsStructType.DOUBLE:
                         {
                             n = ByteConverter.ReverseEndian(reader.ReadDouble());
                         }
                         break;
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -558,9 +604,9 @@ namespace Tup.Tars
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.STRING1:
                         {
@@ -578,6 +624,7 @@ namespace Tup.Tars
                             }
                         }
                         break;
+
                     case (byte)TarsStructType.STRING4:
                         {
                             {
@@ -595,6 +642,7 @@ namespace Tup.Tars
                             }
                         }
                         break;
+
                     default:
                         {
                             throw new TarsDecodeException("type mismatch.");
@@ -610,56 +658,54 @@ namespace Tup.Tars
 
         private string ReadString1()
         {
+            int len = 0;
+            len = reader.ReadByte();
+            if (len < 0)
             {
-                int len = 0;
-                len = reader.ReadByte();
-                if (len < 0)
-                {
-                    len += 256;
-                }
-
-                byte[] ss = new byte[len];
-                ss = reader.ReadBytes(len);
-
-                return ByteConverter.Bytes2String(ss);
+                len += 256;
             }
+
+            byte[] ss = new byte[len];
+            ss = reader.ReadBytes(len);
+
+            return ByteConverter.Bytes2String(ss);
         }
 
         private string ReadString4()
         {
+            int len = 0;
+            len = ByteConverter.ReverseEndian(reader.ReadInt32());
+            if (len > TarsStruct.TARS_MAX_STRING_LENGTH || len < 0)
             {
-                int len = 0;
-                len = ByteConverter.ReverseEndian(reader.ReadInt32());
-                if (len > TarsStruct.TARS_MAX_STRING_LENGTH || len < 0)
-                {
-                    throw new TarsDecodeException("string too long: " + len);
-                }
-
-                byte[] ss = new byte[len];
-                ss = reader.ReadBytes(len);
-
-                return ByteConverter.Bytes2String(ss);
+                throw new TarsDecodeException("string too long: " + len);
             }
+
+            byte[] ss = new byte[len];
+            ss = reader.ReadBytes(len);
+
+            return ByteConverter.Bytes2String(ss);
         }
 
         public string Read(string str, int tag, bool isRequire)
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.STRING1:
                         {
                             str = ReadString1();
                         }
                         break;
+
                     case (byte)TarsStructType.STRING4:
                         {
                             str = ReadString4();
                         }
                         break;
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -676,20 +722,22 @@ namespace Tup.Tars
             string s = null;
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.STRING1:
                         {
                             s = ReadString1();
                         }
                         break;
+
                     case (byte)TarsStructType.STRING4:
                         {
                             s = ReadString4();
                         }
                         break;
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -732,9 +780,9 @@ namespace Tup.Tars
 
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.MAP:
                         {
@@ -763,6 +811,7 @@ namespace Tup.Tars
                             }
                         }
                         break;
+
                     default:
                         {
                             throw new TarsDecodeException("type mismatch.");
@@ -781,9 +830,9 @@ namespace Tup.Tars
             bool[] lr = null;
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.LIST:
                         {
@@ -795,6 +844,7 @@ namespace Tup.Tars
                                 lr[i] = Read(lr[0], 0, true);
                             break;
                         }
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -811,9 +861,9 @@ namespace Tup.Tars
             byte[] lr = null;
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.SIMPLE_LIST:
                         {
@@ -821,13 +871,13 @@ namespace Tup.Tars
                             ReadHead(hh);
                             if (hh.type != (byte)TarsStructType.BYTE)
                             {
-                                throw new TarsDecodeException("type mismatch, tag: " + tag + ", type: " + hd.type + ", " + hh.type);
+                                throw new TarsDecodeException("type mismatch, tag: " + tag + ", type: " + head.type + ", " + hh.type);
                             }
 
                             int size = Read(0, 0, true);
                             if (size < 0)
                             {
-                                throw new TarsDecodeException("invalid size, tag: " + tag + ", type: " + hd.type + ", " + hh.type + ", size: " + size);
+                                throw new TarsDecodeException("invalid size, tag: " + tag + ", type: " + head.type + ", " + hh.type + ", size: " + size);
                             }
 
                             lr = new byte[size];
@@ -842,6 +892,7 @@ namespace Tup.Tars
                             }
                             break;
                         }
+
                     case (byte)TarsStructType.LIST:
                         {
                             int size = Read(0, 0, true);
@@ -852,6 +903,7 @@ namespace Tup.Tars
                                 lr[i] = Read(lr[0], 0, true);
                             break;
                         }
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -868,9 +920,9 @@ namespace Tup.Tars
             short[] lr = null;
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.LIST:
                         {
@@ -882,6 +934,7 @@ namespace Tup.Tars
                                 lr[i] = Read(lr[0], 0, true);
                             break;
                         }
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -898,9 +951,9 @@ namespace Tup.Tars
             int[] lr = null;
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.LIST:
                         {
@@ -912,6 +965,7 @@ namespace Tup.Tars
                                 lr[i] = Read(lr[0], 0, true);
                             break;
                         }
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -928,9 +982,9 @@ namespace Tup.Tars
             long[] lr = null;
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.LIST:
                         {
@@ -942,6 +996,7 @@ namespace Tup.Tars
                                 lr[i] = Read(lr[0], 0, true);
                             break;
                         }
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -958,9 +1013,9 @@ namespace Tup.Tars
             float[] lr = null;
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.LIST:
                         {
@@ -972,6 +1027,7 @@ namespace Tup.Tars
                                 lr[i] = Read(lr[0], 0, true);
                             break;
                         }
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -988,9 +1044,9 @@ namespace Tup.Tars
             double[] lr = null;
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.LIST:
                         {
@@ -1002,6 +1058,7 @@ namespace Tup.Tars
                                 lr[i] = Read(lr[0], 0, true);
                             break;
                         }
+
                     default:
                         throw new TarsDecodeException("type mismatch.");
                 }
@@ -1071,6 +1128,7 @@ namespace Tup.Tars
             {
                 return null;
             }
+
             List<T> _list = new List<T>();
             for (int i = 0; i < array.Length; ++i)
             {
@@ -1084,9 +1142,9 @@ namespace Tup.Tars
         {
             if (SkipToTag(tag))
             {
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                switch (hd.type)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                switch (head.type)
                 {
                     case (byte)TarsStructType.LIST:
                         {
@@ -1115,12 +1173,12 @@ namespace Tup.Tars
                             }
                             if (hh.type != (byte)TarsStructType.BYTE)
                             {
-                                throw new TarsDecodeException("type mismatch, tag: " + tag + ", type: " + hd.type + ", " + hh.type);
+                                throw new TarsDecodeException("type mismatch, tag: " + tag + ", type: " + head.type + ", " + hh.type);
                             }
                             int size = Read(0, 0, true);
                             if (size < 0)
                             {
-                                throw new TarsDecodeException("invalid size, tag: " + tag + ", type: " + hd.type + ", size: " + size);
+                                throw new TarsDecodeException("invalid size, tag: " + tag + ", type: " + head.type + ", size: " + size);
                             }
 
                             T[] lr = new T[size];
@@ -1170,9 +1228,9 @@ namespace Tup.Tars
                     throw new TarsDecodeException(ex.Message);
                 }
 
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                if (hd.type != (byte)TarsStructType.STRUCT_BEGIN)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                if (head.type != (byte)TarsStructType.STRUCT_BEGIN)
                 {
                     throw new TarsDecodeException("type mismatch.");
                 }
@@ -1204,9 +1262,9 @@ namespace Tup.Tars
                     throw new TarsDecodeException(ex.Message);
                 }
 
-                HeadData hd = new HeadData();
-                ReadHead(hd);
-                if (hd.type != (byte)TarsStructType.STRUCT_BEGIN)
+                HeadData head = new HeadData();
+                ReadHead(head);
+                if (head.type != (byte)TarsStructType.STRUCT_BEGIN)
                 {
                     throw new TarsDecodeException("type mismatch.");
                 }
@@ -1236,17 +1294,18 @@ namespace Tup.Tars
             {
                 obj = (T)BasicClassTypeUtil.CreateObject<T>();
             }
-            if (obj is Byte || obj is Char)
+
+            if (obj is byte || obj is Byte)
             {
                 return (Read((byte)0x0, tag, isRequire));
             }
-            else if (obj is char)
-            {
-                return (Read((char)0x0, tag, isRequire));
-            }
-            else if (obj is Boolean)
+            else if(obj is bool || obj is Boolean)
             {
                 return (Read(false, tag, isRequire));
+            }
+            else if (obj is char || obj is Char)
+            {
+                return (Read((char)0x0, tag, isRequire));
             }
             else if (obj is short)
             {
@@ -1276,7 +1335,7 @@ namespace Tup.Tars
             {
                 return (Read((float)0, tag, isRequire));
             }
-            else if (obj is Double)
+            else if (obj is double)
             {
                 return (Read((double)0, tag, isRequire));
             }
@@ -1286,8 +1345,8 @@ namespace Tup.Tars
             }
             else if (obj is TarsStruct)
             {
-                object oo = obj;
-                return Read((TarsStruct)oo, tag, isRequire);
+                object _obj = obj;
+                return Read((TarsStruct)_obj, tag, isRequire);
             }
             else if (obj != null && obj.GetType().IsArray)
             {

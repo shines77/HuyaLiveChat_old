@@ -116,7 +116,7 @@ namespace Tup
             }
             else
             {
-                _os.WriteArray(_new_data, 0);
+                _os.Write(_new_data, 0);
             }
 
             _package.sBuffer = TarsUtil.GetTarsBufferArray(_os.GetMemoryStream());
@@ -124,6 +124,7 @@ namespace Tup
             _os = new TarsOutputStream(0);
             _os.SetServerEncoding(EncodeName);
             this.WriteTo(_os);
+
             byte[] bodys = TarsUtil.GetTarsBufferArray(_os.GetMemoryStream());
             int size = bodys.Length;
 

@@ -96,9 +96,9 @@ namespace Tup.Tars
             {
                 try
                 {
-                    byte b = (byte)((15 << 4) | type);
+                    byte ch = (byte)((15 << 4) | type);
                     {
-                        writer.Write(b);
+                        writer.Write(ch);
                         writer.Write((byte)tag);
                     }
                 }
@@ -119,10 +119,10 @@ namespace Tup.Tars
             Write(ch, tag);
         }
 
-        public void Write(byte b, int tag)
+        public void Write(byte n, int tag)
         {
             Reserve(3);
-            if (b == 0)
+            if (n == 0)
             {
                 WriteHead((byte)TarsStructType.ZERO_TAG, tag);
             }
@@ -132,7 +132,7 @@ namespace Tup.Tars
                 try
                 {
                     {
-                        writer.Write(b);
+                        writer.Write(n);
                     }
                 }
                 catch (Exception ex)
@@ -334,13 +334,13 @@ namespace Tup.Tars
 
         public void Write(string str, int tag, bool IsLocalString = false)
         {
-            byte[] by;
+            byte[] bytes;
             try
             {
-                by = ByteConverter.String2Bytes(str, IsLocalString);
-                if (by == null)
+                bytes = ByteConverter.String2Bytes(str, IsLocalString);
+                if (bytes == null)
                 {
-                    by = new byte[0];
+                    bytes = new byte[0];
                 }
             }
             catch (Exception ex)
@@ -349,23 +349,23 @@ namespace Tup.Tars
                 return;
             }
 
-            if (by != null)
+            if (bytes != null)
             {
-                Reserve(10 + by.Length);
+                Reserve(10 + bytes.Length);
             }
-            if (by != null && by.Length > 255)
+            if (bytes != null && bytes.Length > 255)
             {
                 WriteHead((byte)TarsStructType.STRING4, tag);
                 try
                 {
                     {
-                        writer.Write(ByteConverter.ReverseEndian(by.Length));
-                        writer.Write(by);
+                        writer.Write(ByteConverter.ReverseEndian(bytes.Length));
+                        writer.Write(bytes);
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    QTrace.Trace(e.Message);
+                    QTrace.Trace(ex.Message);
                 }
             }
             else
@@ -374,10 +374,10 @@ namespace Tup.Tars
                 try
                 {
                     {
-                        if (by != null)
+                        if (bytes != null)
                         {
-                            writer.Write((byte)by.Length);
-                            writer.Write(by);
+                            writer.Write((byte)bytes.Length);
+                            writer.Write(bytes);
                         }
                         else
                         {
@@ -385,14 +385,14 @@ namespace Tup.Tars
                         }
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Tup.QTrace.Trace(this + " write s(2) Exception" + e.Message);
+                    Tup.QTrace.Trace(this + " write s(2) Exception" + ex.Message);
                 }
             }
         }
 
-        public void WriteArray<K, V>(Dictionary<K, V> map, int tag)
+        public void Write<K, V>(Dictionary<K, V> map, int tag)
         {
             Reserve(8);
             WriteHead((byte)TarsStructType.MAP, tag);
@@ -569,13 +569,13 @@ namespace Tup.Tars
             }
         }
 
-        public void WriteArray<T>(T[] array, int tag)
+        public void Write<T>(T[] array, int tag)
         {
             object obj = array;
-            WriteArrayImpl((object[])obj, tag);
+            WriteArray((object[])obj, tag);
         }
 
-        private void WriteArrayImpl(object[] array, int tag)
+        private void WriteArray(object[] array, int tag)
         {
             int nLen = 0;
             if (array != null)
@@ -588,9 +588,9 @@ namespace Tup.Tars
 
             if (array != null)
             {
-                foreach (Object e in array)
+                foreach (Object obj in array)
                 {
-                    Write(e, 0);
+                    Write(obj, 0);
                 }
             }
         }
@@ -630,11 +630,12 @@ namespace Tup.Tars
             {
                 return;
             }
-            if (obj is byte)
+
+            if (obj is byte || obj is Byte)
             {
                 Write(((byte)obj), tag);
             }
-            else if (obj is Boolean)
+            else if (obj is bool || obj is Boolean)
             {
                 Write((bool)obj, tag);
             }
