@@ -31,7 +31,7 @@ namespace Tup.Tars
         private StringBuilder sb;
         private int level = 0;
 
-        private void indention(string fieldName)
+        private void Indention(string fieldName)
         {
             for (int i = 0; i < level; ++i)
             {
@@ -57,63 +57,63 @@ namespace Tup.Tars
 
         public TarsDisplayer Display(bool b, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             sb.Append(b ? 'T' : 'F').Append('\n');
             return this;
         }
 
         public TarsDisplayer Display(byte n, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             sb.Append(n).Append('\n');
             return this;
         }
 
         public TarsDisplayer Display(char n, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             sb.Append(n).Append('\n');
             return this;
         }
 
         public TarsDisplayer Display(short n, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             sb.Append(n).Append('\n');
             return this;
         }
 
         public TarsDisplayer Display(int n, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             sb.Append(n).Append('\n');
             return this;
         }
 
         public TarsDisplayer Display(long n, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             sb.Append(n).Append('\n');
             return this;
         }
 
         public TarsDisplayer Display(float n, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             sb.Append(n).Append('\n');
             return this;
         }
 
         public TarsDisplayer Display(double n, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             sb.Append(n).Append('\n');
             return this;
         }
 
         public TarsDisplayer Display(string str, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (null == str)
             {
                 sb.Append("null").Append('\n');
@@ -128,7 +128,7 @@ namespace Tup.Tars
 
         public TarsDisplayer Display(byte[] array, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (array == null)
             {
                 sb.Append("null").Append('\n');
@@ -152,7 +152,7 @@ namespace Tup.Tars
 
         public TarsDisplayer Display(char[] array, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (array == null)
             {
                 sb.Append("null").Append('\n');
@@ -176,7 +176,7 @@ namespace Tup.Tars
 
         public TarsDisplayer Display(short[] array, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (array == null)
             {
                 sb.Append("null").Append('\n');
@@ -200,7 +200,7 @@ namespace Tup.Tars
 
         public TarsDisplayer Display(int[] array, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (array == null)
             {
                 sb.Append("null").Append('\n');
@@ -221,7 +221,7 @@ namespace Tup.Tars
 
         public TarsDisplayer Display(long[] array, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (array == null)
             {
                 sb.Append("null").Append('\n');
@@ -245,7 +245,7 @@ namespace Tup.Tars
 
         public TarsDisplayer Display(float[] array, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (array == null)
             {
                 sb.Append("null").Append('\n');
@@ -269,7 +269,7 @@ namespace Tup.Tars
 
         public TarsDisplayer Display(double[] array, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (array == null)
             {
                 sb.Append("null").Append('\n');
@@ -293,7 +293,7 @@ namespace Tup.Tars
 
         public TarsDisplayer Display<K, V>(Dictionary<K, V> map, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (map == null)
             {
                 sb.Append("null").Append('\n');
@@ -321,7 +321,7 @@ namespace Tup.Tars
 
         public TarsDisplayer Display<T>(T[] array, string fieldName)
         {
-            indention(fieldName);
+            Indention(fieldName);
             if (array == null)
             {
                 sb.Append("null").Append('\n');
@@ -347,7 +347,7 @@ namespace Tup.Tars
         {
             if (list == null)
             {
-                indention(fieldName);
+                Indention(fieldName);
                 sb.Append("null").Append('\n');
                 return this;
             }

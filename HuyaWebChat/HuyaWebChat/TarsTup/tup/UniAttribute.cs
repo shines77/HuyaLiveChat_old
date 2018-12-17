@@ -140,7 +140,7 @@ namespace Tup
             TarsOutputStream _out = new TarsOutputStream();
             _out.SetServerEncoding(_encodeName);
             _out.Write(value, 0);
-			byte[] sBuffer = TarsUtil.getTarsBufArray(_out.GetMemoryStream());
+            byte[] sBuffer = TarsUtil.GetTarsBufferArray(_out.GetMemoryStream());
 
             if (_iVer == Const.PACKET_TYPE_TUP3)
             {
@@ -194,7 +194,7 @@ namespace Tup
         public T GetByClass<T>(string name, T proxy)
         {
             object obj = null;
-            if(_iVer == Const.PACKET_TYPE_TUP3)
+            if (_iVer == Const.PACKET_TYPE_TUP3)
             {
 
                 if (!_new_data.ContainsKey(name))
@@ -311,7 +311,7 @@ namespace Tup
                     {
                         return (T)objtmp;
                     }
-       
+
                     obj = DecodeData(data, objtmp);
                     if (obj != null)
                     {
@@ -339,18 +339,18 @@ namespace Tup
             try
             {
                 object result = null; ;
-             
+
                 if (_iVer == Const.PACKET_TYPE_TUP3)
                 {
                     result = GetByClass<T>(Name, DefaultObj);
-                    
+
                 }
                 else
                 {
                     // Compatible with tup2.
                     result = Get<T>(Name);
                 }
-                
+
                 if (result == null)
                 {
                     return DefaultObj;
@@ -444,7 +444,7 @@ namespace Tup
             {
                 _os.Write(_data, 0);
             }
-            return TarsUtil.getTarsBufArray(_os.GetMemoryStream());
+            return TarsUtil.GetTarsBufferArray(_os.GetMemoryStream());
         }
 
         public void Decode(byte[] buffer, int Index = 0)
@@ -457,13 +457,14 @@ namespace Tup
                 _iVer = Const.PACKET_TYPE_TUP;
                 _data = (Dictionary<string, Dictionary<string, byte[]>>)_is.ReadMap<Dictionary<string, Dictionary<string, byte[]>>>(_data, 0, false);
                 return;
-            }catch
+            }
+            catch
             {
                 // try tup3
                 _iVer = Const.PACKET_TYPE_TUP3;
                 _is.Wrap(buffer, Index);
                 _is.SetServerEncoding(_encodeName);
-                _new_data = (Dictionary<string, byte[]>)_is.ReadMap<Dictionary<string, byte[]>>(_new_data, 0, false);     
+                _new_data = (Dictionary<string, byte[]>)_is.ReadMap<Dictionary<string, byte[]>>(_new_data, 0, false);
             }
         }
 
@@ -483,7 +484,7 @@ namespace Tup
         {
             if (_iVer == Const.PACKET_TYPE_TUP3)
             {
-                _new_data = (Dictionary<string, byte[]>)_is.ReadMap<Dictionary<string, byte[]>>(_new_data, 0, false); 
+                _new_data = (Dictionary<string, byte[]>)_is.ReadMap<Dictionary<string, byte[]>>(_new_data, 0, false);
             }
             else
             {

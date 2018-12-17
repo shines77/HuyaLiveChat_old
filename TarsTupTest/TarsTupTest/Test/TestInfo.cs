@@ -31,11 +31,11 @@ namespace Test
         {
             get
             {
-                 return _ibegin;
+                return _ibegin;
             }
             set
             {
-                _ibegin = value; 
+                _ibegin = value;
             }
         }
 
@@ -44,11 +44,11 @@ namespace Test
         {
             get
             {
-                 return _b;
+                return _b;
             }
             set
             {
-                _b = value; 
+                _b = value;
             }
         }
 
@@ -57,11 +57,11 @@ namespace Test
         {
             get
             {
-                 return _si;
+                return _si;
             }
             set
             {
-                _si = value; 
+                _si = value;
             }
         }
 
@@ -70,11 +70,11 @@ namespace Test
         {
             get
             {
-                 return _by;
+                return _by;
             }
             set
             {
-                _by = value; 
+                _by = value;
             }
         }
 
@@ -83,11 +83,11 @@ namespace Test
         {
             get
             {
-                 return _ii;
+                return _ii;
             }
             set
             {
-                _ii = value; 
+                _ii = value;
             }
         }
 
@@ -96,11 +96,11 @@ namespace Test
         {
             get
             {
-                 return _li;
+                return _li;
             }
             set
             {
-                _li = value; 
+                _li = value;
             }
         }
 
@@ -109,11 +109,11 @@ namespace Test
         {
             get
             {
-                 return _f;
+                return _f;
             }
             set
             {
-                _f = value; 
+                _f = value;
             }
         }
 
@@ -122,11 +122,11 @@ namespace Test
         {
             get
             {
-                 return _d;
+                return _d;
             }
             set
             {
-                _d = value; 
+                _d = value;
             }
         }
 
@@ -135,55 +135,55 @@ namespace Test
         {
             get
             {
-                 return _s;
+                return _s;
             }
             set
             {
-                _s = value; 
+                _s = value;
             }
         }
 
-        public System.Collections.Generic.List<int> vi {get; set;} 
+        public System.Collections.Generic.List<int> vi { get; set; }
 
-        public System.Collections.Generic.Dictionary<int, string> mi {get; set;} 
+        public System.Collections.Generic.Dictionary<int, string> mi { get; set; }
 
-        public A aa {get; set;} 
+        public A aa { get; set; }
 
         int _iend = 0;
         public int iend
         {
             get
             {
-                 return _iend;
+                return _iend;
             }
             set
             {
-                _iend = value; 
+                _iend = value;
             }
         }
 
-        public System.Collections.Generic.List<byte> vb {get; set;} 
+        public System.Collections.Generic.List<byte> vb { get; set; }
 
-        public System.Collections.Generic.List<A> vi2 {get; set;} 
+        public System.Collections.Generic.List<A> vi2 { get; set; }
 
-        public System.Collections.Generic.Dictionary<int, A> mi2 {get; set;} 
+        public System.Collections.Generic.Dictionary<int, A> mi2 { get; set; }
 
         long _uii = 0;
         public long uii
         {
             get
             {
-                 return _uii;
+                return _uii;
             }
             set
             {
-                _uii = value; 
+                _uii = value;
             }
         }
 
-        public System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<A>> msv {get; set;} 
+        public System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<A>> msv { get; set; }
 
-        public System.Collections.Generic.List<float> vf {get; set;} 
+        public System.Collections.Generic.List<float> vf { get; set; }
 
         public override void WriteTo(Tup.Tars.TarsOutputStream _os)
         {
@@ -210,43 +210,43 @@ namespace Test
 
         public override void ReadFrom(Tup.Tars.TarsInputStream _is)
         {
-            ibegin = (int) _is.Read(ibegin, 0, true);
+            ibegin = (int)_is.Read(ibegin, 0, true);
 
-            b = (bool) _is.Read(b, 1, true);
+            b = (bool)_is.Read(b, 1, true);
 
-            si = (short) _is.Read(si, 2, true);
+            si = (short)_is.Read(si, 2, true);
 
-            by = (byte) _is.Read(by, 3, true);
+            by = (byte)_is.Read(by, 3, true);
 
-            ii = (int) _is.Read(ii, 4, true);
+            ii = (int)_is.Read(ii, 4, true);
 
-            li = (long) _is.Read(li, 5, true);
+            li = (long)_is.Read(li, 5, true);
 
-            f = (float) _is.Read(f, 6, true);
+            f = (float)_is.Read(f, 6, true);
 
-            d = (double) _is.Read(d, 7, true);
+            d = (double)_is.Read(d, 7, true);
 
-            s = (string) _is.Read(s, 8, true);
+            s = (string)_is.Read(s, 8, true);
 
-            vi = (System.Collections.Generic.List<int>) _is.Read(vi, 9, true);
+            vi = (System.Collections.Generic.List<int>)_is.Read(vi, 9, true);
 
-            mi = (System.Collections.Generic.Dictionary<int, string>) _is.Read(mi, 10, true);
+            mi = (System.Collections.Generic.Dictionary<int, string>)_is.Read(mi, 10, true);
 
-            aa = (A) _is.Read(aa, 11, true);
+            aa = (A)_is.Read(aa, 11, true);
 
-            iend = (int) _is.Read(iend, 12, true);
+            iend = (int)_is.Read(iend, 12, true);
 
-            vb = (System.Collections.Generic.List<byte>) _is.Read(vb, 13, true);
+            vb = (System.Collections.Generic.List<byte>)_is.Read(vb, 13, true);
 
-            vi2 = (System.Collections.Generic.List<A>) _is.Read(vi2, 15, true);
+            vi2 = (System.Collections.Generic.List<A>)_is.Read(vi2, 15, true);
 
-            mi2 = (System.Collections.Generic.Dictionary<int, A>) _is.Read(mi2, 16, true);
+            mi2 = (System.Collections.Generic.Dictionary<int, A>)_is.Read(mi2, 16, true);
 
-            uii = (long) _is.Read(uii, 17, true);
+            uii = (long)_is.Read(uii, 17, true);
 
-            msv = (System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<A>>) _is.Read(msv, 18, true);
+            msv = (System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<A>>)_is.Read(msv, 18, true);
 
-            vf = (System.Collections.Generic.List<float>) _is.Read(vf, 19, false);
+            vf = (System.Collections.Generic.List<float>)_is.Read(vf, 19, false);
 
         }
 

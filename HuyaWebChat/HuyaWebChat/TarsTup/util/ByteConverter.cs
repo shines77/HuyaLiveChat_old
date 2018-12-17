@@ -26,14 +26,14 @@ namespace Tup
         public static byte[] ReverseBytes(byte[] inArray)
         {
             byte temp;
-            int highCtr = inArray.Length - 1;
+            int tail = inArray.Length - 1;
 
-            for (int ctr = 0; ctr < inArray.Length / 2; ctr++)
+            for (int head = 0; head < inArray.Length / 2; head++)
             {
-                temp = inArray[ctr];
-                inArray[ctr] = inArray[highCtr];
-                inArray[highCtr] = temp;
-                highCtr -= 1;
+                temp = inArray[head];
+                inArray[head] = inArray[tail];
+                inArray[tail] = temp;
+                tail -= 1;
             }
             return inArray;
         }
@@ -85,24 +85,24 @@ namespace Tup
             int nLenWithoutZero = 0;
             for (; nLenWithoutZero < bytes.Length; nLenWithoutZero++)
             {
-                if(bytes[nLenWithoutZero] == 0)
+                if (bytes[nLenWithoutZero] == 0)
                 {
                     break;
                 }
             }
-            byte[] byteWithoutZero = new byte[nLenWithoutZero];
 
+            byte[] byteWithoutZero = new byte[nLenWithoutZero];
             Array.Copy(bytes, byteWithoutZero, byteWithoutZero.Length);
 
             List<int> listIndexes = new List<int>();
             for (int i = 0; i < byteWithoutZero.Length - 1; i++)
             {
-                // 检查字符串为零
+                // Check string is zero.
                 if (byteWithoutZero[i] == 0)
                 {
                     break;
                 }
-                if(byteWithoutZero[i] == 0x14)
+                if (byteWithoutZero[i] == 0x14)
                 {
                     listIndexes.Add(i);
                     i++;
@@ -132,7 +132,6 @@ namespace Tup
                 strOutput += (char)byteWithoutZero[listIndexes[i] + 1];
             }
 
-
             int leftIndex = 0;
             if (listIndexes.Count > 0)
             {
@@ -149,27 +148,28 @@ namespace Tup
         {
             byte high = (byte)((ch >> 8) & 0xff);
             byte low = (byte)(ch & 0xff);
-            if (high == 0 && ((low&0x80)!=0))
+            if ((high == 0) && ((low & 0x80) != 0))
             {
                 return false;
             }
             return true;
-            
         }
 
         /// <summary>
-        /// 写本地文件是使用
+        /// Write local files are used.
         /// </summary>
         /// <param name="strInput"></param>
         /// <param name="IsLocalString"></param>
-        /// <returns></returns>
-        public static byte[] String2Bytes(string strInput,bool IsLocalString)
+        /// <returns>
+        /// </returns>
+        public static byte[] String2Bytes(string strInput, bool IsLocalString)
         {
             if (!IsLocalString)
             {
                 return String2Bytes(strInput);
             }
-            else {
+            else
+            {
                 return Encoding.UTF8.GetBytes(strInput);
             }
         }

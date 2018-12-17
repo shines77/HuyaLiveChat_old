@@ -25,12 +25,12 @@ namespace Tup.Tars
     internal class TarsUtil
     {
         /**
-         * Constant to use in building the hashCode.
+         * Constant to use in building the HashCode.
          */
         private static int iConstant = 37;
 
         /**
-         * Running total of the hashCode.
+         * Running total of the HashCode.
          */
         private static int iTotal = 17;
 
@@ -79,52 +79,52 @@ namespace Tup.Tars
             return l.Equals(r);
         }
 
-        public static int compareTo(bool l, bool r)
+        public static int CompareTo(bool l, bool r)
         {
             return (l ? 1 : 0) - (r ? 1 : 0);
         }
 
-        public static int compareTo(byte l, byte r)
+        public static int CompareTo(byte l, byte r)
         {
             return l < r ? -1 : (l > r ? 1 : 0);
         }
 
-        public static int compareTo(char l, char r)
+        public static int CompareTo(char l, char r)
         {
             return l < r ? -1 : (l > r ? 1 : 0);
         }
 
-        public static int compareTo(short l, short r)
+        public static int CompareTo(short l, short r)
         {
             return l < r ? -1 : (l > r ? 1 : 0);
         }
 
-        public static int compareTo(int l, int r)
+        public static int CompareTo(int l, int r)
         {
             return l < r ? -1 : (l > r ? 1 : 0);
         }
 
-        public static int compareTo(long l, long r)
+        public static int CompareTo(long l, long r)
         {
             return l < r ? -1 : (l > r ? 1 : 0);
         }
 
-        public static int compareTo(float l, float r)
+        public static int CompareTo(float l, float r)
         {
             return l < r ? -1 : (l > r ? 1 : 0);
         }
 
-        public static int compareTo(double l, double r)
+        public static int CompareTo(double l, double r)
         {
             return l < r ? -1 : (l > r ? 1 : 0);
         }
 
-        public static int compareTo<T>(T left, T right) where T : IComparable
+        public static int CompareTo<T>(T left, T right) where T : IComparable
         {
             return left.CompareTo(right);
         }
 
-        public static int compareTo<T>(List<T> left, List<T> right) where T : IComparable
+        public static int CompareTo<T>(List<T> left, List<T> right) where T : IComparable
         {
             for (int i = 0, j = 0; i < left.Count && j < right.Count; i++, j++)
             {
@@ -144,10 +144,10 @@ namespace Tup.Tars
                 }
             }
 
-            return compareTo(left.Count, right.Count);
+            return CompareTo(left.Count, right.Count);
         }
 
-        public static int compareTo<T>(T[] left, T[] right) where T : IComparable
+        public static int CompareTo<T>(T[] left, T[] right) where T : IComparable
         {
             for (int li = 0, ri = 0; li < left.Length && ri < right.Length; ++li, ++ri)
             {
@@ -157,119 +157,119 @@ namespace Tup.Tars
                     return n;
                 }
             }
-            return compareTo(left.Length, right.Length);
+            return CompareTo(left.Length, right.Length);
         }
 
-        public static int compareTo(bool[] left, bool[] right)
+        public static int CompareTo(bool[] left, bool[] right)
         {
             for (int li = 0, ri = 0; li < left.Length && ri < right.Length; ++li, ++ri)
             {
-                int n = compareTo(left[li], right[ri]);
+                int n = CompareTo(left[li], right[ri]);
                 if (n != 0)
                 {
                     return n;
                 }
             }
-            return compareTo(left.Length, right.Length);
+            return CompareTo(left.Length, right.Length);
         }
 
-        public static int compareTo(byte[] left, byte[] right)
+        public static int CompareTo(byte[] left, byte[] right)
         {
             for (int li = 0, ri = 0; li < left.Length && ri < right.Length; ++li, ++ri)
             {
-                int n = compareTo(left[li], right[ri]);
+                int n = CompareTo(left[li], right[ri]);
                 if (n != 0)
                 {
                     return n;
                 }
             }
-            return compareTo(left.Length, right.Length);
+            return CompareTo(left.Length, right.Length);
         }
 
-        public static int compareTo(char[] left, char[] right)
+        public static int CompareTo(char[] left, char[] right)
         {
             for (int li = 0, ri = 0; li < left.Length && ri < right.Length; ++li, ++ri)
             {
-                int n = compareTo(left[li], right[ri]);
+                int n = CompareTo(left[li], right[ri]);
                 if (n != 0)
                 {
                     return n;
                 }
             }
-            return compareTo(left.Length, right.Length);
+            return CompareTo(left.Length, right.Length);
         }
 
-        public static int compareTo(short[] left, short[] right)
+        public static int CompareTo(short[] left, short[] right)
         {
             for (int li = 0, ri = 0; li < left.Length && ri < right.Length; ++li, ++ri)
             {
-                int n = compareTo(left[li], right[ri]);
+                int n = CompareTo(left[li], right[ri]);
                 if (n != 0)
                 {
                     return n;
                 }
             }
-            return compareTo(left.Length, right.Length);
+            return CompareTo(left.Length, right.Length);
         }
 
-        public static int compareTo(int[] left, int[] right)
+        public static int CompareTo(int[] left, int[] right)
         {
             for (int li = 0, ri = 0; li < left.Length && ri < right.Length; ++li, ++ri)
             {
-                int n = compareTo(left[li], right[ri]);
+                int n = CompareTo(left[li], right[ri]);
                 if (n != 0)
                 {
                     return n;
                 }
             }
-            return compareTo(left.Length, right.Length);
+            return CompareTo(left.Length, right.Length);
         }
 
-        public static int compareTo(long[] left, long[] right)
+        public static int CompareTo(long[] left, long[] right)
         {
             for (int li = 0, ri = 0; li < left.Length && ri < right.Length; ++li, ++ri)
             {
-                int n = compareTo(left[li], right[ri]);
+                int n = CompareTo(left[li], right[ri]);
                 if (n != 0)
                 {
                     return n;
                 }
             }
-            return compareTo(left.Length, right.Length);
+            return CompareTo(left.Length, right.Length);
         }
 
-        public static int compareTo(float[] left, float[] right)
+        public static int CompareTo(float[] left, float[] right)
         {
             for (int li = 0, ri = 0; li < left.Length && ri < right.Length; ++li, ++ri)
             {
-                int n = compareTo(left[li], right[ri]);
+                int n = CompareTo(left[li], right[ri]);
                 if (n != 0)
                 {
                     return n;
                 }
             }
-            return compareTo(left.Length, right.Length);
+            return CompareTo(left.Length, right.Length);
         }
 
-        public static int compareTo(double[] left, double[] right)
+        public static int CompareTo(double[] left, double[] right)
         {
             for (int li = 0, ri = 0; li < left.Length && ri < right.Length; ++li, ++ri)
             {
-                int n = compareTo(left[li], right[ri]);
+                int n = CompareTo(left[li], right[ri]);
                 if (n != 0)
                 {
                     return n;
                 }
             }
-            return compareTo(left.Length, right.Length);
+            return CompareTo(left.Length, right.Length);
         }
 
-        public static int hashCode(bool b)
+        public static int HashCode(bool b)
         {
             return iTotal * iConstant + (b ? 0 : 1);
         }
 
-        public static int hashCode(bool[] array)
+        public static int HashCode(bool[] array)
         {
             if (array == null)
             {
@@ -286,12 +286,12 @@ namespace Tup.Tars
             }
         }
 
-        public static int hashCode(byte b)
+        public static int HashCode(byte b)
         {
             return iTotal * iConstant + b;
         }
 
-        public static int hashCode(byte[] array)
+        public static int HashCode(byte[] array)
         {
             if (array == null)
             {
@@ -308,12 +308,12 @@ namespace Tup.Tars
             }
         }
 
-        public static int hashCode(char c)
+        public static int HashCode(char c)
         {
             return iTotal * iConstant + c;
         }
 
-        public static int hashCode(char[] array)
+        public static int HashCode(char[] array)
         {
             if (array == null)
             {
@@ -330,12 +330,12 @@ namespace Tup.Tars
             }
         }
 
-        public static int hashCode(short s)
+        public static int HashCode(short s)
         {
             return iTotal * iConstant + s;
         }
 
-        public static int hashCode(short[] array)
+        public static int HashCode(short[] array)
         {
             if (array == null)
             {
@@ -353,12 +353,12 @@ namespace Tup.Tars
         }
 
 
-        public static int hashCode(int i)
+        public static int HashCode(int i)
         {
             return iTotal * iConstant + i;
         }
 
-        public static int hashCode(int[] array)
+        public static int HashCode(int[] array)
         {
             if (array == null)
             {
@@ -375,12 +375,12 @@ namespace Tup.Tars
             }
         }
 
-        public static int hashCode(long l)
+        public static int HashCode(long l)
         {
             return iTotal * iConstant + ((int)(l ^ (l >> 32)));
         }
 
-        public static int hashCode(long[] array)
+        public static int HashCode(long[] array)
         {
             if (array == null)
             {
@@ -397,12 +397,12 @@ namespace Tup.Tars
             }
         }
 
-        public static int hashCode(float f)
+        public static int HashCode(float f)
         {
             return iTotal * iConstant + Convert.ToInt32(f);
         }
 
-        public static int hashCode(float[] array)
+        public static int HashCode(float[] array)
         {
             if (array == null)
             {
@@ -419,12 +419,12 @@ namespace Tup.Tars
             }
         }
 
-        public static int hashCode(double d)
+        public static int HashCode(double d)
         {
-            return hashCode(Convert.ToInt64(d));
+            return HashCode(Convert.ToInt64(d));
         }
 
-        public static int hashCode(double[] array)
+        public static int HashCode(double[] array)
         {
             if (array == null)
             {
@@ -441,7 +441,7 @@ namespace Tup.Tars
             }
         }
 
-        public static int hashCode(TarsStruct[] array)
+        public static int HashCode(TarsStruct[] array)
         {
             if (array == null)
             {
@@ -458,7 +458,7 @@ namespace Tup.Tars
             }
         }
 
-        public static int hashCode(object obj)
+        public static int HashCode(object obj)
         {
             if (obj == null)
             {
@@ -470,43 +470,43 @@ namespace Tup.Tars
                 {
                     if (obj is long[])
                     {
-                        return hashCode((long[])obj);
+                        return HashCode((long[])obj);
                     }
                     else if (obj is int[])
                     {
-                        return hashCode((int[])obj);
+                        return HashCode((int[])obj);
                     }
                     else if (obj is short[])
                     {
-                        return hashCode((short[])obj);
+                        return HashCode((short[])obj);
                     }
                     else if (obj is char[])
                     {
-                        return hashCode((char[])obj);
+                        return HashCode((char[])obj);
                     }
                     else if (obj is byte[])
                     {
-                        return hashCode((byte[])obj);
+                        return HashCode((byte[])obj);
                     }
                     else if (obj is double[])
                     {
-                        return hashCode((double[])obj);
+                        return HashCode((double[])obj);
                     }
                     else if (obj is float[])
                     {
-                        return hashCode((float[])obj);
+                        return HashCode((float[])obj);
                     }
                     else if (obj is bool[])
                     {
-                        return hashCode((bool[])obj);
+                        return HashCode((bool[])obj);
                     }
                     else if (obj is TarsStruct[])
                     {
-                        return hashCode((TarsStruct[])obj);
+                        return HashCode((TarsStruct[])obj);
                     }
                     else
                     {
-                        return hashCode((Object[])obj);
+                        return HashCode((Object[])obj);
                     }
                 }
                 else if (obj is TarsStruct)
@@ -520,7 +520,7 @@ namespace Tup.Tars
             }
         }
 
-        public static byte[] getTarsBufArray(MemoryStream stream)
+        public static byte[] GetTarsBufferArray(MemoryStream stream)
         {
             byte[] bytes = new byte[stream.Position];
             Array.Copy(stream.GetBuffer(), 0, bytes, 0, bytes.Length);

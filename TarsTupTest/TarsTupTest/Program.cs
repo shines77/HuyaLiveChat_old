@@ -315,9 +315,9 @@ namespace TarsTupTest
             TestInfo stTest = new TestInfo();
             stTest.ReadFrom(_is);
 
-            Console.WriteLine("stTest.ibegin:" + stTest.ibegin);
-            Console.WriteLine("stTest.li:" + stTest.li);
-            Console.WriteLine("stTest.s:" + stTest.s);
+            Console.WriteLine("stTest.ibegin: " + stTest.ibegin);
+            Console.WriteLine("stTest.li: " + stTest.li);
+            Console.WriteLine("stTest.s: " + stTest.s);
 
             Console_PressAnyKey();
         }
@@ -347,7 +347,7 @@ namespace TarsTupTest
             unipack.Put("teststr", teststr);
 
             buffer = unipack.Encode();
-            Console.WriteLine("buffer.size:" + buffer.Length);
+            Console.WriteLine("buffer.size: " + buffer.Length);
 
             UniAttribute de = new UniAttribute();
             TarsInputStream _is = new TarsInputStream(buffer);
@@ -368,11 +368,11 @@ namespace TarsTupTest
             dteststr = de.Get<string>("teststr", dteststr);
             st = de.Get<TestInfo>("mystruct", st);
 
-            Console.WriteLine("dtests:" + dtests);
-            Console.WriteLine("dtesti:" + dtesti);
-            Console.WriteLine("dtestl:" + dtestl);
-            Console.WriteLine("dtestf:" + dtestf);
-            Console.WriteLine("dteststr:" + dteststr);
+            Console.WriteLine("dtests: " + dtests);
+            Console.WriteLine("dtesti: " + dtesti);
+            Console.WriteLine("dtestl: " + dtestl);
+            Console.WriteLine("dtestf: " + dtestf);
+            Console.WriteLine("dteststr: " + dteststr);
             Console.WriteLine("\nTestInfo get struct:  st->ibegin=" + st.ibegin + " st->li=" + st.li);
 
             Console_PressAnyKey();
@@ -383,9 +383,8 @@ namespace TarsTupTest
          */
         public void TestTup(TestInfo ti, ref byte[] buffer)
         {
-
             UniPacket client = new UniPacket();
-            client.setVersion(3);
+            client.SetVersion(3);
             client.ServantName = "ServantName";
             client.FuncName = "test";
 
@@ -404,7 +403,7 @@ namespace TarsTupTest
 
             // 编码tup
             buffer = client.Encode();
-            Console.WriteLine("buffer.size:" + buffer.Length);
+            Console.WriteLine("buffer.size: " + buffer.Length);
 
             // 解码tup
             UniPacket de = new UniPacket();
@@ -425,11 +424,11 @@ namespace TarsTupTest
             dteststr = de.Get<string>("teststr", dteststr);
             st = de.Get<TestInfo>("mystruct", st);
 
-            Console.WriteLine("dtests:" + dtests);
-            Console.WriteLine("dtesti:" + dtesti);
-            Console.WriteLine("dtestl:" + dtestl);
-            Console.WriteLine("dtestf:" + dtestf);
-            Console.WriteLine("dteststr:" + dteststr);
+            Console.WriteLine("dtests: " + dtests);
+            Console.WriteLine("dtesti: " + dtesti);
+            Console.WriteLine("dtestl: " + dtestl);
+            Console.WriteLine("dtestf: " + dtestf);
+            Console.WriteLine("dteststr: " + dteststr);
 
             Console.WriteLine("\nTestInfo get struct:  st->ibegin=" + st.ibegin + " st->li=" + st.li);
 
@@ -485,7 +484,7 @@ namespace TarsTupTest
                 ret = client.receive(bufferR);
 
                 Console.WriteLine("打印接收 buffer");
-                Console.WriteLine("接收大小:" + ret);
+                Console.WriteLine("接收大小: " + ret);
 
                 // ----------------------decode----------------------------
                 if (ret > sizeof(int))
@@ -510,12 +509,12 @@ namespace TarsTupTest
 
                     sb.Clear();
                     tiRecv.Display(sb, 0);
-                    Console.WriteLine("end:" + sb.ToString());
-                    Console.WriteLine("dtests:" + dtests);
-                    Console.WriteLine("dtesti:" + dtesti);
-                    Console.WriteLine("dtestl:" + dtestl);
-                    Console.WriteLine("dtestf:" + dtestf);
-                    Console.WriteLine("dteststr:" + dteststr);
+                    Console.WriteLine("end: " + sb.ToString());
+                    Console.WriteLine("dtests: " + dtests);
+                    Console.WriteLine("dtesti: " + dtesti);
+                    Console.WriteLine("dtestl: " + dtestl);
+                    Console.WriteLine("dtestf: " + dtestf);
+                    Console.WriteLine("dteststr: " + dteststr);
 
                     Console_PressAnyKey();
                 }
@@ -544,8 +543,8 @@ namespace TarsTupTest
 
                 encodePack.RequestId = 1;
                 // 设置tup版本号,默认是PACKET_TYPE_TUP
-                encodePack.setTarsVersion(Tup.Const.PACKET_TYPE_TUP3);
-                encodePack.setTarsPacketType(Tup.Const.PACKET_TYPE_TARSNORMAL);
+                encodePack.SetVersion(Tup.Const.PACKET_TYPE_TUP3);
+                encodePack.SetPacketType(Tup.Const.PACKET_TYPE_TARSNORMAL);
                 encodePack.ServantName = "Test.HelloServer.HelloImpObj";
                 encodePack.FuncName = "testHello";
 
@@ -580,13 +579,13 @@ namespace TarsTupTest
 
                     Console.WriteLine("打印接收 buffer");
                     Console.WriteLine(bin2hex(bufferD));
-                    Console.WriteLine("接收大小:" + ret);
+                    Console.WriteLine("接收大小: " + ret);
 
-                    if (respPack.getTarsResultCode() == 0)
+                    if (respPack.GetResultCode() == 0)
                     {
                         string sOut = "";
                         sOut = respPack.Get<string>("r", sOut);
-                        Console.WriteLine("sOut:" + sOut);
+                        Console.WriteLine("sOut: " + sOut);
                     }
                     else
                     {
@@ -626,7 +625,7 @@ namespace TarsTupTest
             catch (Exception ex)
             {
                 Console.WriteLine("Exception: " + ex.StackTrace + "\n" + ex.Message);
-            }            
+            }
         }
     }
 }

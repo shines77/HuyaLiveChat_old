@@ -46,5 +46,5 @@ namespace Tup.Tars
         public virtual void Display(StringBuilder sb, int level)
         {
         }
-   }
+    }
 }

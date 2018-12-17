@@ -25,25 +25,22 @@ namespace Tup
     public class BasicClassTypeUtil
     {
         /**
-         * 将嵌套的类型转成字符串
+         * Convert nested types to strings
          * @param listTpye
          * @return
          */
         public static string TransTypeList(List<string> listTpye)
         {
             StringBuilder sb = new StringBuilder();
-
             for (int i = 0; i < listTpye.Count; i++)
             {
                 listTpye[i] = CS2UniType(listTpye[i]);
             }
-
             listTpye.Reverse();
 
             for (int i = 0; i < listTpye.Count; i++)
             {
                 string type = (string)listTpye[i];
-
                 if (type == null)
                 {
                     continue;
@@ -65,6 +62,7 @@ namespace Tup
                     listTpye[0] = listTpye[0] + ">";
                 }
             }
+
             listTpye.Reverse();
             foreach (string s in listTpye)
             {
@@ -82,7 +80,9 @@ namespace Tup
         {
             try
             {
-                // String类型没有缺少构造函数.
+                //
+                // The String type is not missing the constructor.
+                //
                 if (type.ToString() == "System.String")
                 {
                     return "";
@@ -198,9 +198,9 @@ namespace Tup
             }
         }
 
-        public static bool IsQDictionary(string cls)
+        public static bool IsQDictionary(string className)
         {
-            return (cls.IndexOf("System.Collections.Generic.QDictionary") == 0);
+            return (className.IndexOf("System.Collections.Generic.QDictionary") == 0);
         }
     }
 }

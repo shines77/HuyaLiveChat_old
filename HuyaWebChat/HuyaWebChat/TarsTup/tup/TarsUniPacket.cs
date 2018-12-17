@@ -36,73 +36,9 @@ namespace Tup
         }
 
         /**
-         * 设置协议版本
-         */
-        public void setTarsVersion(short version)
-        {
-            setVersion(version);
-        }
-
-        /**
-         * 设置调用类型
-         */
-        public void setTarsPacketType(byte packetType)
-        {
-            _package.cPacketType = packetType;
-        }
-
-        /**
-         * 设置消息类型
-         */
-        public void setTarsMessageType(int messageType)
-        {
-            _package.iMessageType = messageType;
-        }
-
-        /**
-         * 设置超时时间
-         */
-        public void setTarsTimeout(int timeout)
-        {
-            _package.iTimeout = timeout;
-        }
-
-        /**
-         * 设置参数编码内容
-         */
-        public void setTarsBuffer(byte[] buffer)
-        {
-            _package.sBuffer = buffer;
-        }
-
-        /**
-         * 设置上下文
-         */
-        public void setTarsContext(Dictionary<string, string> context)
-        {
-            _package.context = context;
-        }
-
-        /**
-         * 设置特殊消息的状态值
-         */
-        public void setTarsStatus(Dictionary<string, string> status)
-        {
-            _package.status = status;
-        }
-
-        /**
-         * 获取协议版本
-         */
-        public short getTarsVersion()
-        {
-            return _package.iVersion;
-        }
-
-        /**
          * 获取调用类型
          */
-        public byte getTarsPacketType()
+        public byte GetPacketType()
         {
             return _package.cPacketType;
         }
@@ -110,7 +46,7 @@ namespace Tup
         /**
          * 获取消息类型
          */
-        public int getTarsMessageType()
+        public int GetMessageType()
         {
             return _package.iMessageType;
         }
@@ -118,7 +54,7 @@ namespace Tup
         /**
          * 获取超时时间
          */
-        public int getTarsTimeout()
+        public int GetTimeout()
         {
             return _package.iTimeout;
         }
@@ -126,7 +62,7 @@ namespace Tup
         /**
          * 获取参数编码后内容
          */
-        public byte[] getTarsBuffer()
+        public byte[] GetBuffer()
         {
             return _package.sBuffer;
         }
@@ -134,7 +70,7 @@ namespace Tup
         /**
          * 获取上下文信息
          */
-        public Dictionary<string, string> getTarsContext()
+        public Dictionary<string, string> GetContext()
         {
             return _package.context;
         }
@@ -142,15 +78,63 @@ namespace Tup
         /**
          * 获取特殊消息的状态值
          */
-        public Dictionary<string, string> getTarsStatus()
+        public Dictionary<string, string> GetStatus()
         {
             return _package.status;
         }
 
         /**
+         * 设置调用类型
+         */
+        public void SetPacketType(byte packetType)
+        {
+            _package.cPacketType = packetType;
+        }
+
+        /**
+         * 设置消息类型
+         */
+        public void SetMessageType(int messageType)
+        {
+            _package.iMessageType = messageType;
+        }
+
+        /**
+         * 设置超时时间
+         */
+        public void SetTimeout(int timeout)
+        {
+            _package.iTimeout = timeout;
+        }
+
+        /**
+         * 设置参数编码内容
+         */
+        public void SetBuffer(byte[] buffer)
+        {
+            _package.sBuffer = buffer;
+        }
+
+        /**
+         * 设置上下文
+         */
+        public void SetContext(Dictionary<string, string> context)
+        {
+            _package.context = context;
+        }
+
+        /**
+         * 设置特殊消息的状态值
+         */
+        public void SetStatus(Dictionary<string, string> status)
+        {
+            _package.status = status;
+        }
+
+        /**
          * 获取调用tars的返回值
          */
-        public int getTarsResultCode()
+        public int GetResultCode()
         {
             int result = 0;
             try
@@ -158,9 +142,9 @@ namespace Tup
                 string rcode = _package.status[(Const.STATUS_RESULT_CODE)];
                 result = (rcode != null ? int.Parse(rcode) : 0);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                QTrace.Trace(e.Message);
+                QTrace.Trace(ex.Message);
                 return 0;
             }
             return result;
@@ -169,7 +153,7 @@ namespace Tup
         /**
          * 获取调用tars的返回描述
          */
-        public string getTarsResultDesc()
+        public string GetResultDesc()
         {
             string rdesc = _package.status[(Const.STATUS_RESULT_DESC)];
             string result = rdesc != null ? rdesc : "";

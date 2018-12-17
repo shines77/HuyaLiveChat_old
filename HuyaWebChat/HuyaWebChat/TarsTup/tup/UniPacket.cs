@@ -83,15 +83,15 @@ namespace Tup
             _package.iVersion = 2;
         }
 
-        public void setVersion(short iVer)
+        public short GetVersion()
+        {
+            return _package.iVersion;
+        }
+
+        public void SetVersion(short iVer)
         {
             _iVer = iVer;
             _package.iVersion = iVer;
-        }
-
-        public short getVersion()
-        {
-            return _package.iVersion;
         }
 
         /**
@@ -119,12 +119,12 @@ namespace Tup
                 _os.WriteArray(_new_data, 0);
             }
 
-            _package.sBuffer = TarsUtil.getTarsBufArray(_os.GetMemoryStream());
-            
+            _package.sBuffer = TarsUtil.GetTarsBufferArray(_os.GetMemoryStream());
+
             _os = new TarsOutputStream(0);
             _os.SetServerEncoding(EncodeName);
             this.WriteTo(_os);
-            byte[] bodys = TarsUtil.getTarsBufArray(_os.GetMemoryStream());
+            byte[] bodys = TarsUtil.GetTarsBufferArray(_os.GetMemoryStream());
             int size = bodys.Length;
 
             MemoryStream stream = new MemoryStream(size + UniPacketHeadSize);
@@ -167,7 +167,7 @@ namespace Tup
                 }
                 else
                 {
-                    _new_data = (Dictionary<string, byte[]>)_is.ReadMap<Dictionary<string, byte[]>>(0, false);  
+                    _new_data = (Dictionary<string, byte[]>)_is.ReadMap<Dictionary<string, byte[]>>(0, false);
                 }
             }
             catch (Exception ex)
@@ -186,30 +186,32 @@ namespace Tup
         {
             _package.ReadFrom(_is);
         }
-        
-        public int OldRespIRet { get; set; }
+
+        public int OldResponseIRet { get; set; }
 
         /**
          * 为兼容最早发布的客户端版本解码使用 iret 字段始终为 0.
          * 
          * @return
          */
-        public byte[] CreateOldRespEncode()
+        public byte[] CreateOldResponseEncode()
         {
             TarsOutputStream _os = new TarsOutputStream(0);
             _os.SetServerEncoding(EncodeName);
             _os.Write(_data, 0);
-            byte[] oldSBuffer = TarsUtil.getTarsBufArray(_os.GetMemoryStream());
+
+            byte[] oldSBuffer = TarsUtil.GetTarsBufferArray(_os.GetMemoryStream());
             _os = new TarsOutputStream(0);
             _os.SetServerEncoding(EncodeName);
             _os.Write(_package.iVersion, 1);
             _os.Write(_package.cPacketType, 2);
             _os.Write(_package.iRequestId, 3);
             _os.Write(_package.iMessageType, 4);
-            _os.Write(OldRespIRet, 5);
+            _os.Write(OldResponseIRet, 5);
             _os.Write(oldSBuffer, 6);
             _os.Write(_package.status, 7);
-            return TarsUtil.getTarsBufArray(_os.GetMemoryStream());
+
+            return TarsUtil.GetTarsBufferArray(_os.GetMemoryStream());
         }
     }
 }

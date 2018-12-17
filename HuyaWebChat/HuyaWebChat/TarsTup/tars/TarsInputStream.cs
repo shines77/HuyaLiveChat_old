@@ -79,7 +79,7 @@ namespace Tup.Tars
             if (null != stream)
             {
                 stream = null;
-                stream = new MemoryStream(bs, index, bs.Length-index);
+                stream = new MemoryStream(bs, index, bs.Length - index);
                 reader = null;
                 reader = new BinaryReader(stream);
             }
@@ -99,10 +99,10 @@ namespace Tup.Tars
          */
         public static int ReadHead(HeadData hd, BinaryReader bb)
         {
-			if (bb.BaseStream.Position >= bb.BaseStream.Length)
-			{
-				throw new TarsDecodeException("read file to end");
-			}
+            if (bb.BaseStream.Position >= bb.BaseStream.Length)
+            {
+                throw new TarsDecodeException("read file to end");
+            }
             byte b = bb.ReadByte();
             hd.type = (byte)(b & 15);
             hd.tag = ((b & (15 << 4)) >> 4);
@@ -1154,7 +1154,7 @@ namespace Tup.Tars
             }
             return null;
         }
-        
+
         public TarsStruct DirectRead(TarsStruct s, int tag, bool isRequire)
         {
             // TarsStruct must have a no-argument constructor.
@@ -1339,10 +1339,9 @@ namespace Tup.Tars
             }
         }
 
-        public int SetServerEncoding(string encoding)
+        public void SetServerEncoding(string encoding)
         {
             sServerEncoding = encoding;
-            return 0;
         }
     }
 }

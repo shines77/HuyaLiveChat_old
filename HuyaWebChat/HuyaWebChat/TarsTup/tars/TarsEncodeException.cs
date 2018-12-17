@@ -18,10 +18,10 @@ using System;
 
 namespace Tup.Tars
 {
-    public class TarsEncodeException: Exception
+    public class TarsEncodeException : Exception
     {
-	    public TarsEncodeException(string str): base(str) 
+        public TarsEncodeException(string str) : base(str)
         {
-	    }
+        }
     }
 }

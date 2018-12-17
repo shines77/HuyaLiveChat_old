@@ -396,7 +396,7 @@ namespace Tup.Tars
         {
             Reserve(8);
             WriteHead((byte)TarsStructType.MAP, tag);
-            
+
             Write(map == null ? 0 : map.Count, 0);
             if (map != null)
             {
@@ -604,7 +604,7 @@ namespace Tup.Tars
             Write(list == null ? 0 : (list.Count > 0 ? list.Count : 0), 0);
             if (list != null)
             {
-                for(int i = 0; i<list.Count; i++)
+                for (int i = 0; i < list.Count; i++)
                 {
                     Write(list[i], 0);
                 }
@@ -726,10 +726,9 @@ namespace Tup.Tars
             }
         }
 
-        public int SetServerEncoding(string encoding)
+        public void SetServerEncoding(string encoding)
         {
             sServerEncoding = encoding;
-            return 0;
         }
     }
 }
