@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Tup;
 using Tup.Tars;
 
-namespace HuyaLive
+namespace HuyaWebChat.HuyaLive
 {
     public enum Gender
     {

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TarsTupTest", "TarsTupTest\TarsTupTest.csproj", "{2E369DA4-CFAB-4543-B636-7B4A1B1051C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuyaChatHelper", ".\HuyaChatHelper\HuyaChatHelper.csproj", "{FADC6490-E32E-41C1-A2BA-00EF1A641401}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2E369DA4-CFAB-4543-B636-7B4A1B1051C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E369DA4-CFAB-4543-B636-7B4A1B1051C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E369DA4-CFAB-4543-B636-7B4A1B1051C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E369DA4-CFAB-4543-B636-7B4A1B1051C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FADC6490-E32E-41C1-A2BA-00EF1A641401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FADC6490-E32E-41C1-A2BA-00EF1A641401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FADC6490-E32E-41C1-A2BA-00EF1A641401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FADC6490-E32E-41C1-A2BA-00EF1A641401}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

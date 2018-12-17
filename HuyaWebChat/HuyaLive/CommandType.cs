@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HuyaLive
+namespace HuyaWebChat.HuyaLive
 {
     public enum CommandType
     {
