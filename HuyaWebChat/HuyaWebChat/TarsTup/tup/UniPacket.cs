@@ -131,7 +131,7 @@ namespace Tup
             MemoryStream stream = new MemoryStream(size + UniPacketHeadSize);
             using (BinaryWriter writer = new BinaryWriter(stream))
             {
-                // 整个数据包长度
+                // Entire packet length.
                 writer.Write(ByteConverter.ReverseEndian(size + UniPacketHeadSize));
                 writer.Write(bodys);
             }
@@ -153,10 +153,11 @@ namespace Tup
             {
                 TarsInputStream _is = new TarsInputStream(buffer, UniPacketHeadSize + Index);
                 _is.SetServerEncoding(EncodeName);
-                // 解码出 RequestPacket 包.
+
+                // Decode the RequestPacket package.
                 this.ReadFrom(_is);
 
-                // 设置 tup 版本.
+                // Set the tup version.
                 _iVer = _package.iVersion;
 
                 _is = new TarsInputStream(_package.sBuffer);
@@ -164,7 +165,8 @@ namespace Tup
 
                 if (_package.iVersion == Const.PACKET_TYPE_TUP)
                 {
-                    _data = (Dictionary<string, Dictionary<string, byte[]>>)_is.ReadMap<Dictionary<string, Dictionary<string, byte[]>>>(0, false);
+                    _data = (Dictionary<string, Dictionary<string, byte[]>>)_is.ReadMap<
+                             Dictionary<string, Dictionary<string, byte[]>>>(0, false);
                 }
                 else
                 {

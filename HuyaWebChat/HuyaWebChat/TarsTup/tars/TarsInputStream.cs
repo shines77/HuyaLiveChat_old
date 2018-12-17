@@ -151,6 +151,7 @@ namespace Tup.Tars
                     int len = PeakHead(head);
                     if (tag <= head.tag || head.type == (byte)TarsStructType.STRUCT_END)
                     {
+                        /* Modified by shines77, 2018-12-17 20:00 */
                         return ((head.type == (byte)TarsStructType.STRUCT_END) ? false : (tag == head.tag));
                     }
 

@@ -26,15 +26,15 @@ namespace Tup
     public class UniAttribute : TarsStruct
     {
         /**
-         * PACKET_TYPE_TUP类型
+         * PACKET_TYPE_TUP Type
          */
         protected Dictionary<string, Dictionary<string, byte[]>> _data = null;
         /**
-         * 精简版tup，PACKET_TYPE_TUP3类型.
+         * Lite version Tup，PACKET_TYPE_TUP3 Type.
          */
         protected Dictionary<string, byte[]> _new_data = null;
         /**
-         * 存储get后的数据, 避免多次解析.
+         * Store the data after get, avoid multiple parsing.
          */
         private Dictionary<string, object> cachedData = new Dictionary<string, object>(128);
 
@@ -184,7 +184,8 @@ namespace Tup
         }
 
         /**
-         * 获取tup精简版本编码的数据,兼容旧版本tup
+         * Get the data encoded by the tup streamlined version,
+         * compatible with the old version of tup.
          * @param <T>
          * @param name
          * @param proxy
@@ -237,7 +238,8 @@ namespace Tup
         }
 
         /**
-         * 获取一个元素,只能用于tup版本2，如果待获取的数据为tup3，则抛异常
+         * Get an element, only for tup version 2, if the data to be acquired is version tup3,
+         * throw an exception.
          * @param <T>
          * @param name
          * @return
@@ -273,7 +275,7 @@ namespace Tup
                 string className = null;
                 byte[] data = new byte[0];
 
-                // 找到和T类型对应的数据data
+                // Find the data corresponding to the T type.
                 foreach (KeyValuePair<string, byte[]> pair in map)
                 {
                     className = pair.Key;
@@ -284,7 +286,7 @@ namespace Tup
                         continue;
                     }
 
-                    // 比较基本类型
+                    // Comparative basic type.
                     strBasicType = BasicClassTypeUtil.CS2UniType(typeof(T).ToString());
                     if (className.Length > 0 && className == strBasicType)
                     {
@@ -328,7 +330,7 @@ namespace Tup
         }
 
         /**
-          * 获取一个元素,tup新旧版本都兼容
+          * Get an element, tup new and old versions are compatible.
           * @param Name
           * @param DefaultObj
           * @return
@@ -374,10 +376,10 @@ namespace Tup
         }
 
         /**
-         * 检测传入的元素类型
+         * Detect incoming element types.
          * 
          * @param listTpye
-         * @param o
+         * @param obj
          */
         private void CheckObjectType(List<string> listTpye, Object obj)
         {
