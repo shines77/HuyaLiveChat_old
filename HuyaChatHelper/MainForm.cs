@@ -13,7 +13,7 @@ using HuyaWebChat.HuyaLive;
 
 namespace HuyaChatHelper
 {
-    public partial class MainForm : Form, ClientLinstener
+    public partial class MainForm : Form, ClientListener
     {
         private HuyaChatClient client = null;
         private Logger logger = null;
@@ -117,10 +117,7 @@ namespace HuyaChatHelper
             try
             {
                 client = new HuyaChatClient(this);
-                if (client != null)
-                {
-                    client.Start("666007");
-                }
+                client.Start("666007");
             }
             catch (Exception ex)
             {

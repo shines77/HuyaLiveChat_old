@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HuyaWebChat.HuyaLive
 {
-    public interface ClientLinstener
+    public interface ClientListener
     {
         void OnClientStart(object sender);
         void OnClientClose(object sender);

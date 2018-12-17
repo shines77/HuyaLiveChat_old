@@ -6,7 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
+using System.Net.Http;
 using WebSocketSharp;
+using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 
 namespace HuyaWebChat.HuyaLive
 {
@@ -21,28 +24,29 @@ namespace HuyaWebChat.HuyaLive
 
     public class HuyaChatClient
     {
-        private ClientLinstener linstener = null;
+        private ClientListener listener = null;
         private string roomId = "";
         private ClientState state = ClientState.Closed;
 
+        private HttpClient httpClient = null;
         private WebSocketSharp.WebSocket websocket = null;        
         private System.Threading.Timer heartbeatTimer = null;
 
         private object locker = new object();
 
-        public HuyaChatClient(ClientLinstener linstener = null)
+        public HuyaChatClient(ClientListener listener = null)
         {
-            SetLinstener(linstener);
+            Setlistener(listener);
         }
 
-        public ClientLinstener GetLinstener()
+        public ClientListener Getlistener()
         {
-            return linstener;
+            return listener;
         }
 
-        public void SetLinstener(ClientLinstener linstener)
+        public void Setlistener(ClientListener listener)
         {
-            this.linstener = linstener;
+            this.listener = listener;
         }
 
         public ClientState GetState()
@@ -78,26 +82,26 @@ namespace HuyaWebChat.HuyaLive
 
         private void OnHeartbeat(object state)
         {
-            Logger.WriteLine(linstener, "HuyaChatClient::OnHeartbeat()");
+            Logger.WriteLine(listener, "HuyaChatClient::OnHeartbeat()");
 
             if (WsIsAlive())
             {
-                websocket.Send("ping");
+                //websocket.Send("ping");
             }
         }
 
         private void OnOpen(object sender, EventArgs eventArgs)
         {
-            Logger.Enter(linstener, "HuyaChatClient::OnOpen()");
+            Logger.Enter(listener, "HuyaChatClient::OnOpen()");
 
             if (WsIsAlive())
             {
                 // WebSocket is connected.
                 state = ClientState.Connected;
 
-                if (linstener != null)
+                if (listener != null)
                 {
-                    linstener.OnClientStart(this);
+                    listener.OnClientStart(this);
                 }
                     
                 //
@@ -106,12 +110,12 @@ namespace HuyaWebChat.HuyaLive
                 heartbeatTimer = new System.Threading.Timer(new TimerCallback(OnHeartbeat), null, 0, 15000);
             }
 
-            Logger.Leave(linstener, "HuyaChatClient::OnOpen()");
+            Logger.Leave(listener, "HuyaChatClient::OnOpen()");
         }
 
         private void OnMessage(object sender, WebSocketSharp.MessageEventArgs eventArgs)
         {
-            Logger.Enter(linstener, "HuyaChatClient::OnMessage()");
+            Logger.Enter(listener, "HuyaChatClient::OnMessage()");
 
             if (WsIsAlive())
             {
@@ -135,7 +139,7 @@ namespace HuyaWebChat.HuyaLive
 
                 try
                 {
-                    if (linstener != null)
+                    if (listener != null)
                     {
                         ChatMessage message = new ChatMessage();
                         message.rid = "0";
@@ -144,7 +148,7 @@ namespace HuyaWebChat.HuyaLive
                         message.content = "test";
                         lock (locker)
                         {
-                            linstener.OnClientChat(this, message);
+                            listener.OnClientChat(this, message);
                         }
                     }
                 }
@@ -154,29 +158,29 @@ namespace HuyaWebChat.HuyaLive
                 }
             }
 
-            Logger.Leave(linstener, "HuyaChatClient::OnMessage()");
+            Logger.Leave(listener, "HuyaChatClient::OnMessage()");
         }
 
         private void OnError(object sender, WebSocketSharp.ErrorEventArgs eventArgs)
         {
-            Logger.Enter(linstener, "HuyaChatClient::OnError()");
-            if (linstener != null)
+            Logger.Enter(listener, "HuyaChatClient::OnError()");
+            if (listener != null)
             {
-                linstener.OnClientError(this, eventArgs.Exception, eventArgs.Message);
+                listener.OnClientError(this, eventArgs.Exception, eventArgs.Message);
             }
-            Logger.Leave(linstener, "HuyaChatClient::OnError()");
+            Logger.Leave(listener, "HuyaChatClient::OnError()");
         }
 
         private void OnClose(object sender, WebSocketSharp.CloseEventArgs eventArgs)
         {
-            Logger.Enter(linstener, "HuyaChatClient::OnClose()");
+            Logger.Enter(listener, "HuyaChatClient::OnClose()");
 
             // Is closing.
             state = ClientState.Closing;
 
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.OnClientClose(this);
+                listener.OnClientClose(this);
             }
 
             if (heartbeatTimer != null)
@@ -185,12 +189,96 @@ namespace HuyaWebChat.HuyaLive
                 heartbeatTimer = null;
             }
 
-            Logger.Leave(linstener, "HuyaChatClient::OnClose()");
+            Logger.Leave(listener, "HuyaChatClient::OnClose()");
+        }
+
+        private void EnumerateHttpHeaders(HttpHeaders headers)
+        {
+            Logger.WriteLine(listener, "");
+
+            foreach (var header in headers)
+            {
+                var value = "";
+                foreach (var val in header.Value)
+                {
+                    value += val + " ";
+                }
+                Logger.WriteLine(listener, header.Key + ": " + value);
+            }
+
+            Logger.WriteLine(listener, "");
+        }
+
+        static private long ParseMatchLong(Match match)
+        {
+            if (match.Groups.Count >= 2)
+            {
+                return ((match.Groups[1].Value.Trim() == "") ? 0 : long.Parse(match.Groups[1].Value));
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public void Start(string roomId)
         {
-            Logger.Enter(linstener, "HuyaChatClient::Start()");
+            Logger.Enter(listener, "HuyaChatClient::Start()");
+
+            if (httpClient != null)
+            {
+                httpClient.Dispose();
+            }
+
+            if (httpClient == null)
+            {
+                string roomUrl = "https://m.huya.com/" + roomId;
+
+                httpClient = new HttpClient();
+                //httpClient.Timeout = new TimeSpan(30000);
+                httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata=verbose");
+                httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate");
+                httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                httpClient.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
+                httpClient.DefaultRequestHeaders.Add("User-Agent",
+                    "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) " +
+                    "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                    "Chrome/63.0.3239.84 Mobile Safari/537.36");
+
+                EnumerateHttpHeaders(httpClient.DefaultRequestHeaders);
+
+                HttpResponseMessage response = httpClient.GetAsync(roomUrl).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    Logger.WriteLine(listener, "Response Status Code and Reason Phrase: " +
+                                     response.StatusCode + " " + response.ReasonPhrase);
+
+                    string html = response.Content.ReadAsStringAsync().Result;
+
+                    Logger.WriteLine(listener, "Received payload of " + html.Length + " characters.");
+
+                    //
+                    // See: https://www.cnblogs.com/caokai520/p/4511848.html
+                    //
+                    Match topsid_set = Regex.Match(html, @"var TOPSID = '(.*)';");
+                    Match subsid_set = Regex.Match(html, @"var SUBSID = '(.*)';");
+                    Match yyuid_set = Regex.Match(html, @"ayyuid: '(.*)',");
+
+                    long topsid = ParseMatchLong(topsid_set);
+                    long subsid = ParseMatchLong(subsid_set);
+                    long yyuid = ParseMatchLong(yyuid_set);
+
+                    Logger.WriteLine(listener, "Html contont:\n\n{0}", html);
+
+                    Logger.WriteLine(listener, "");
+                    Logger.WriteLine(listener, "topsid = \"{0}\"", topsid);
+                    Logger.WriteLine(listener, "subsid = \"{0}\"", subsid);
+                    Logger.WriteLine(listener, "yyuid  = \"{0}\"", yyuid);
+                    Logger.WriteLine(listener, "");
+
+                    EnumerateHttpHeaders(response.Headers);
+                }
+            }
 
             if (websocket != null)
             {
@@ -226,12 +314,12 @@ namespace HuyaWebChat.HuyaLive
                 }
             }
 
-            Logger.Leave(linstener, "HuyaChatClient::Start()");
+            Logger.Leave(listener, "HuyaChatClient::Start()");
         }
 
         public void Stop()
         {
-            Logger.Enter(linstener, "HuyaChatClient::Stop()");
+            Logger.Enter(listener, "HuyaChatClient::Stop()");
 
             if (websocket != null)
             {
@@ -241,14 +329,14 @@ namespace HuyaWebChat.HuyaLive
                 state = ClientState.Closed;
             }
 
-            Logger.Leave(linstener, "HuyaChatClient::Stop()");
+            Logger.Leave(listener, "HuyaChatClient::Stop()");
         }
 
         public void Dispose()
         {
             this.Stop();
 
-            linstener = null;
+            listener = null;
         }
     }
 }

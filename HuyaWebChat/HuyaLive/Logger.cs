@@ -255,85 +255,85 @@ namespace HuyaWebChat.HuyaLive
             tracer.Close();
         }
 
-        static public void Print(ClientLinstener linstener, string message)
+        static public void Print(ClientListener listener, string message)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.Print(message);
+                listener.Print(message);
             }
         }
 
-        static public void Print(ClientLinstener linstener, string format, params object[] args)
+        static public void Print(ClientListener listener, string format, params object[] args)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.Print(format, args);
+                listener.Print(format, args);
             }
         }
 
-        static public void Write(ClientLinstener linstener, string message)
+        static public void Write(ClientListener listener, string message)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.Write(message);
+                listener.Write(message);
             }
         }
 
-        static public void Write(ClientLinstener linstener, string format, params object[] args)
+        static public void Write(ClientListener listener, string format, params object[] args)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.Write(format, args);
+                listener.Write(format, args);
             }
         }
 
-        static public void WriteLine(ClientLinstener linstener, string message)
+        static public void WriteLine(ClientListener listener, string message)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.WriteLine(message);
+                listener.WriteLine(message);
             }
         }
 
-        static public void WriteLine(ClientLinstener linstener, string format, params object[] args)
+        static public void WriteLine(ClientListener listener, string format, params object[] args)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.WriteLine(format, args);
+                listener.WriteLine(format, args);
             }
         }
 
-        static public void Flush(ClientLinstener linstener)
+        static public void Flush(ClientListener listener)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.FlushLogger();
+                listener.FlushLogger();
             }
         }
 
-        static public void Close(ClientLinstener linstener)
+        static public void Close(ClientListener listener)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.CloseLogger();
+                listener.CloseLogger();
             }
         }
 
-        static public void Enter(ClientLinstener linstener, string message)
+        static public void Enter(ClientListener listener, string message)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.WriteLine("-------------------------------------");
-                linstener.WriteLine(message + " enter.");
+                listener.WriteLine("-------------------------------------");
+                listener.WriteLine(message + " enter.");
             }
         }
 
-        static public void Leave(ClientLinstener linstener, string message)
+        static public void Leave(ClientListener listener, string message)
         {
-            if (linstener != null)
+            if (listener != null)
             {
-                linstener.WriteLine(message + " leave.");
-                linstener.WriteLine("-------------------------------------");
+                listener.WriteLine(message + " leave.");
+                listener.WriteLine("-------------------------------------");
             }
         }
     }
