@@ -68,6 +68,10 @@ namespace HuyaWebChat.HuyaLive
         public string sHuyaUA = "";
         public string sCookie = "";
 
+        public UserId()
+        {
+        }
+
         public override void ReadFrom(TarsInputStream _is)
         {
             lUid = (long)_is.Read(lUid, 1, true);
@@ -91,12 +95,12 @@ namespace HuyaWebChat.HuyaLive
         public override void Display(StringBuilder sb, int level)
         {
             TarsDisplayer _ds = new TarsDisplayer(sb, level);
-            _ds.Display(lUid, "uid");
-            _ds.Display(bAnonymous, "anonymous");
-            _ds.Display(sGuid, "GUID");
-            _ds.Display(sToken, "token");
-            _ds.Display(sHuyaUA, "HuyaUA");
-            _ds.Display(sCookie, "cookie");
+            _ds.Display(lUid, "lUid");
+            _ds.Display(bAnonymous, "bAnonymous");
+            _ds.Display(sGuid, "sGuid");
+            _ds.Display(sToken, "sToken");
+            _ds.Display(sHuyaUA, "sHuyaUA");
+            _ds.Display(sCookie, "sCookie");
         }
     }
 
@@ -110,6 +114,10 @@ namespace HuyaWebChat.HuyaLive
         public long lSid = 0;
         public long lGroupId = 0;
         public long lGroupType = 0;
+
+        public UserInfo()
+        {
+        }
 
         public override void ReadFrom(TarsInputStream _is)
         {
@@ -153,6 +161,10 @@ namespace HuyaWebChat.HuyaLive
     {
         public int iCmdType = 0;
         public byte[] vData = null;
+
+        public WebSocketCommand()
+        {
+        }
 
         static public void Read(TarsInputStream _is, ref WebSocketCommand command,
                                 int tag, bool require = true)
