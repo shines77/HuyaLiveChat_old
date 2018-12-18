@@ -234,8 +234,14 @@ namespace HuyaWebChat.HuyaLive
             {
                 string roomUrl = "https://m.huya.com/" + roomId;
 
+                //
+                // See: https://www.jianshu.com/p/f8616ef87df6
+                //
                 httpClient = new HttpClient();
-                //httpClient.Timeout = new TimeSpan(30000);
+                //
+                // See: https://stackoverflow.com/questions/10547895/how-can-i-tell-when-httpclient-has-timed-out
+                //
+                httpClient.Timeout = TimeSpan.FromMilliseconds(30000);
                 httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata=verbose");
                 httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate");
                 httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
