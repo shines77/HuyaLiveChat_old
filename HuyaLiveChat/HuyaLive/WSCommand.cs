@@ -9,7 +9,7 @@ using Tup.Tars;
 
 namespace HuyaLive
 {
-    public class CommandType
+    public struct CommandType
     {
         static public int None = 0;
         static public int RegisterRequest = 1;

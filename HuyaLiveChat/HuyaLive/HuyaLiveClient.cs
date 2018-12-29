@@ -33,17 +33,17 @@ namespace HuyaLive
 
         public HuyaChatInfo()
         {
-            reset();
+            Reset();
         }
 
-        public void setInfo(long subsid, long topsid, long yyuid)
+        public void SetInfo(long subsid, long topsid, long yyuid)
         {
             this.subsid = subsid;
             this.topsid = topsid;
             this.yyuid = yyuid;
         }
 
-        public void reset()
+        public void Reset()
         {
             subsid = 0;
             topsid = 0;
@@ -59,7 +59,15 @@ namespace HuyaLive
 
         private HttpClient httpClient = null;
         private WebSocketSharp.WebSocket websocket = null;        
+
         private System.Threading.Timer heartbeatTimer = null;
+        private System.Threading.Timer freshGiftListTimer = null;
+
+        private const int timeout_ms = 30000;
+        // The heartbeat interval: 60 seconds.
+        private const int heartbeat_ms = 60000;
+        // The fresh gift list interval: 1 hours = 3600 seconds
+        private const int freshGiftList_ms = 3600 * 1000;
 
         HuyaChatInfo chatInfo = null;
 
@@ -159,6 +167,7 @@ namespace HuyaLive
         private bool ReadGiftList()
         {
             bool result = false;
+            Logger.Enter(listener, "HuyaChatClient::ReadGiftList()");
 
             try
             {
@@ -176,6 +185,7 @@ namespace HuyaLive
                 }
             }
 
+            Logger.Leave(listener, "HuyaChatClient::ReadGiftList()");
             return result;
         }
 
@@ -221,9 +231,9 @@ namespace HuyaLive
             return result;
         }
 
-        private void OnHeartbeat(object state)
+        private bool Heartbeat()
         {
-            Logger.Enter(listener, "HuyaChatClient::OnHeartbeat()");
+            Logger.Enter(listener, "HuyaChatClient::Heartbeat()");
 
             UserId userId = new UserId();
             userId.sHuyaUA = "webh5&1.0.0&websocket";
@@ -235,14 +245,20 @@ namespace HuyaLive
             heartbeatRequest.lPid = chatInfo.yyuid;
             heartbeatRequest.iLineType = (int)StreamLineType.WebSocket;
 
-            bool success = SendWUP("onlineui", "OnUserHeartBeat", heartbeatRequest);
+            bool result = SendWUP("onlineui", "OnUserHeartBeat", heartbeatRequest);
 
-            if (WsIsAlive())
-            {
-                //websocket.Send("ping");
-            }
+            Logger.Leave(listener, "HuyaChatClient::Heartbeat()");
+            return result;
+        }
 
-            Logger.Leave(listener, "HuyaChatClient::OnHeartbeat()");
+        private void OnHeartbeat(object state)
+        {
+            bool success = Heartbeat();
+        }
+
+        private void OnFreshGiftList(object state)
+        {
+            bool success = ReadGiftList();
         }
 
         private void OnOpen(object sender, EventArgs eventArgs)
@@ -257,11 +273,13 @@ namespace HuyaLive
                 bool success;
                 success  = ReadGiftList();
                 success &= BindWsInfo();
-                    
+                success &= Heartbeat();
+
                 //
                 // See: https://www.cnblogs.com/arxive/p/7015853.html
                 //
-                heartbeatTimer = new System.Threading.Timer(new TimerCallback(OnHeartbeat), null, 0, 15000);
+                heartbeatTimer = new System.Threading.Timer(new TimerCallback(OnHeartbeat), null, heartbeat_ms, heartbeat_ms);
+                freshGiftListTimer = new System.Threading.Timer(new TimerCallback(OnFreshGiftList), null, freshGiftList_ms, freshGiftList_ms);
 
                 if (listener != null)
                 {
@@ -347,12 +365,6 @@ namespace HuyaLive
             // Is closing.
             state = ClientState.Closing;
 
-            if (heartbeatTimer != null)
-            {
-                heartbeatTimer.Dispose();
-                heartbeatTimer = null;
-            }
-
             Stop();
 
             if (listener != null)
@@ -413,7 +425,7 @@ namespace HuyaLive
                 //
                 // See: https://stackoverflow.com/questions/10547895/how-can-i-tell-when-httpclient-has-timed-out
                 //
-                httpClient.Timeout = TimeSpan.FromMilliseconds(30000);
+                httpClient.Timeout = TimeSpan.FromMilliseconds(timeout_ms);
                 httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata=verbose");
                 httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate");
                 httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
@@ -426,7 +438,7 @@ namespace HuyaLive
                 EnumerateHttpHeaders(httpClient.DefaultRequestHeaders);
 
                 result = new HuyaChatInfo();
-                result.reset();
+                result.Reset();
 
                 HttpResponseMessage response = httpClient.GetAsync(roomUrl).Result;
                 if (response.IsSuccessStatusCode)
@@ -457,7 +469,7 @@ namespace HuyaLive
                     Logger.WriteLine(listener, "yyuid  = \"{0}\"", yyuid);
                     Logger.WriteLine(listener, "");
 
-                    result.setInfo(topsid, subsid, yyuid);
+                    result.SetInfo(topsid, subsid, yyuid);
 
                     EnumerateHttpHeaders(response.Headers);
                 }
@@ -516,6 +528,11 @@ namespace HuyaLive
         {
             Logger.Enter(listener, "HuyaChatClient::Start()");
 
+            if (IsRunning())
+            {
+                Stop();
+            }
+
             chatInfo = ReadChatInfo(roomId);
             if (chatInfo != null && chatInfo.yyuid != 0)
             {
@@ -535,6 +552,18 @@ namespace HuyaLive
         {
             Logger.Enter(listener, "HuyaChatClient::Stop()");
 
+            if (heartbeatTimer != null)
+            {
+                heartbeatTimer.Dispose();
+                heartbeatTimer = null;
+            }
+
+            if (freshGiftListTimer != null)
+            {
+                freshGiftListTimer.Dispose();
+                freshGiftListTimer = null;
+            }
+
             if (httpClient != null)
             {
                 httpClient.Dispose();
@@ -545,9 +574,9 @@ namespace HuyaLive
             {
                 websocket.Close();
                 websocket = null;
-
-                state = ClientState.Closed;
             }
+
+            state = ClientState.Closed;
 
             Logger.Leave(listener, "HuyaChatClient::Stop()");
         }
