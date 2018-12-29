@@ -16,7 +16,7 @@ using Tup.Tars;
 
 namespace HuyaLive
 {
-    public enum ClientState : ushort
+    public enum ClientState
     {
         Connecting = 0,
         Connected = 1,

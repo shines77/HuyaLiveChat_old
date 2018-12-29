@@ -199,108 +199,108 @@ namespace HuyaLive
 
     public class Logger : Loggerable
     {
-        private Loggerable tracer = null;
+        private Loggerable logger = null;
 
-        public Logger(Loggerable tracer)
+        public Logger(Loggerable logger)
         {
-            SetInstance(tracer);
+            SetInstance(logger);
         }
 
-        public void SetInstance(Loggerable tracer)
+        public void SetInstance(Loggerable logger)
         {
-            this.tracer = tracer;
+            this.logger = logger;
         }
 
         public void Print(string message)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.Print(message);
+                logger.Print(message);
             }
         }
 
         public void Print(string format, params object[] args)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.Print(format, args);
+                logger.Print(format, args);
             }
         }
 
         public void Write(string message)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.Write(message);
+                logger.Write(message);
             }
         }
 
         public void Write(string format, params object[] args)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.Write(format, args);
+                logger.Write(format, args);
             }
         }
 
         public void Write(Exception ex)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.Write(ex.ToString());
+                logger.Write(ex.ToString());
             }
         }
 
         public void WriteLine(string message)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.WriteLine(message);
+                logger.WriteLine(message);
             }
         }
 
         public void WriteLine(string format, params object[] args)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.WriteLine(format, args);
+                logger.WriteLine(format, args);
             }
         }
 
         public void WriteLine(Exception ex)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.WriteLine(ex.ToString());
+                logger.WriteLine(ex.ToString());
             }
         }
 
         public void Enter(string message)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.WriteLine("-------------------------------------------");
-                tracer.WriteLine(message + " enter.");
+                logger.WriteLine("-------------------------------------------");
+                logger.WriteLine(message + " enter.");
             }
         }
 
         public void Leave(string message)
         {
-            if (tracer != null)
+            if (logger != null)
             {
-                tracer.WriteLine(message + " leave.");
-                tracer.WriteLine("-------------------------------------------");
+                logger.WriteLine(message + " leave.");
+                logger.WriteLine("-------------------------------------------");
             }
         }
 
         public void Flush()
         {
-            tracer.Flush();
+            logger.Flush();
         }
 
         public void Close()
         {
-            tracer.Close();
+            logger.Close();
         }
 
         static public void Print(ClientListener listener, string message)
