@@ -365,7 +365,7 @@ namespace HuyaLive
             // Is closing.
             state = ClientState.Closing;
 
-            Stop();
+            DestoryTimer();
 
             if (listener != null)
             {
@@ -516,7 +516,7 @@ namespace HuyaLive
                 catch (Exception ex)
                 {
                     string what = ex.ToString();
-                    Debug.WriteLine("Exception: " + what);
+                    Logger.WriteLine(listener, "Exception: " + what);
                 }
             }
 
@@ -552,17 +552,7 @@ namespace HuyaLive
         {
             Logger.Enter(listener, "HuyaChatClient::Stop()");
 
-            if (heartbeatTimer != null)
-            {
-                heartbeatTimer.Dispose();
-                heartbeatTimer = null;
-            }
-
-            if (freshGiftListTimer != null)
-            {
-                freshGiftListTimer.Dispose();
-                freshGiftListTimer = null;
-            }
+            DestoryTimer();
 
             if (httpClient != null)
             {
@@ -579,6 +569,21 @@ namespace HuyaLive
             state = ClientState.Closed;
 
             Logger.Leave(listener, "HuyaChatClient::Stop()");
+        }
+
+        private void DestoryTimer()
+        {
+            if (heartbeatTimer != null)
+            {
+                heartbeatTimer.Dispose();
+                heartbeatTimer = null;
+            }
+
+            if (freshGiftListTimer != null)
+            {
+                freshGiftListTimer.Dispose();
+                freshGiftListTimer = null;
+            }
         }
 
         public void Dispose()
