@@ -86,8 +86,8 @@ namespace HuyaLiveHelper
         public void OnClientChat(object sender, ChatMessage message)
         {
             Debug.WriteLine("  MainForm::OnClientChat()");
-            Debug.WriteLine("  rid = {0}, nickname = {0}, timestamp = {0}, content = {0}.",
-                        message.rid, message.nickname, message.timestamp, message.content);
+            Debug.WriteLine("  uid = {0}, nickname = {1}, timestamp = {2}, content = {3}, length = {4}.",
+                            message.uid, message.nickname, message.timestamp, message.content, message.length);
         }
 
         public void OnClientGift(object sender, GiftMessage message)
@@ -125,9 +125,12 @@ namespace HuyaLiveHelper
             {
                 if (client.IsRunning())
                 {
-                    client.Dispose();
-                    client = null;
+                    client.Stop();
                 }
+
+                client.Dispose();
+                client.SetListener(null);
+                client = null;
             }
         }
     }

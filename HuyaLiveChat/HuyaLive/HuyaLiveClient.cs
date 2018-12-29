@@ -69,15 +69,15 @@ namespace HuyaLive
 
         public HuyaLiveClient(ClientListener listener = null)
         {
-            Setlistener(listener);
+            SetListener(listener);
         }
 
-        public ClientListener Getlistener()
+        public ClientListener GetListener()
         {
             return listener;
         }
 
-        public void Setlistener(ClientListener listener)
+        public void SetListener(ClientListener listener)
         {
             this.listener = listener;
         }
@@ -113,29 +113,27 @@ namespace HuyaLive
             return (websocket.ReadyState == WebSocketState.Closed);
         }
 
-        private void OnHeartbeat(object state)
-        {
-            Logger.WriteLine(listener, "HuyaChatClient::OnHeartbeat()");
-
-            if (WsIsAlive())
-            {
-                //websocket.Send("ping");
-            }
-        }
-
         private bool SendWUP(string action, string callback, TarsStruct request)
         {
             bool result = false;
 
+            if (listener != null)
+            {
+                string text = string.Format("HuyaChatClient::SendWUP(), action = {0}, callback = {1}.",
+                                            action, callback);
+                Logger.WriteLine(listener, text);
+            }
+
             try
             {
                 TarsUniPacket wup = new TarsUniPacket();
+                //wup.SetVersion(Const.PACKET_TYPE_TUP3);
                 wup.ServantName = action;
                 wup.FuncName = callback;
-                wup.Put("tReq,", request);
+                wup.Put("tReq", request);
 
                 WebSocketCommand command = new WebSocketCommand();
-                command.iCmdType = (int)CommandType.WupRequest;
+                command.iCmdType = CommandType.WupRequest;
                 command.vData = wup.Encode();
 
                 TarsOutputStream stream = new TarsOutputStream();
@@ -151,25 +149,100 @@ namespace HuyaLive
             {
                 if (listener != null)
                 {
-                    listener.OnClientError(this, ex, "HuyaChatClient::SendWUP() failed.");
+                    listener.OnClientError(this, ex, "HuyaChatClient::SendWUP() error.");
                 }
             }
 
             return result;
         }
 
-        private void ReadGiftList()
+        private bool ReadGiftList()
         {
-            GetPropsListRequest propRequest = new GetPropsListRequest();
-            propRequest.tUserId = mainUserId;
-            propRequest.iTemplateType = (int)ClientTemplateMask.Mirror;
+            bool result = false;
 
-            bool success = SendWUP("PropsUIServer", "getPropsList", propRequest);
+            try
+            {
+                GetPropsListRequest propRequest = new GetPropsListRequest();
+                propRequest.tUserId = mainUserId;
+                propRequest.iTemplateType = (int)ClientTemplateMask.Mirror;
+
+                result = SendWUP("PropsUIServer", "getPropsList", propRequest);
+            }
+            catch (Exception ex)
+            {
+                if (listener != null)
+                {
+                    listener.OnClientError(this, ex, "HuyaChatClient::ReadGiftList() error.");
+                }
+            }
+
+            return result;
         }
 
-        private void BindWsInfo()
+        private bool BindWsInfo()
         {
-            //
+            bool result = false;
+
+            try
+            {
+                UserInfo wsUserInfo = new UserInfo();
+                wsUserInfo.lUid = chatInfo.yyuid;
+                wsUserInfo.bAonymous = (chatInfo.yyuid == 0);
+                wsUserInfo.sGuid = mainUserId.sGuid;
+                wsUserInfo.sToken = "";
+                wsUserInfo.lTid = chatInfo.topsid;
+                wsUserInfo.lSid = chatInfo.subsid;
+                wsUserInfo.lGroupId = chatInfo.yyuid;
+                wsUserInfo.lGroupType = 3;
+
+                TarsOutputStream wsStream = new TarsOutputStream();
+                wsUserInfo.WriteTo(wsStream);
+
+                TarsOutputStream stream = new TarsOutputStream();
+                WebSocketCommand wsCommand = new WebSocketCommand();
+                wsCommand.iCmdType = CommandType.RegisterRequest;
+                wsCommand.vData = wsStream.ToByteArray();
+                wsCommand.WriteTo(stream);
+
+                if (WsIsAlive())
+                {
+                    websocket.Send(stream.ToByteArray());
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (listener != null)
+                {
+                    listener.OnClientError(this, ex, "HuyaChatClient::BindWsInfo() error.");
+                }
+            }
+
+            return result;
+        }
+
+        private void OnHeartbeat(object state)
+        {
+            Logger.Enter(listener, "HuyaChatClient::OnHeartbeat()");
+
+            UserId userId = new UserId();
+            userId.sHuyaUA = "webh5&1.0.0&websocket";
+
+            UserHeartBeatRequest heartbeatRequest = new UserHeartBeatRequest();
+            heartbeatRequest.tId = userId;
+            heartbeatRequest.lTid = chatInfo.topsid;
+            heartbeatRequest.lSid = chatInfo.subsid;
+            heartbeatRequest.lPid = chatInfo.yyuid;
+            heartbeatRequest.iLineType = (int)StreamLineType.WebSocket;
+
+            bool success = SendWUP("onlineui", "OnUserHeartBeat", heartbeatRequest);
+
+            if (WsIsAlive())
+            {
+                //websocket.Send("ping");
+            }
+
+            Logger.Leave(listener, "HuyaChatClient::OnHeartbeat()");
         }
 
         private void OnOpen(object sender, EventArgs eventArgs)
@@ -181,8 +254,9 @@ namespace HuyaLive
                 // WebSocket is connected.
                 state = ClientState.Connected;
 
-                ReadGiftList();
-                BindWsInfo();
+                bool success;
+                success  = ReadGiftList();
+                success &= BindWsInfo();
                     
                 //
                 // See: https://www.cnblogs.com/arxive/p/7015853.html
@@ -204,22 +278,31 @@ namespace HuyaLive
 
             if (WsIsAlive())
             {
-                string jsonStr;
+                string jsonStr, dataType;
+                int dataLen = 0;
                 if (eventArgs.IsText)
                 {
                     jsonStr = eventArgs.Data;
+                    dataType = "IsText";
+                    dataLen = eventArgs.Data.Length;
                 }
                 else if (eventArgs.IsBinary)
                 {
                     jsonStr = Encoding.UTF8.GetString(eventArgs.RawData);
+                    dataType = "IsBinary";
+                    dataLen = eventArgs.RawData.Length;
                 }
                 else if (eventArgs.IsPing)
                 {
-                    return;
+                    dataType = "IsPing";
+                    dataLen = eventArgs.RawData.Length;
+                    //return;
                 }
                 else
                 {
                     jsonStr = "ping";
+                    dataType = "Other";
+                    dataLen = eventArgs.Data.Length;
                 }
 
                 try
@@ -227,10 +310,11 @@ namespace HuyaLive
                     if (listener != null)
                     {
                         ChatMessage message = new ChatMessage();
-                        message.rid = "0";
+                        message.uid = "0";
                         message.nickname = "shines77";
-                        message.timestamp = TimeStamp.now();
-                        message.content = "test";
+                        message.content = dataType;
+                        message.length = dataLen;
+                        message.timestamp = TimeStamp.now_ms();
                         lock (locker)
                         {
                             listener.OnClientChat(this, message);
@@ -239,7 +323,7 @@ namespace HuyaLive
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex);
+                    Logger.WriteLine(listener, ex);
                 }
             }
 
@@ -451,6 +535,12 @@ namespace HuyaLive
         {
             Logger.Enter(listener, "HuyaChatClient::Stop()");
 
+            if (httpClient != null)
+            {
+                httpClient.Dispose();
+                httpClient = null;
+            }
+
             if (websocket != null)
             {
                 websocket.Close();
@@ -465,8 +555,6 @@ namespace HuyaLive
         public void Dispose()
         {
             this.Stop();
-
-            listener = null;
         }
     }
 }

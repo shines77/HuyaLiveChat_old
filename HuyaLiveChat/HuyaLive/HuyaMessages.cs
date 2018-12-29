@@ -8,21 +8,22 @@ namespace HuyaLive
 {
     public class EnterMessage
     {
-        public string rid;
+        public string uid;
         public string nickname;
     }
 
     public class ChatMessage
     {
-        public string rid;
+        public string uid;
         public string nickname;
         public string content;
-        public uint timestamp;
+        public int length;
+        public long timestamp;
     }
 
     public class GiftMessage
     {
-        public string rid;
+        public string uid;
         public string nickname;
         public string itemName;
         public uint itemCount;

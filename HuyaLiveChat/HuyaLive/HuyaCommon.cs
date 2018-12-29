@@ -62,7 +62,6 @@ namespace HuyaLive
     public class UserId : TarsStruct
     {
         public long lUid = 0;
-        public bool bAnonymous = true;
         public string sGuid = "";
         public string sToken = "";
         public string sHuyaUA = "";
@@ -74,29 +73,26 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            lUid = (long)_is.Read(lUid, 1, true);
-            bAnonymous = (bool)_is.Read(bAnonymous, 2, true);
-            sGuid = (string)_is.Read(sGuid, 3, true);
-            sToken = (string)_is.Read(sToken, 4, true);
-            sHuyaUA = (string)_is.Read(sHuyaUA, 5, true);
-            sCookie = (string)_is.Read(sCookie, 6, true);
+            lUid = (long)_is.Read(lUid, 0, true);
+            sGuid = (string)_is.Read(sGuid, 1, true);
+            sToken = (string)_is.Read(sToken, 2, true);
+            sHuyaUA = (string)_is.Read(sHuyaUA, 3, true);
+            sCookie = (string)_is.Read(sCookie, 4, true);
         }
 
         public override void WriteTo(TarsOutputStream _os)
         {
-            _os.Write(lUid, 1);
-            _os.Write(bAnonymous, 2);
-            _os.Write(sGuid, 3);
-            _os.Write(sToken, 4);
-            _os.Write(sHuyaUA, 5);
-            _os.Write(sCookie, 6);
+            _os.Write(lUid, 0);
+            _os.Write(sGuid, 1);
+            _os.Write(sToken, 2);
+            _os.Write(sHuyaUA, 3);
+            _os.Write(sCookie, 4);
         }
 
         public override void Display(StringBuilder sb, int level)
         {
             TarsDisplayer _ds = new TarsDisplayer(sb, level);
             _ds.Display(lUid, "lUid");
-            _ds.Display(bAnonymous, "bAnonymous");
             _ds.Display(sGuid, "sGuid");
             _ds.Display(sToken, "sToken");
             _ds.Display(sHuyaUA, "sHuyaUA");
@@ -121,26 +117,26 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            lUid = (long)_is.Read(lUid, 1, true);
-            bAonymous = (bool)_is.Read(bAonymous, 2, true);
-            sGuid = (string)_is.Read(sGuid, 3, true);
-            sToken = (string)_is.Read(sToken, 4, true);
-            lTid = (long)_is.Read(lTid, 5, true);
-            lSid = (long)_is.Read(lSid, 6, true);
-            lGroupId = (long)_is.Read(lGroupId, 7, true);
-            lGroupType = (long)_is.Read(lGroupType, 8, true);
+            lUid = (long)_is.Read(lUid, 0, true);
+            bAonymous = (bool)_is.Read(bAonymous, 1, true);
+            sGuid = (string)_is.Read(sGuid, 2, true);
+            sToken = (string)_is.Read(sToken, 3, true);
+            lTid = (long)_is.Read(lTid, 4, true);
+            lSid = (long)_is.Read(lSid, 5, true);
+            lGroupId = (long)_is.Read(lGroupId, 6, true);
+            lGroupType = (long)_is.Read(lGroupType, 7, true);
         }
 
         public override void WriteTo(TarsOutputStream _os)
         {
-            _os.Write(lUid, 1);
-            _os.Write(bAonymous, 2);
-            _os.Write(sGuid, 3);
-            _os.Write(sToken, 4);
-            _os.Write(lTid, 5);
-            _os.Write(lSid, 6);
-            _os.Write(lGroupId, 7);
-            _os.Write(lGroupType, 8);
+            _os.Write(lUid, 0);
+            _os.Write(bAonymous, 1);
+            _os.Write(sGuid, 2);
+            _os.Write(sToken, 3);
+            _os.Write(lTid, 4);
+            _os.Write(lSid, 5);
+            _os.Write(lGroupId, 6);
+            _os.Write(lGroupType, 7);
         }
 
         public override void Display(StringBuilder sb, int level)
@@ -154,46 +150,6 @@ namespace HuyaLive
             _ds.Display(lSid, "lSid");
             _ds.Display(lGroupId, "lGroupId");
             _ds.Display(lGroupType, "lGroupType");
-        }
-    }
-
-    public class WebSocketCommand : TarsStruct
-    {
-        public int iCmdType = 0;
-        public byte[] vData = null;
-
-        public WebSocketCommand()
-        {
-        }
-
-        static public void Read(TarsInputStream _is, ref WebSocketCommand command,
-                                int tag, bool require = true)
-        {
-            command = (WebSocketCommand)_is.Read(command, tag, require);
-        }
-
-        static public void Write(TarsOutputStream _os, WebSocketCommand command, int tag)
-        {
-            _os.Write(command, tag);
-        }
-
-        public override void ReadFrom(TarsInputStream _is)
-        {
-            iCmdType = (int)_is.Read(iCmdType, 1, true);
-            vData = (byte[])_is.Read(vData, 2, true);
-        }
-
-        public override void WriteTo(TarsOutputStream _os)
-        {
-            _os.Write(iCmdType, 1);
-            _os.Write(vData, 2);
-        }
-
-        public override void Display(StringBuilder sb, int level)
-        {
-            TarsDisplayer _ds = new TarsDisplayer(sb, level);
-            _ds.Display(iCmdType, "iCmdType");
-            _ds.Display(vData, "vData");
         }
     }
 }

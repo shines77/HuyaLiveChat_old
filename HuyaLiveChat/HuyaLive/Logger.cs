@@ -18,8 +18,10 @@ namespace HuyaLive
         void Print(string format, params object[] args);
         void Write(string message);
         void Write(string format, params object[] args);
+        void Write(Exception ex);
         void WriteLine(string message);
         void WriteLine(string format, params object[] args);
+        void WriteLine(Exception ex);
         void Flush();
         void Close();
     }
@@ -60,6 +62,11 @@ namespace HuyaLive
             Debug.Print(format, args);
         }
 
+        public void Write(Exception ex)
+        {
+            Debug.Write(ex.ToString());
+        }
+
         public void WriteLine(string message)
         {
             Debug.WriteLine(message);
@@ -68,6 +75,11 @@ namespace HuyaLive
         public void WriteLine(string format, params object[] args)
         {
             Debug.WriteLine(format, args);
+        }
+
+        public void WriteLine(Exception ex)
+        {
+            Debug.WriteLine(ex.ToString());
         }
     }
 
@@ -107,6 +119,11 @@ namespace HuyaLive
             Console.Write(format, args);
         }
 
+        public void Write(Exception ex)
+        {
+            Console.Write(ex.ToString());
+        }
+
         public void WriteLine(string message)
         {
             Console.WriteLine(message);
@@ -115,6 +132,11 @@ namespace HuyaLive
         public void WriteLine(string format, params object[] args)
         {
             Console.WriteLine(format, args);
+        }
+
+        public void WriteLine(Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
         }
     }
 
@@ -154,6 +176,11 @@ namespace HuyaLive
             Console.Out.Write(format, args);
         }
 
+        public void Write(Exception ex)
+        {
+            Console.Out.Write(ex.ToString());
+        }
+
         public void WriteLine(string message)
         {
             Console.Out.WriteLine(message);
@@ -162,6 +189,11 @@ namespace HuyaLive
         public void WriteLine(string format, params object[] args)
         {
             Console.Out.WriteLine(format, args);
+        }
+
+        public void WriteLine(Exception ex)
+        {
+            Console.Out.WriteLine(ex.ToString());
         }
     }
 
@@ -211,6 +243,14 @@ namespace HuyaLive
             }
         }
 
+        public void Write(Exception ex)
+        {
+            if (tracer != null)
+            {
+                tracer.Write(ex.ToString());
+            }
+        }
+
         public void WriteLine(string message)
         {
             if (tracer != null)
@@ -227,11 +267,19 @@ namespace HuyaLive
             }
         }
 
+        public void WriteLine(Exception ex)
+        {
+            if (tracer != null)
+            {
+                tracer.WriteLine(ex.ToString());
+            }
+        }
+
         public void Enter(string message)
         {
             if (tracer != null)
             {
-                tracer.WriteLine("-------------------------------------");
+                tracer.WriteLine("-------------------------------------------");
                 tracer.WriteLine(message + " enter.");
             }
         }
@@ -241,7 +289,7 @@ namespace HuyaLive
             if (tracer != null)
             {
                 tracer.WriteLine(message + " leave.");
-                tracer.WriteLine("-------------------------------------");
+                tracer.WriteLine("-------------------------------------------");
             }
         }
 
@@ -287,6 +335,14 @@ namespace HuyaLive
             }
         }
 
+        static public void Write(ClientListener listener, Exception ex)
+        {
+            if (listener != null)
+            {
+                listener.Write(ex.ToString());
+            }
+        }
+
         static public void WriteLine(ClientListener listener, string message)
         {
             if (listener != null)
@@ -300,6 +356,14 @@ namespace HuyaLive
             if (listener != null)
             {
                 listener.WriteLine(format, args);
+            }
+        }
+
+        static public void WriteLine(ClientListener listener, Exception ex)
+        {
+            if (listener != null)
+            {
+                listener.WriteLine(ex.ToString());
             }
         }
 

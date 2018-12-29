@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HuyaLive\ClientLinstener.cs" />
-    <Compile Include="HuyaLive\CommandType.cs" />
+    <Compile Include="HuyaLive\WSCommand.cs" />
     <Compile Include="HuyaLive\HuyaLiveClient.cs" />
     <Compile Include="HuyaLive\HuyaCommon.cs" />
     <Compile Include="HuyaLive\HuyaMessages.cs" />
