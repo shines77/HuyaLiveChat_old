@@ -7,8 +7,8 @@
     <ProjectGuid>{7B698BA2-2706-457C-BD06-A5F1D57DE36A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HuyaWebChat</RootNamespace>
-    <AssemblyName>HuyaWebChat</AssemblyName>
+    <RootNamespace>HuyaLiveChat</RootNamespace>
+    <AssemblyName>HuyaLiveChat</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -45,7 +45,7 @@
   <ItemGroup>
     <Compile Include="HuyaLive\ClientLinstener.cs" />
     <Compile Include="HuyaLive\CommandType.cs" />
-    <Compile Include="HuyaLive\HuyaChatClient.cs" />
+    <Compile Include="HuyaLive\HuyaLiveClient.cs" />
     <Compile Include="HuyaLive\HuyaCommon.cs" />
     <Compile Include="HuyaLive\HuyaMessages.cs" />
     <Compile Include="HuyaLive\Logger.cs" />

@@ -121,69 +121,6 @@ namespace Tup
         }
 
         /**
-         * Put in an element.
-         * @param <T>
-         * @param name
-         * @param value
-         */
-        public void Put<T>(string name, T value)
-        {
-            if (name == null)
-            {
-                throw new ArgumentException("put key can not is null");
-            }
-            if (value == null)
-            {
-                throw new ArgumentException("put value can not is null");
-            }
-
-            TarsOutputStream _out = new TarsOutputStream();
-            _out.SetServerEncoding(_encodeName);
-            _out.Write(value, 0);
-            byte[] sBuffer = TarsUtil.GetTarsBufferArray(_out.GetMemoryStream());
-
-            if (_iVer == Const.PACKET_TYPE_TUP3)
-            {
-                cachedData.Remove(name);
-                if (_new_data.ContainsKey(name))
-                {
-                    _new_data[name] = sBuffer;
-                }
-                else
-                {
-                    _new_data.Add(name, sBuffer);
-                }
-            }
-            else
-            {
-                List<string> listType = new List<string>();
-                CheckObjectType(listType, value);
-                string className = BasicClassTypeUtil.TransTypeList(listType);
-
-                Dictionary<string, byte[]> map = new Dictionary<string, byte[]>(1);
-                map.Add(className, sBuffer);
-                cachedData.Remove(name);
-
-                if (_data.ContainsKey(name))
-                {
-                    _data[name] = map;
-                }
-                else
-                {
-                    _data.Add(name, map);
-                }
-            }
-        }
-
-        private Object DecodeData(byte[] data, Object proxy)
-        {
-            _is.Wrap(data);
-            _is.SetServerEncoding(_encodeName);
-            Object obj = _is._Read(proxy, 0, true);
-            return obj;
-        }
-
-        /**
          * Get the data encoded by the tup streamlined version,
          * compatible with the old version of tup.
          * @param <T>
@@ -365,6 +302,61 @@ namespace Tup
             }
         }
 
+        /**
+         * Put in an element.
+         * @param <T>
+         * @param name
+         * @param value
+         */
+        public void Put<T>(string name, T value)
+        {
+            if (name == null)
+            {
+                throw new ArgumentException("put key can not is null");
+            }
+            if (value == null)
+            {
+                throw new ArgumentException("put value can not is null");
+            }
+
+            TarsOutputStream _out = new TarsOutputStream();
+            _out.SetServerEncoding(_encodeName);
+            _out.Write(value, 0);
+            byte[] sBuffer = TarsUtil.GetTarsBufferArray(_out.GetMemoryStream());
+
+            if (_iVer == Const.PACKET_TYPE_TUP3)
+            {
+                cachedData.Remove(name);
+                if (_new_data.ContainsKey(name))
+                {
+                    _new_data[name] = sBuffer;
+                }
+                else
+                {
+                    _new_data.Add(name, sBuffer);
+                }
+            }
+            else
+            {
+                List<string> listType = new List<string>();
+                CheckObjectType(listType, value);
+                string className = BasicClassTypeUtil.TransTypeList(listType);
+
+                Dictionary<string, byte[]> map = new Dictionary<string, byte[]>(1);
+                map.Add(className, sBuffer);
+                cachedData.Remove(name);
+
+                if (_data.ContainsKey(name))
+                {
+                    _data[name] = map;
+                }
+                else
+                {
+                    _data.Add(name, map);
+                }
+            }
+        }
+
         private Object GetCacheProxy<T>(string className)
         {
             return BasicClassTypeUtil.CreateObject<T>();
@@ -447,6 +439,14 @@ namespace Tup
                 _os.Write(_data, 0);
             }
             return TarsUtil.GetTarsBufferArray(_os.GetMemoryStream());
+        }
+
+        private Object DecodeData(byte[] data, Object proxy)
+        {
+            _is.Wrap(data);
+            _is.SetServerEncoding(_encodeName);
+            Object obj = _is._Read(proxy, 0, true);
+            return obj;
         }
 
         public void Decode(byte[] buffer, int Index = 0)

@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HuyaWebChat.HuyaLive
+namespace HuyaLive
 {
-    class Utils
+    public class Program
     {
+        static public void Main(string[] args)
+        {
+            //
+        }
     }
 }

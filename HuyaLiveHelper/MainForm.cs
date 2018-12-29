@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-using HuyaWebChat.HuyaLive;
+using HuyaLive;
 
-namespace HuyaChatHelper
+namespace HuyaLiveHelper
 {
     public partial class MainForm : Form, ClientListener
     {
-        private HuyaChatClient client = null;
+        private HuyaLiveClient client = null;
         private Logger logger = null;
 
         public MainForm()
@@ -23,15 +16,15 @@ namespace HuyaChatHelper
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
 
-            logger = new Logger(new HuyaWebChat.HuyaLive.Debugger());
+            logger = new Logger(new HuyaLive.Debugger());
         }
 
-        public void FlushLogger()
+        public void FlushLog()
         {
             Debug.Flush();
         }
 
-        public void CloseLogger()
+        public void CloseLog()
         {
             Debug.Close();
         }
@@ -116,7 +109,7 @@ namespace HuyaChatHelper
         {
             try
             {
-                client = new HuyaChatClient(this);
+                client = new HuyaLiveClient(this);
                 client.Start("666007");
             }
             catch (Exception ex)

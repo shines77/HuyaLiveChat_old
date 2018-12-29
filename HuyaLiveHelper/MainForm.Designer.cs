@@ -1,4 +1,4 @@
-﻿namespace HuyaChatHelper
+﻿namespace HuyaLiveHelper
 {
     partial class MainForm
     {

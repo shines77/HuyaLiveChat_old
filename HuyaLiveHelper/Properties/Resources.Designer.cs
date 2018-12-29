@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HuyaChatHelper.Properties
+namespace HuyaLiveHelper.Properties
 {
 
 

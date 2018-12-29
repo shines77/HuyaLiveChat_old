@@ -11,7 +11,10 @@ using WebSocketSharp;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 
-namespace HuyaWebChat.HuyaLive
+using Tup;
+using Tup.Tars;
+
+namespace HuyaLive
 {
     public enum ClientState : ushort
     {
@@ -22,7 +25,33 @@ namespace HuyaWebChat.HuyaLive
         Closed = 4
     }
 
-    public class HuyaChatClient
+    class HuyaChatInfo
+    {
+        public long subsid = 0;
+        public long topsid = 0;
+        public long yyuid = 0;
+
+        public HuyaChatInfo()
+        {
+            reset();
+        }
+
+        public void setInfo(long subsid, long topsid, long yyuid)
+        {
+            this.subsid = subsid;
+            this.topsid = topsid;
+            this.yyuid = yyuid;
+        }
+
+        public void reset()
+        {
+            subsid = 0;
+            topsid = 0;
+            yyuid = 0;
+        }
+    }
+
+    public class HuyaLiveClient
     {
         private ClientListener listener = null;
         private string roomId = "";
@@ -32,9 +61,13 @@ namespace HuyaWebChat.HuyaLive
         private WebSocketSharp.WebSocket websocket = null;        
         private System.Threading.Timer heartbeatTimer = null;
 
+        HuyaChatInfo chatInfo = null;
+
+        UserId mainUserId = null;
+
         private object locker = new object();
 
-        public HuyaChatClient(ClientListener listener = null)
+        public HuyaLiveClient(ClientListener listener = null)
         {
             Setlistener(listener);
         }
@@ -90,6 +123,55 @@ namespace HuyaWebChat.HuyaLive
             }
         }
 
+        private bool SendWUP(string action, string callback, TarsStruct request)
+        {
+            bool result = false;
+
+            try
+            {
+                TarsUniPacket wup = new TarsUniPacket();
+                wup.ServantName = action;
+                wup.FuncName = callback;
+                wup.Put("tReq,", request);
+
+                WebSocketCommand command = new WebSocketCommand();
+                command.iCmdType = (int)CommandType.WupRequest;
+                command.vData = wup.Encode();
+
+                TarsOutputStream stream = new TarsOutputStream();
+                command.WriteTo(stream);
+
+                if (WsIsAlive())
+                {
+                    websocket.Send(stream.ToByteArray());
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (listener != null)
+                {
+                    listener.OnClientError(this, ex, "HuyaChatClient::SendWUP() failed.");
+                }
+            }
+
+            return result;
+        }
+
+        private void ReadGiftList()
+        {
+            GetPropsListRequest propRequest = new GetPropsListRequest();
+            propRequest.tUserId = mainUserId;
+            propRequest.iTemplateType = (int)ClientTemplateMask.Mirror;
+
+            bool success = SendWUP("PropsUIServer", "getPropsList", propRequest);
+        }
+
+        private void BindWsInfo()
+        {
+            //
+        }
+
         private void OnOpen(object sender, EventArgs eventArgs)
         {
             Logger.Enter(listener, "HuyaChatClient::OnOpen()");
@@ -99,15 +181,18 @@ namespace HuyaWebChat.HuyaLive
                 // WebSocket is connected.
                 state = ClientState.Connected;
 
-                if (listener != null)
-                {
-                    listener.OnClientStart(this);
-                }
+                ReadGiftList();
+                BindWsInfo();
                     
                 //
                 // See: https://www.cnblogs.com/arxive/p/7015853.html
                 //
                 heartbeatTimer = new System.Threading.Timer(new TimerCallback(OnHeartbeat), null, 0, 15000);
+
+                if (listener != null)
+                {
+                    listener.OnClientStart(this);
+                }
             }
 
             Logger.Leave(listener, "HuyaChatClient::OnOpen()");
@@ -178,15 +263,17 @@ namespace HuyaWebChat.HuyaLive
             // Is closing.
             state = ClientState.Closing;
 
-            if (listener != null)
-            {
-                listener.OnClientClose(this);
-            }
-
             if (heartbeatTimer != null)
             {
                 heartbeatTimer.Dispose();
                 heartbeatTimer = null;
+            }
+
+            Stop();
+
+            if (listener != null)
+            {
+                listener.OnClientClose(this);
             }
 
             Logger.Leave(listener, "HuyaChatClient::OnClose()");
@@ -221,9 +308,10 @@ namespace HuyaWebChat.HuyaLive
             }
         }
 
-        public void Start(string roomId)
+        private HuyaChatInfo ReadChatInfo(string roomId)
         {
-            Logger.Enter(listener, "HuyaChatClient::Start()");
+            HuyaChatInfo result = null;
+            Logger.Enter(listener, "HuyaChatClient::ReadChatInfo()");           
 
             if (httpClient != null)
             {
@@ -252,6 +340,9 @@ namespace HuyaWebChat.HuyaLive
                     "Chrome/63.0.3239.84 Mobile Safari/537.36");
 
                 EnumerateHttpHeaders(httpClient.DefaultRequestHeaders);
+
+                result = new HuyaChatInfo();
+                result.reset();
 
                 HttpResponseMessage response = httpClient.GetAsync(roomUrl).Result;
                 if (response.IsSuccessStatusCode)
@@ -282,9 +373,20 @@ namespace HuyaWebChat.HuyaLive
                     Logger.WriteLine(listener, "yyuid  = \"{0}\"", yyuid);
                     Logger.WriteLine(listener, "");
 
+                    result.setInfo(topsid, subsid, yyuid);
+
                     EnumerateHttpHeaders(response.Headers);
                 }
             }
+
+            Logger.Leave(listener, "HuyaChatClient::ReadChatInfo()");
+            return result;
+        }
+
+        public bool StartWebSocket(string roomId)
+        {
+            bool result = false;
+            Logger.Enter(listener, "HuyaChatClient::StartWebSocket()");
 
             if (websocket != null)
             {
@@ -312,6 +414,8 @@ namespace HuyaWebChat.HuyaLive
                     state = ClientState.Connecting;
                     websocket.Connect();
                     state = ClientState.Running;
+
+                    result = true;
                 }
                 catch (Exception ex)
                 {
@@ -319,6 +423,26 @@ namespace HuyaWebChat.HuyaLive
                     Debug.WriteLine("Exception: " + what);
                 }
             }
+
+            Logger.Leave(listener, "HuyaChatClient::StartWebSocket()");
+            return result;
+        }
+
+        public void Start(string roomId)
+        {
+            Logger.Enter(listener, "HuyaChatClient::Start()");
+
+            chatInfo = ReadChatInfo(roomId);
+            if (chatInfo != null && chatInfo.yyuid != 0)
+            {
+                mainUserId = new UserId();
+                mainUserId.lUid = chatInfo.yyuid;
+                mainUserId.sHuyaUA = "webh5&1.0.0&websocket";
+
+                bool success = StartWebSocket(roomId);
+            }
+
+            this.roomId = roomId;
 
             Logger.Leave(listener, "HuyaChatClient::Start()");
         }

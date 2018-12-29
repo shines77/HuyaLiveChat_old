@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 
-namespace HuyaWebChat.HuyaLive
+namespace HuyaLive
 {
     public enum LoggerType
     {
@@ -307,7 +307,7 @@ namespace HuyaWebChat.HuyaLive
         {
             if (listener != null)
             {
-                listener.FlushLogger();
+                listener.FlushLog();
             }
         }
 
@@ -315,7 +315,7 @@ namespace HuyaWebChat.HuyaLive
         {
             if (listener != null)
             {
-                listener.CloseLogger();
+                listener.CloseLog();
             }
         }
 
