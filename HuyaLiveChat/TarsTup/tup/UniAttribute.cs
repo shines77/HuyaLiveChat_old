@@ -229,14 +229,17 @@ namespace Tup
                     {
                         break;
                     }
+
                     if (strBasicType == "map" && className.Length >= 3 && className.Substring(0, 3).ToLower() == "map")
                     {
                         break;
                     }
+
                     if (typeof(T).IsArray && className.Length > 3 && className.Substring(0, 4).ToLower() == "list")
                     {
                         break;
                     }
+
                     if (strBasicType == "list" && className.Length > 3 && className.Substring(0, 4).ToLower() == "list")
                     {
                         break;
@@ -245,13 +248,13 @@ namespace Tup
 
                 try
                 {
-                    object objtmp = GetCacheProxy<T>(className);
-                    if (objtmp == null)
+                    object tmpObj = GetCacheProxy<T>(className);
+                    if (tmpObj == null)
                     {
-                        return (T)objtmp;
+                        return (T)tmpObj;
                     }
 
-                    obj = DecodeData(data, objtmp);
+                    obj = DecodeData(data, tmpObj);
                     if (obj != null)
                     {
                         SaveDataCache(name, obj);

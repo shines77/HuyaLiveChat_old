@@ -110,12 +110,15 @@ namespace HuyaLiveHelper
             try
             {
                 client = new HuyaLiveClient(this);
-                client.Start("666007");
+                // Shen tu
+                //client.Start("666007");
+                // Yang qi huang
+                client.Start("18001");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Exception: " + ex.ToString());
-                Console.WriteLine();
+                Debug.WriteLine("");
             }
         }
 

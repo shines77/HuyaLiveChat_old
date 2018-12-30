@@ -11,20 +11,20 @@ namespace HuyaLive
 {
     public struct CommandType
     {
-        static public int None = 0;
-        static public int RegisterRequest = 1;
-        static public int RegisterResponse = 2;
-        static public int WupRequest = 3;
-        static public int WupResponse = 4;
-        static public int HeartBeat = 5;
-        static public int HeartBeatAck = 6;
-        static public int MsgPushRequest = 7;
-        static public int UnregisterRequest = 8;
-        static public int UnregisterResponse = 9;
-        static public int VerifyCookieRequest = 10;
-        static public int VerifyCookieResponse = 11;
-        static public int VerifyTokenRequest = 12;
-        static public int VerifyTokenResponse = 13;
+        public const int None = 0;
+        public const int RegisterRequest = 1;
+        public const int RegisterResponse = 2;
+        public const int WupRequest = 3;
+        public const int WupResponse = 4;
+        public const int HeartBeat = 5;
+        public const int HeartBeatAck = 6;
+        public const int MsgPushRequest = 7;
+        public const int UnregisterRequest = 8;
+        public const int UnregisterResponse = 9;
+        public const int VerifyCookieRequest = 10;
+        public const int VerifyCookieResponse = 11;
+        public const int VerifyTokenRequest = 12;
+        public const int VerifyTokenResponse = 13;
     }
 
     public class GetPropsListRequest : TarsStruct
@@ -186,4 +186,182 @@ namespace HuyaLive
             _ds.Display(vData, "vData");
         }
     }
+
+    public class LiveProxyValue : TarsStruct
+    {
+        public int iProxyType = 0;
+        public List<string> sProxy = new List<string>();
+
+        public LiveProxyValue()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iProxyType = (int)_is.Read(iProxyType, 0, true);
+            sProxy = (List<string>)_is.Read(sProxy, 1, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iProxyType, 0);
+            _os.Write(sProxy, 1);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iProxyType, "iProxyType");
+            _ds.Display(sProxy, "sProxy");
+        }
+    }
+
+    public class LiveLaunchResponse : TarsStruct
+    {
+        public string sGuid = "";
+        public int iTime = 0;
+        public List<LiveProxyValue> vProxyList = new List<LiveProxyValue>();
+        public int iAccess = 0;
+
+        public LiveLaunchResponse()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            sGuid = (string)_is.Read(sGuid, 0, true);
+            iTime = (int)_is.Read(iTime, 1, true);
+            vProxyList = (List<LiveProxyValue>)_is.Read(vProxyList, 2, true);
+            iAccess = (int)_is.Read(iAccess, 3, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(sGuid, 0);
+            _os.Write(iTime, 1);
+            _os.Write(vProxyList, 2);
+            _os.Write(iAccess, 3);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(sGuid, "sGuid");
+            _ds.Display(iTime, "iTime");
+            _ds.Display(vProxyList, "vProxyList");
+            _ds.Display(iAccess, "iAccess");
+        }
+    }
+
+    public class NobleSpeakResponse : TarsStruct
+    {
+        public int iId = 0;
+
+        public NobleSpeakResponse()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iId = (int)_is.Read(iId, 0, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iId, 0);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iId, "iId");
+        }
+    }
+
+    public class GetPropsListResponse : TarsStruct
+    {
+        public int iId = 0;
+
+        public GetPropsListResponse()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iId = (int)_is.Read(iId, 0, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iId, 0);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iId, "iId");
+        }
+    }
+
+    public class GetLivingInfoResponse : TarsStruct
+    {
+        public int iId = 0;
+
+        public GetLivingInfoResponse()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iId = (int)_is.Read(iId, 0, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iId, 0);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iId, "iId");
+        }
+    }
+
+    public class WSPushMessage : TarsStruct
+    {
+        public int iPushType = 0;
+        public int iUri = 0;
+        public byte[] sMsg = new byte[0];
+        public int iProtocolType = 0;
+
+        public WSPushMessage()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iPushType = (int)_is.Read(iPushType, 0, true);
+            iUri = (int)_is.Read(iUri, 1, true);
+            sMsg = (byte[])_is.Read(sMsg, 2, true);
+            iProtocolType = (int)_is.Read(iProtocolType, 3, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iPushType, 0);
+            _os.Write(iUri, 1);
+            _os.Write(sMsg, 2);
+            _os.Write(iProtocolType, 3);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iPushType, "iPushType");
+            _ds.Display(iUri, "iUri");
+            _ds.Display(sMsg, "sMsg");
+            _ds.Display(iProtocolType, "iProtocolType");
+        }
+    }   
 }
