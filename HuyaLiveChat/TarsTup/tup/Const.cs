@@ -28,9 +28,14 @@ namespace Tup
         public static int INVALID_HASH_CODE = -1;
         public static int INVALID_GRID_CODE = -1;
 
+        public const short TUP_VERSION_0 = 0;
+        public const short TUP_VERSION_1 = 1;
+        public const short TUP_VERSION_2 = 2;
+        public const short TUP_VERSION_3 = 3;
+
         public static byte PACKET_TYPE_TARSNORMAL = 0;
         public static byte PACKET_TYPE_TARSONEWAY = 1;
-        public static byte PACKET_TYPE_TUP = 2;
+        public static byte PACKET_TYPE_TUP2 = 2;
         public static byte PACKET_TYPE_TUP3 = 3;
     }
 }

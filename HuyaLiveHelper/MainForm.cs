@@ -59,50 +59,70 @@ namespace HuyaLiveHelper
             Debug.WriteLine(format, args);
         }
 
+        public void FuncEnter(string message)
+        {
+            Debug.WriteLine("-------------------------------------------");
+            Debug.WriteLine(message + " enter.");
+        }
+
+        public void FuncLeave(string message)
+        {
+            Debug.WriteLine(message + " leave.");
+            Debug.WriteLine("-------------------------------------------");
+        }
+
         public void OnClientStart(object sender)
         {
-            Debug.WriteLine("  MainForm::OnClientStart()");
+            Logger log = ((HuyaLiveClient)sender)?.GetLogger();
+            log?.WriteLine("  MainForm::OnClientStart()");
         }
 
         public void OnClientClose(object sender)
         {
-            Debug.WriteLine("  MainForm::OnClientClose()");
+            Logger log = ((HuyaLiveClient)sender)?.GetLogger();
+            log?.WriteLine("  MainForm::OnClientClose()");
         }
 
         public void OnClientError(object sender, Exception exception, string message)
         {
-            Debug.WriteLine("--------------------------------------------------------");
-            Debug.WriteLine("  MainForm::OnClientError()");
-            Debug.WriteLine("  Eexception: " + exception.ToString());
-            Debug.WriteLine("  Message: " + message);
-            Debug.WriteLine("--------------------------------------------------------");
+            Logger log = ((HuyaLiveClient)sender)?.GetLogger();
+            log?.WriteLine("--------------------------------------------------------");
+            log?.WriteLine("  MainForm::OnClientError()");
+            log?.WriteLine("  Eexception: " + exception.ToString());
+            log?.WriteLine("  Message: " + message);
+            log?.WriteLine("--------------------------------------------------------");
         }
 
         public void OnClientEnter(object sender, EnterMessage message)
         {
-            Debug.WriteLine("  MainForm::OnClientEnter()");
+            Logger log = ((HuyaLiveClient)sender)?.GetLogger();
+            log?.WriteLine("  MainForm::OnClientEnter()");
         }
 
         public void OnClientChat(object sender, ChatMessage message)
         {
-            Debug.WriteLine("  MainForm::OnClientChat()");
-            Debug.WriteLine("  uid = {0}, nickname = {1}, timestamp = {2}, content = {3}, length = {4}.",
-                            message.uid, message.nickname, message.timestamp, message.content, message.length);
+            Logger log = ((HuyaLiveClient)sender)?.GetLogger();
+            log?.WriteLine("  MainForm::OnClientChat()");
+            log?.WriteLine("  uid = {0}, nickname = {1}, timestamp = {2}, content = {3}, length = {4}.",
+                message.uid, message.nickname, message.timestamp, message.content, message.length);
         }
 
         public void OnClientGift(object sender, GiftMessage message)
         {
-            Debug.WriteLine("  MainForm::OnClientGift()");
+            Logger log = ((HuyaLiveClient)sender)?.GetLogger();
+            log?.WriteLine("  MainForm::OnClientGift()");
         }
 
         public void OnClientGiftList(object sender, GiftListMessage message)
         {
-            Debug.WriteLine("  MainForm::OnClientGiftList()");
+            Logger log = ((HuyaLiveClient)sender)?.GetLogger();
+            log?.WriteLine("  MainForm::OnClientGiftList()");
         }
 
         public void OnClientOnline(object sender, OnlineMessage message)
         {
-            Debug.WriteLine("  MainForm::OnClientOnline()");
+            Logger log = ((HuyaLiveClient)sender)?.GetLogger();
+            log?.WriteLine("  MainForm::OnClientOnline()");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -111,9 +131,9 @@ namespace HuyaLiveHelper
             {
                 client = new HuyaLiveClient(this);
                 // Shen tu
-                //client.Start("666007");
+                client.Start("666007");
                 // Yang qi huang
-                client.Start("18001");
+                //client.Start("18001");
             }
             catch (Exception ex)
             {

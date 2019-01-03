@@ -1,0 +1,44 @@
+{
+    "res": {
+        "widget/pop_download": {
+            "url": "//a.msstatic.com/huya/mobile/widget/pop_download/pop_download_a01616b.js"
+        },
+        "widget/iPhoneX": {
+            "url": "//a.msstatic.com/huya/mobile/widget/iPhoneX/iPhoneX_b59abe5.js"
+        },
+        "anchorNotice": {
+            "url": "//a.msstatic.com/huya/mobile/modules/anchorNotice/anchorNotice_bd03c35.js"
+        },
+        "widget/more_live": {
+            "url": "//a.msstatic.com/huya/mobile/widget/more_live/more_live_c2b9c6c.js"
+        },
+        "weixinShare": {
+            "url": "//a.msstatic.com/huya/mobile/modules/weixinShare/weixinShare_cd01add.js"
+        },
+        "wxShareApp": {
+            "deps": [
+                "weixinShare"
+            ],
+            "url": "//a.msstatic.com/huya/mobile/modules/wxShareApp/wxShareApp_9da4d43.js"
+        },
+        "widget/sharePanel": {
+            "url": "//a.msstatic.com/huya/mobile/widget/sharePanel/sharePanel_301e240.js"
+        },
+        "roomAsync": {
+            "deps": [
+                "anchorNotice",
+                "widget/more_live",
+                "wxShareApp",
+                "widget/sharePanel"
+            ],
+            "url": "//a.msstatic.com/huya/mobile/modules/roomAsync/roomAsync_1dca204.js"
+        },
+        "clipboard": {
+            "url": "//a.msstatic.com/huya/mobile/modules/clipboard/clipboard_a2d3759.js"
+        },
+        "widget/baidu": {
+            "url": "//a.msstatic.com/huya/mobile/widget/baidu/baidu_8240d79.js"
+        }
+    },
+    "pkg": {}
+}

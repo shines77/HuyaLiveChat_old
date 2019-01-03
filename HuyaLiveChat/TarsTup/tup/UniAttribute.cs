@@ -40,7 +40,7 @@ namespace Tup
 
         TarsInputStream _is = new TarsInputStream();
 
-        protected short _iVer = Const.PACKET_TYPE_TUP;
+        protected short _iVer = Const.TUP_VERSION_2;
         private string _encodeName = "UTF-8";
 
         public short Version
@@ -83,7 +83,7 @@ namespace Tup
 
         public bool IsEmpty()
         {
-            if (_iVer == Const.PACKET_TYPE_TUP3)
+            if (_iVer == Const.TUP_VERSION_3)
             {
                 return _new_data.Count == 0;
             }
@@ -97,7 +97,7 @@ namespace Tup
         {
             get
             {
-                if (_iVer == Const.PACKET_TYPE_TUP3)
+                if (_iVer == Const.TUP_VERSION_3)
                 {
                     return _new_data.Count;
                 }
@@ -110,67 +110,13 @@ namespace Tup
 
         public bool ContainsKey(string key)
         {
-            if (_iVer == Const.PACKET_TYPE_TUP3)
+            if (_iVer == Const.TUP_VERSION_3)
             {
                 return _new_data.ContainsKey(key);
             }
             else
             {
                 return _data.ContainsKey(key);
-            }
-        }
-
-        /**
-         * Get the data encoded by the tup streamlined version,
-         * compatible with the old version of tup.
-         * @param <T>
-         * @param name
-         * @param proxy
-         * @return
-         * @throws ObjectCreateException
-         */
-        public T GetByClass<T>(string name, T proxy)
-        {
-            object obj = null;
-            if (_iVer == Const.PACKET_TYPE_TUP3)
-            {
-
-                if (!_new_data.ContainsKey(name))
-                {
-                    return (T)obj;
-                }
-                else if (cachedData.ContainsKey(name))
-                {
-                    if (!cachedData.TryGetValue(name, out obj))
-                    {
-                        obj = null;
-                    }
-                    return (T)obj;
-                }
-                else
-                {
-                    try
-                    {
-                        byte[] data = new byte[0];
-                        _new_data.TryGetValue(name, out data);
-
-                        Object _obj = DecodeData(data, proxy);
-                        if (null != _obj)
-                        {
-                            SaveDataCache(name, _obj);
-                        }
-                        return (T)_obj;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ObjectCreateException(ex);
-                    }
-                }
-            }
-            else
-            {
-                // Compatible with tup2.
-                return Get<T>(name);
             }
         }
 
@@ -184,9 +130,9 @@ namespace Tup
          */
         public T Get<T>(string name)
         {
-            if (_iVer == Const.PACKET_TYPE_TUP3)
+            if (_iVer == Const.TUP_VERSION_3)
             {
-                throw new Exception("data is encoded by new version, please use getTarsStruct(String name, T proxy)");
+                throw new Exception("data is encoded by new version, please use Get(string Name, T DefaultObj)");
             }
 
             object obj = null;
@@ -282,10 +228,10 @@ namespace Tup
             {
                 object result = null; ;
 
-                if (_iVer == Const.PACKET_TYPE_TUP3)
+                if (_iVer == Const.TUP_VERSION_3)
                 {
+                    // For tup3 version.
                     result = GetByClass<T>(Name, DefaultObj);
-
                 }
                 else
                 {
@@ -302,6 +248,59 @@ namespace Tup
             catch
             {
                 return DefaultObj;
+            }
+        }
+
+        /**
+         * Get the data encoded by the tup streamlined version,
+         * compatible with the old version of tup.
+         * @param <T>
+         * @param name
+         * @param proxy
+         * @return
+         * @throws ObjectCreateException
+         */
+        public T GetByClass<T>(string name, T proxy)
+        {
+            object obj = null;
+            if (_iVer == Const.TUP_VERSION_3)
+            {
+                if (!_new_data.ContainsKey(name))
+                {
+                    return (T)obj;
+                }
+                else if (cachedData.ContainsKey(name))
+                {
+                    if (!cachedData.TryGetValue(name, out obj))
+                    {
+                        obj = null;
+                    }
+                    return (T)obj;
+                }
+                else
+                {
+                    try
+                    {
+                        byte[] data = new byte[0];
+                        _new_data.TryGetValue(name, out data);
+
+                        Object _obj = DecodeData(data, proxy);
+                        if (null != _obj)
+                        {
+                            SaveDataCache(name, _obj);
+                        }
+                        return (T)_obj;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ObjectCreateException(ex);
+                    }
+                }
+            }
+            else
+            {
+                // Compatible with tup2.
+                return Get<T>(name);
             }
         }
 
@@ -327,7 +326,7 @@ namespace Tup
             _out.Write(value, 0);
             byte[] sBuffer = TarsUtil.GetTarsBufferArray(_out.GetMemoryStream());
 
-            if (_iVer == Const.PACKET_TYPE_TUP3)
+            if (_iVer == Const.TUP_VERSION_3)
             {
                 cachedData.Remove(name);
                 if (_new_data.ContainsKey(name))
@@ -365,9 +364,9 @@ namespace Tup
             return BasicClassTypeUtil.CreateObject<T>();
         }
 
-        private void SaveDataCache(string name, Object o)
+        private void SaveDataCache(string name, Object obj)
         {
-            cachedData.Add(name, o);
+            cachedData.Add(name, obj);
         }
 
         /**
@@ -376,7 +375,7 @@ namespace Tup
          * @param listTpye
          * @param obj
          */
-        private void CheckObjectType(List<string> listTpye, Object obj)
+        private void CheckObjectType(List<string> listType, Object obj)
         {
             if (obj == null)
             {
@@ -386,46 +385,46 @@ namespace Tup
             if (obj.GetType().IsArray)
             {
                 Type elementType = obj.GetType().GetElementType();
-                listTpye.Add("list");
-                CheckObjectType(listTpye, BasicClassTypeUtil.CreateObject(elementType));
+                listType.Add("list");
+                CheckObjectType(listType, BasicClassTypeUtil.CreateObject(elementType));
             }
             else if (obj is IList)
             {
-                listTpye.Add("list");
+                listType.Add("list");
 
                 IList list = (IList)obj;
                 if (list.Count > 0)
                 {
-                    CheckObjectType(listTpye, list[0]);
+                    CheckObjectType(listType, list[0]);
                 }
                 else
                 {
-                    listTpye.Add("?");
+                    listType.Add("?");
                 }
             }
             else if (obj is IDictionary)
             {
-                listTpye.Add("map");
+                listType.Add("map");
                 IDictionary map = (IDictionary)obj;
                 if (map.Count > 0)
                 {
                     foreach (object key in map.Keys)
                     {
-                        listTpye.Add(BasicClassTypeUtil.CS2UniType(key.GetType().ToString()));
-                        CheckObjectType(listTpye, map[key]);
+                        listType.Add(BasicClassTypeUtil.CS2UniType(key.GetType().ToString()));
+                        CheckObjectType(listType, map[key]);
                         break;
                     }
                 }
                 else
                 {
-                    listTpye.Add("?");
-                    listTpye.Add("?");
+                    listType.Add("?");
+                    listType.Add("?");
                     //throw new ArgumentException("Map can not is empty.");
                 }
             }
             else
             {
-                listTpye.Add(BasicClassTypeUtil.CS2UniType(obj.GetType().ToString()));
+                listType.Add(BasicClassTypeUtil.CS2UniType(obj.GetType().ToString()));
             }
         }
 
@@ -433,7 +432,7 @@ namespace Tup
         {
             TarsOutputStream _os = new TarsOutputStream(0);
             _os.SetServerEncoding(_encodeName);
-            if (_iVer == Const.PACKET_TYPE_TUP3)
+            if (_iVer == Const.TUP_VERSION_3)
             {
                 _os.Write(_new_data, 0);
             }
@@ -459,14 +458,14 @@ namespace Tup
                 // try tup2
                 _is.Wrap(buffer, Index);
                 _is.SetServerEncoding(_encodeName);
-                _iVer = Const.PACKET_TYPE_TUP;
+                _iVer = Const.TUP_VERSION_2;
                 _data = (Dictionary<string, Dictionary<string, byte[]>>)_is.ReadMap<Dictionary<string, Dictionary<string, byte[]>>>(_data, 0, false);
                 return;
             }
             catch
             {
                 // try tup3
-                _iVer = Const.PACKET_TYPE_TUP3;
+                _iVer = Const.TUP_VERSION_3;
                 _is.Wrap(buffer, Index);
                 _is.SetServerEncoding(_encodeName);
                 _new_data = (Dictionary<string, byte[]>)_is.ReadMap<Dictionary<string, byte[]>>(_new_data, 0, false);
@@ -475,7 +474,7 @@ namespace Tup
 
         public override void WriteTo(TarsOutputStream _os)
         {
-            if (_iVer == Const.PACKET_TYPE_TUP3)
+            if (_iVer == Const.TUP_VERSION_3)
             {
                 _os.Write(_new_data, 0);
             }
@@ -487,7 +486,7 @@ namespace Tup
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            if (_iVer == Const.PACKET_TYPE_TUP3)
+            if (_iVer == Const.TUP_VERSION_3)
             {
                 _new_data = (Dictionary<string, byte[]>)_is.ReadMap<Dictionary<string, byte[]>>(_new_data, 0, false);
             }

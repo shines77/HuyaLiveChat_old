@@ -97,18 +97,18 @@ namespace Tup.Tars
          * @param bb buffer
          * @return The number of bytes read
          */
-        public static int ReadHead(HeadData head, BinaryReader binReader)
+        public static int ReadHead(HeadData head, BinaryReader _reader)
         {
-            if (binReader.BaseStream.Position >= binReader.BaseStream.Length)
+            if (_reader.BaseStream.Position >= _reader.BaseStream.Length)
             {
                 throw new TarsDecodeException("read file to end");
             }
-            byte ch = binReader.ReadByte();
+            byte ch = _reader.ReadByte();
             head.type = (byte)(ch & 15);
             head.tag = ((ch & (15 << 4)) >> 4);
-            if (head.tag == 15)
+            if (head.tag >= 15)
             {
-                head.tag = binReader.ReadByte();
+                head.tag = _reader.ReadByte();
                 return 2;
             }
             return 1;
@@ -122,7 +122,7 @@ namespace Tup.Tars
         //
         // Read header information but not move the current offset of the buffer.
         //
-        private int PeakHead(HeadData head)
+        private int PeekHead(HeadData head)
         {
             long curPos = stream.Position;
             int len = ReadHead(head);
@@ -148,13 +148,13 @@ namespace Tup.Tars
                 HeadData head = new HeadData();
                 while (true)
                 {
-                    int len = PeakHead(head);
+                    int len = PeekHead(head);
                     if (tag <= head.tag || head.type == (byte)TarsStructType.STRUCT_END)
                     {
                         /* Modified by shines77, 2018-12-17 20:00 */
                         return ((head.type == (byte)TarsStructType.STRUCT_END) ? false : (tag == head.tag));
                     }
-
+                    
                     Skip(len);
                     SkipField(head.type);
                 }
@@ -298,13 +298,17 @@ namespace Tup.Tars
                 switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:
-                        c = 0x0;
-                        break;
+                        {
+                            c = 0x0;
+                            break;
+                        }
+
                     case (byte)TarsStructType.BYTE:
                         {
                             c = reader.ReadByte();
                             break;
                         }
+
                     default:
                         {
                             throw new TarsDecodeException("type mismatch.");
@@ -1166,15 +1170,15 @@ namespace Tup.Tars
 
                     case (byte)TarsStructType.SIMPLE_LIST:
                         {
-                            HeadData hh = new HeadData();
-                            ReadHead(hh);
-                            if (hh.type == (byte)TarsStructType.ZERO_TAG)
+                            HeadData listHead = new HeadData();
+                            ReadHead(listHead);
+                            if (listHead.type == (byte)TarsStructType.ZERO_TAG)
                             {
                                 return Array.CreateInstance(element.GetType(), 0);
                             }
-                            if (hh.type != (byte)TarsStructType.BYTE)
+                            if (listHead.type != (byte)TarsStructType.BYTE)
                             {
-                                throw new TarsDecodeException("type mismatch, tag: " + tag + ", type: " + head.type + ", " + hh.type);
+                                throw new TarsDecodeException("type mismatch, tag: " + tag + ", type: " + head.type + ", " + listHead.type);
                             }
                             int size = Read(0, 0, true);
                             if (size < 0)
@@ -1217,12 +1221,12 @@ namespace Tup.Tars
         public TarsStruct DirectRead(TarsStruct s, int tag, bool isRequire)
         {
             // TarsStruct must have a no-argument constructor.
-            TarsStruct reff = null;
+            TarsStruct ref_s = null;
             if (SkipToTag(tag))
             {
                 try
                 {
-                    reff = (TarsStruct)BasicClassTypeUtil.CreateObject(s.GetType());
+                    ref_s = (TarsStruct)BasicClassTypeUtil.CreateObject(s.GetType());
                 }
                 catch (Exception ex)
                 {
@@ -1235,7 +1239,7 @@ namespace Tup.Tars
                 {
                     throw new TarsDecodeException("type mismatch.");
                 }
-                reff.ReadFrom(this);
+                ref_s.ReadFrom(this);
                 SkipToStructEnd();
             }
             else if (isRequire)
@@ -1243,20 +1247,20 @@ namespace Tup.Tars
                 throw new TarsDecodeException("require field not exist.");
             }
 
-            return reff;
+            return ref_s;
         }
 
         public TarsStruct Read(TarsStruct s, int tag, bool isRequire)
         {
             // TarsStruct must have a no-argument constructor.
-            TarsStruct reff = null;
+            TarsStruct ref_s = null;
             if (SkipToTag(tag))
             {
                 try
                 {
                     // Must be recreated, otherwise it will result in assignment on the same object,
                     // which is caused by a reference to C#.
-                    reff = (TarsStruct)BasicClassTypeUtil.CreateObject(s.GetType());
+                    ref_s = (TarsStruct)BasicClassTypeUtil.CreateObject(s.GetType());
                 }
                 catch (Exception ex)
                 {
@@ -1269,14 +1273,14 @@ namespace Tup.Tars
                 {
                     throw new TarsDecodeException("type mismatch.");
                 }
-                reff.ReadFrom(this);
+                ref_s.ReadFrom(this);
                 SkipToStructEnd();
             }
             else if (isRequire)
             {
                 throw new TarsDecodeException("require field not exist.");
             }
-            return reff;
+            return ref_s;
         }
 
         public TarsStruct[] Read(TarsStruct[] s, int tag, bool isRequire)

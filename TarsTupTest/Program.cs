@@ -323,7 +323,7 @@ namespace TarsTupTest
         }
 
         /*
-         * 测试UniAttributte
+         * 测试 UniAttributte
          */
         public void TestUnipack(TestInfo ti)
         {
@@ -336,8 +336,8 @@ namespace TarsTupTest
             float testf = -100.032f;
             string teststr = "teststring";
 
-            // 设置tup版本号，默认是tup2，非精简版
-            unipack.Version = Tup.Const.PACKET_TYPE_TUP;
+            // 设置 tup 版本号，默认是 tup2，非精简版.
+            unipack.Version = Tup.Const.TUP_VERSION_2;
 
             unipack.Put("mystruct", ti);
             unipack.Put("tests", tests);

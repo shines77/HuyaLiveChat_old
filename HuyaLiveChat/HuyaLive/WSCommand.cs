@@ -80,6 +80,31 @@ namespace HuyaLive
         }
     }
 
+    public class UserHeartBeatResponse : TarsStruct
+    {
+        public int iRet = 0;
+
+        public UserHeartBeatResponse()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iRet = (int)_is.Read(iRet, 0, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iRet, 0);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iRet, "iRet");
+        }
+    }
+
     public class UserHeartBeatRequest : TarsStruct
     {
         public UserId tId = new UserId();

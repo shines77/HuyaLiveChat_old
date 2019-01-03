@@ -26,8 +26,8 @@ namespace Tup
     {
         public TarsUniPacket()
         {
-            _package.iVersion = (short)2;
-            _package.cPacketType = Const.PACKET_TYPE_TUP;
+            _package.iVersion = Const.TUP_VERSION_2;
+            _package.cPacketType = Const.PACKET_TYPE_TUP2;
             _package.iMessageType = (int)0;
             _package.iTimeout = (int)0;
             _package.sBuffer = new byte[] { };

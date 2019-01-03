@@ -28,7 +28,7 @@ namespace Tup
         protected RequestPacket _package = new RequestPacket();
 
         /**
-         * 获取请求的service名字
+         * Get the requested service name.
          * 
          * @return
          */
@@ -45,7 +45,7 @@ namespace Tup
         }
 
         /**
-         * 获取请求的函数名字
+         * Get the requested function name.
          * 
          * @return
          */
@@ -62,7 +62,7 @@ namespace Tup
         }
 
         /**
-         * 获取消息序列号
+         * Get the requested id.
          * 
          * @return
          */
@@ -80,7 +80,7 @@ namespace Tup
 
         public UniPacket()
         {
-            _package.iVersion = 2;
+            _package.iVersion = Const.TUP_VERSION_2;
         }
 
         public short GetVersion()
@@ -95,7 +95,7 @@ namespace Tup
         }
 
         /**
-         * 将put的对象进行编码
+         * Encode the put object.
          */
         public new byte[] Encode()
         {
@@ -110,7 +110,7 @@ namespace Tup
 
             TarsOutputStream _os = new TarsOutputStream(0);
             _os.SetServerEncoding(EncodeName);
-            if (_package.iVersion == Const.PACKET_TYPE_TUP)
+            if (_package.iVersion == Const.TUP_VERSION_2)
             {
                 _os.Write(_data, 0);
             }
@@ -140,7 +140,7 @@ namespace Tup
         }
 
         /**
-         * 对传入的数据进行解码 填充可get的对象
+         * Decode incoming data, fill in getable objects.
          */
         public new void Decode(byte[] buffer, int Index = 0)
         {
@@ -163,7 +163,7 @@ namespace Tup
                 _is = new TarsInputStream(_package.sBuffer);
                 _is.SetServerEncoding(EncodeName);
 
-                if (_package.iVersion == Const.PACKET_TYPE_TUP)
+                if (_package.iVersion == Const.TUP_VERSION_2)
                 {
                     _data = (Dictionary<string, Dictionary<string, byte[]>>)_is.ReadMap<
                              Dictionary<string, Dictionary<string, byte[]>>>(0, false);
@@ -193,7 +193,7 @@ namespace Tup
         public int OldResponseIRet { get; set; }
 
         /**
-         * 为兼容最早发布的客户端版本解码使用 iret 字段始终为 0.
+         * The 'iret' field is always 0, for compatibility with the earliest published client version.
          * 
          * @return
          */
@@ -206,6 +206,7 @@ namespace Tup
             byte[] oldSBuffer = TarsUtil.GetTarsBufferArray(_os.GetMemoryStream());
             _os = new TarsOutputStream(0);
             _os.SetServerEncoding(EncodeName);
+
             _os.Write(_package.iVersion, 1);
             _os.Write(_package.cPacketType, 2);
             _os.Write(_package.iRequestId, 3);

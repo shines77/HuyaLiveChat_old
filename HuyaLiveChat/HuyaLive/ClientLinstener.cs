@@ -15,6 +15,9 @@ namespace HuyaLive
         void WriteLine(string format, params object[] args);
         void FlushLog();
         void CloseLog();
+
+        void FuncEnter(string message);
+        void FuncLeave(string message);
     }
 
     public interface ClientListener : LoggerListener
