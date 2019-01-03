@@ -80,8 +80,6 @@ namespace HuyaLive
 
         public HuyaLiveClient(ClientListener listener = null)
         {
-            logger = new Logger(new HuyaLive.Debugger());
-
             SetListener(listener);
             onWupRspEmitter += OnWupResponse;
         }
@@ -145,7 +143,7 @@ namespace HuyaLive
             {
                 string text = string.Format("HuyaLiveClient::SendWUP(), action = {0}, callback = {1}.",
                                             action, callback);
-                listener?.WriteLine(text);
+                logger?.WriteLine(text);
             }
 
             try
@@ -183,7 +181,7 @@ namespace HuyaLive
         private bool ReadGiftList()
         {
             bool result = false;
-            listener?.FuncEnter("HuyaLiveClient::ReadGiftList()");
+            logger?.Enter("HuyaLiveClient::ReadGiftList()");
 
             try
             {
@@ -201,7 +199,7 @@ namespace HuyaLive
                 }
             }
 
-            listener?.FuncLeave("HuyaLiveClient::ReadGiftList()");
+            logger?.Leave("HuyaLiveClient::ReadGiftList()");
             return result;
         }
 
@@ -249,7 +247,7 @@ namespace HuyaLive
 
         private bool Heartbeat()
         {
-            listener?.FuncEnter("HuyaLiveClient::Heartbeat()");
+            logger?.Enter("HuyaLiveClient::Heartbeat()");
 
             UserId userId = new UserId();
             userId.sHuyaUA = "webh5&1.0.0&websocket";
@@ -263,7 +261,7 @@ namespace HuyaLive
 
             bool result = SendWUP("onlineui", "OnUserHeartBeat", heartbeatRequest);
 
-            listener?.FuncLeave("HuyaLiveClient::Heartbeat()");
+            logger?.Leave("HuyaLiveClient::Heartbeat()");
             return result;
         }
 
@@ -279,7 +277,7 @@ namespace HuyaLive
 
         private void OnOpen(object sender, EventArgs eventArgs)
         {
-            listener?.FuncEnter("HuyaLiveClient::OnOpen()");
+            logger?.Enter("HuyaLiveClient::OnOpen()");
 
             if (WsIsAlive())
             {
@@ -303,7 +301,7 @@ namespace HuyaLive
                 }
             }
 
-            listener?.FuncLeave("HuyaLiveClient::OnOpen()");
+            logger?.Leave("HuyaLiveClient::OnOpen()");
         }
 
         private void OnWupResponse(object sender, TarsStruct response)
@@ -374,14 +372,14 @@ namespace HuyaLive
                             default:
                                 {
                                     isDefault = true;
-                                    listener?.WriteLine("CommandType = WupResponse, funcName: ** " + funcName);
+                                    logger?.WriteLine("CommandType = WupResponse, funcName: ** " + funcName);
                                 }
                                 break;
                         }
 
                         if (!isDefault)
                         {
-                            listener?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
+                            logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
                         }
                     }
                     break;
@@ -393,7 +391,7 @@ namespace HuyaLive
                         msg.ReadFrom(inStream);
 
                         TarsInputStream stream = new TarsInputStream(msg.sMsg);
-                        listener?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + msg.iUri);
+                        logger?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + msg.iUri);
 
                         OnMsgPushRequest(msg);
                     }
@@ -401,7 +399,7 @@ namespace HuyaLive
 
                 default:
                     {
-                        listener?.WriteLine("CommandType = ** " + command.iCmdType + "");
+                        logger?.WriteLine("CommandType = ** " + command.iCmdType + "");
                     }
                     break;
             }
@@ -409,7 +407,7 @@ namespace HuyaLive
 
         private void OnMessage(object sender, WebSocketSharp.MessageEventArgs eventArgs)
         {
-            listener?.FuncEnter("HuyaLiveClient::OnMessage()");
+            logger?.Enter("HuyaLiveClient::OnMessage()");
 
             try
             {
@@ -464,25 +462,25 @@ namespace HuyaLive
             catch (Exception ex)
             {
                 string what = ex.ToString();
-                listener?.WriteLine("Exception: " + what);
+                logger?.WriteLine("Exception: " + what);
             }
 
-            listener?.FuncLeave("HuyaLiveClient::OnMessage()");
+            logger?.Leave("HuyaLiveClient::OnMessage()");
         }
 
         private void OnError(object sender, WebSocketSharp.ErrorEventArgs eventArgs)
         {
-            listener?.FuncEnter("HuyaLiveClient::OnError()");
+            logger?.Enter("HuyaLiveClient::OnError()");
             if (listener != null)
             {
                 listener?.OnClientError(this, eventArgs.Exception, eventArgs.Message);
             }
-            listener?.FuncLeave("HuyaLiveClient::OnError()");
+            logger?.Leave("HuyaLiveClient::OnError()");
         }
 
         private void OnClose(object sender, WebSocketSharp.CloseEventArgs eventArgs)
         {
-            listener?.FuncEnter("HuyaLiveClient::OnClose()");
+            logger?.Enter("HuyaLiveClient::OnClose()");
 
             // Is closing.
             state = ClientState.Closing;
@@ -494,12 +492,12 @@ namespace HuyaLive
                 listener?.OnClientClose(this);
             }
 
-            listener?.FuncLeave("HuyaLiveClient::OnClose()");
+            logger?.Leave("HuyaLiveClient::OnClose()");
         }
 
         private void EnumerateHttpHeaders(HttpHeaders headers)
         {
-            listener?.WriteLine("");
+            logger?.WriteLine("");
 
             foreach (var header in headers)
             {
@@ -508,10 +506,10 @@ namespace HuyaLive
                 {
                     value += val + " ";
                 }
-                listener?.WriteLine(header.Key + ": " + value);
+                logger?.WriteLine(header.Key + ": " + value);
             }
 
-            listener?.WriteLine("");
+            logger?.WriteLine("");
         }
 
         static private long ParseMatchLong(Match match)
@@ -529,7 +527,7 @@ namespace HuyaLive
         private HuyaChatInfo ReadChatInfo(string roomId)
         {
             HuyaChatInfo result = null;
-            listener?.FuncEnter("HuyaLiveClient::ReadChatInfo()");           
+            logger?.Enter("HuyaLiveClient::ReadChatInfo()");           
 
             if (httpClient != null)
             {
@@ -566,12 +564,12 @@ namespace HuyaLive
                 HttpResponseMessage response = httpClient.GetAsync(roomUrl).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    listener?.WriteLine("Response Status Code and Reason Phrase: " +
+                    logger?.WriteLine("Response Status Code and Reason Phrase: " +
                                         response.StatusCode + " " + response.ReasonPhrase);
 
                     string html = response.Content.ReadAsStringAsync().Result;
 
-                    listener?.WriteLine("Received payload of " + html.Length + " characters.");
+                    logger?.WriteLine("Received payload of " + html.Length + " characters.");
 
                     //
                     // See: https://www.cnblogs.com/caokai520/p/4511848.html
@@ -584,13 +582,13 @@ namespace HuyaLive
                     long subsid = ParseMatchLong(subsid_set);
                     long yyuid = ParseMatchLong(yyuid_set);
 
-                    listener?.WriteLine("Html contont:\n\n{0}", html);
+                    logger?.WriteLine("Html contont:\n\n{0}", html);
 
-                    listener?.WriteLine("");
-                    listener?.WriteLine("topsid = \"{0}\"", topsid);
-                    listener?.WriteLine("subsid = \"{0}\"", subsid);
-                    listener?.WriteLine("yyuid  = \"{0}\"", yyuid);
-                    listener?.WriteLine("");
+                    logger?.WriteLine("");
+                    logger?.WriteLine("topsid = \"{0}\"", topsid);
+                    logger?.WriteLine("subsid = \"{0}\"", subsid);
+                    logger?.WriteLine("yyuid  = \"{0}\"", yyuid);
+                    logger?.WriteLine("");
 
                     result.SetInfo(topsid, subsid, yyuid);
 
@@ -598,14 +596,14 @@ namespace HuyaLive
                 }
             }
 
-            listener?.FuncLeave("HuyaLiveClient::ReadChatInfo()");
+            logger?.Leave("HuyaLiveClient::ReadChatInfo()");
             return result;
         }
 
         public bool StartWebSocket(string roomId)
         {
             bool result = false;
-            listener?.FuncEnter("HuyaLiveClient::StartWebSocket()");
+            logger?.Enter("HuyaLiveClient::StartWebSocket()");
 
             if (websocket != null)
             {
@@ -639,17 +637,17 @@ namespace HuyaLive
                 catch (Exception ex)
                 {
                     string what = ex.ToString();
-                    listener?.WriteLine("Exception: " + what);
+                    logger?.WriteLine("Exception: " + what);
                 }
             }
 
-            listener?.FuncLeave("HuyaLiveClient::StartWebSocket()");
+            logger?.Leave("HuyaLiveClient::StartWebSocket()");
             return result;
         }
 
         public void Start(string roomId)
         {
-            listener?.FuncEnter("HuyaLiveClient::Start()");
+            logger?.Enter("HuyaLiveClient::Start()");
 
             if (IsRunning())
             {
@@ -668,12 +666,12 @@ namespace HuyaLive
 
             this.roomId = roomId;
 
-            listener?.FuncLeave("HuyaLiveClient::Start()");
+            logger?.Leave("HuyaLiveClient::Start()");
         }
 
         public void Stop()
         {
-            listener?.FuncEnter("HuyaLiveClient::Stop()");
+            logger?.Enter("HuyaLiveClient::Stop()");
 
             DestoryTimer();
 
@@ -691,7 +689,7 @@ namespace HuyaLive
 
             state = ClientState.Closed;
 
-            listener?.FuncLeave("HuyaLiveClient::Stop()");
+            logger?.Leave("HuyaLiveClient::Stop()");
         }
 
         private void DestoryTimer()

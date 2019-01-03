@@ -303,101 +303,101 @@ namespace HuyaLive
             logger.Close();
         }
 
-        static public void Print(ClientListener listener, string message)
+        static public void Print(Loggerable logger, string message)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.Print(message);
+                logger.Print(message);
             }
         }
 
-        static public void Print(ClientListener listener, string format, params object[] args)
+        static public void Print(Loggerable logger, string format, params object[] args)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.Print(format, args);
+                logger.Print(format, args);
             }
         }
 
-        static public void Write(ClientListener listener, string message)
+        static public void Write(Loggerable logger, string message)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.Write(message);
+                logger.Write(message);
             }
         }
 
-        static public void Write(ClientListener listener, string format, params object[] args)
+        static public void Write(Loggerable logger, string format, params object[] args)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.Write(format, args);
+                logger.Write(format, args);
             }
         }
 
-        static public void Write(ClientListener listener, Exception ex)
+        static public void Write(Loggerable logger, Exception ex)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.Write(ex.ToString());
+                logger.Write(ex.ToString());
             }
         }
 
-        static public void WriteLine(ClientListener listener, string message)
+        static public void WriteLine(Loggerable logger, string message)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.WriteLine(message);
+                logger.WriteLine(message);
             }
         }
 
-        static public void WriteLine(ClientListener listener, string format, params object[] args)
+        static public void WriteLine(Loggerable logger, string format, params object[] args)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.WriteLine(format, args);
+                logger.WriteLine(format, args);
             }
         }
 
-        static public void WriteLine(ClientListener listener, Exception ex)
+        static public void WriteLine(Loggerable logger, Exception ex)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.WriteLine(ex.ToString());
+                logger.WriteLine(ex.ToString());
             }
         }
 
-        static public void Flush(ClientListener listener)
+        static public void Flush(Loggerable logger)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.FlushLog();
+                logger.Flush();
             }
         }
 
-        static public void Close(ClientListener listener)
+        static public void Close(Loggerable logger)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.CloseLog();
+                logger.Close();
             }
         }
 
-        static public void Enter(ClientListener listener, string message)
+        static public void Enter(Loggerable logger, string message)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.WriteLine("-------------------------------------");
-                listener.WriteLine(message + " enter.");
+                logger.WriteLine("-------------------------------------");
+                logger.WriteLine(message + " enter.");
             }
         }
 
-        static public void Leave(ClientListener listener, string message)
+        static public void Leave(Loggerable logger, string message)
         {
-            if (listener != null)
+            if (logger != null)
             {
-                listener.WriteLine(message + " leave.");
-                listener.WriteLine("-------------------------------------");
+                logger.WriteLine(message + " leave.");
+                logger.WriteLine("-------------------------------------");
             }
         }
     }

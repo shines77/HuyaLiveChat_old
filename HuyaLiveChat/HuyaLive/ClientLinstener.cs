@@ -20,7 +20,7 @@ namespace HuyaLive
         void FuncLeave(string message);
     }
 
-    public interface ClientListener : LoggerListener
+    public interface ClientListener
     {
         void OnClientStart(object sender);
         void OnClientClose(object sender);
