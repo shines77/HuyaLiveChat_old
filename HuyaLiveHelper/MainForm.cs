@@ -22,9 +22,9 @@ namespace HuyaLiveHelper
             logger?.WriteLine("  MainForm::OnClientStart()");
         }
 
-        public void OnClientClose(object sender)
+        public void OnClientStop(object sender)
         {
-            logger?.WriteLine("  MainForm::OnClientClose()");
+            logger?.WriteLine("  MainForm::OnClientStop()");
         }
 
         public void OnClientError(object sender, Exception exception, string message)

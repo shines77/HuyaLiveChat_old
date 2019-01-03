@@ -489,7 +489,7 @@ namespace HuyaLive
 
             if (listener != null)
             {
-                listener?.OnClientClose(this);
+                listener?.OnClientStop(this);
             }
 
             logger?.Leave("HuyaLiveClient::OnClose()");

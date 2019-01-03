@@ -23,7 +23,7 @@ namespace HuyaLive
     public interface ClientListener
     {
         void OnClientStart(object sender);
-        void OnClientClose(object sender);
+        void OnClientStop(object sender);
         void OnClientError(object sender, Exception exception, string message);
 
         void OnClientEnter(object sender, EnterMessage message);
