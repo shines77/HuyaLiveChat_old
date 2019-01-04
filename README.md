@@ -1,3 +1,3 @@
-# HuyaWebChat
+# HuyaLiveChat
 
-A class library about the chat of HuyaLive web version. 
+A class library about the chat of HuyaLive web or mobile version. 
