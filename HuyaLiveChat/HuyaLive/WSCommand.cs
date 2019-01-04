@@ -27,6 +27,31 @@ namespace HuyaLive
         public const int VerifyTokenResponse = 13;
     }
 
+    public struct UriType
+    {
+        public const int NobleEnterNotice = 1002;
+        public const int NobleSpeakBrust = 1003;
+        public const int NobleLeaveNotice = 1005;
+        public const int MessageNotice = 1400;
+
+        public const int SendItemSubBroadcastPacket = 6501;
+        public const int SendItemNoticeWordBroadcastPacket = 6552;
+
+        public const int EnterPushInfo = 6200;
+        public const int VipBarListResponse = 6210;
+        public const int WeekRankListResponse = 6220;
+        public const int WeekRankEnterBanner = 6221;
+        public const int FansRankListResponse = 6230;
+        public const int BadgeInfo = 6231;
+        public const int BadgeScoreChanged = 6232;
+        public const int FansInfoNotice = 6233;
+        public const int UserGiftNotice = 6234;
+        public const int GiftBarResponse = 6250;
+
+        public const int AttendeeCountNotice = 8006;
+        public const int AttendeeCountNoticeResponse = 8007;
+    }
+
     public class GetPropsListRequest : TarsStruct
     {
         public UserId tUserId = new UserId();
@@ -198,31 +223,177 @@ namespace HuyaLive
         }
     }
 
-    public class DisplayInfo
+    public class DisplayInfo : TarsStruct
     {
+        public int iMarqueeScopeMin = 0;
+        public int iMarqueeScopeMax = 0;
+        public int iCurrentVideoNum = 0;
+        public int iCurrentVideoMin = 0;
+        public int iCurrentVideoMax = 0;
+        public int iAllVideoNum = 0;
+        public int iAllVideoMin = 0;
+        public int iAllVideoMax = 0;
+        public int iCurrentScreenNum = 0;
+        public int iCurrentScreenMin = 0;
+        public int iCurrentScreenMax = 0;
+
         public DisplayInfo()
         {
             //
         }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iMarqueeScopeMin = (int)_is.Read(iMarqueeScopeMin, 1, true);
+            iMarqueeScopeMax = (int)_is.Read(iMarqueeScopeMax, 2, true);
+            iCurrentVideoNum = (int)_is.Read(iCurrentVideoNum, 3, true);
+            iCurrentVideoMin = (int)_is.Read(iCurrentVideoMin, 4, true);
+            iCurrentVideoMax = (int)_is.Read(iCurrentVideoMax, 5, true);
+            iAllVideoNum = (int)_is.Read(iAllVideoNum, 6, true);
+            iAllVideoMin = (int)_is.Read(iAllVideoMin, 7, true);
+            iAllVideoMax = (int)_is.Read(iAllVideoMax, 8, true);
+            iCurrentScreenNum = (int)_is.Read(iCurrentScreenNum, 9, true);
+            iCurrentScreenMin = (int)_is.Read(iCurrentScreenMin, 10, true);
+            iCurrentScreenMax = (int)_is.Read(iCurrentScreenMax, 11, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iMarqueeScopeMin, 1);
+            _os.Write(iMarqueeScopeMax, 2);
+            _os.Write(iCurrentVideoNum, 3);
+            _os.Write(iCurrentVideoMin, 4);
+            _os.Write(iCurrentVideoMax, 5);
+            _os.Write(iAllVideoNum, 6);
+            _os.Write(iAllVideoMin, 7);
+            _os.Write(iAllVideoMax, 8);
+            _os.Write(iCurrentScreenNum, 9);
+            _os.Write(iCurrentScreenMin, 10);
+            _os.Write(iCurrentScreenMax, 11);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iMarqueeScopeMin, "iMarqueeScopeMin");
+            _ds.Display(iMarqueeScopeMax, "iMarqueeScopeMax");
+            _ds.Display(iCurrentVideoNum, "iCurrentVideoNum");
+            _ds.Display(iCurrentVideoMin, "iCurrentVideoMin");
+            _ds.Display(iCurrentVideoMax, "iCurrentVideoMax");
+            _ds.Display(iAllVideoNum, "iAllVideoNum");
+            _ds.Display(iAllVideoMin, "iAllVideoMin");
+            _ds.Display(iAllVideoMax, "iAllVideoMax");
+            _ds.Display(iCurrentScreenNum, "iCurrentScreenNum");
+            _ds.Display(iCurrentScreenMin, "iCurrentScreenMin");
+            _ds.Display(iCurrentScreenMax, "iCurrentScreenMax");
+        }
     }
 
-    public class SpecialInfo
+    public class SpecialInfo : TarsStruct
     {
+        public int iFirstSingle = 0;
+        public int iFirstGroup = 0;
+        public string sFirstTips = "";
+        public int iSecondSingle = 0;
+        public int iSecondGroup = 0;
+        public string sSecondTips = "";
+        public int iThirdSingle = 0;
+        public int iThirdGroup = 0;
+        public string sThirdTips = "";
+        public int iWorldSingle = 0;
+        public int iWorldGroup = 0;
+
         public SpecialInfo()
         {
             //
         }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iFirstSingle = (int)_is.Read(iFirstSingle, 1, true);
+            iFirstGroup = (int)_is.Read(iFirstGroup, 2, true);
+            sFirstTips = (string)_is.Read(sFirstTips, 3, true);
+            iSecondSingle = (int)_is.Read(iSecondSingle, 4, true);
+            iSecondGroup = (int)_is.Read(iSecondGroup, 5, true);
+            sSecondTips = (string)_is.Read(sSecondTips, 6, true);
+            iThirdSingle = (int)_is.Read(iThirdSingle, 7, true);
+            iThirdGroup = (int)_is.Read(iThirdGroup, 8, true);
+            sThirdTips = (string)_is.Read(sThirdTips, 9, true);
+            iWorldSingle = (int)_is.Read(iWorldSingle, 10, true);
+            iWorldGroup = (int)_is.Read(iWorldGroup, 11, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iFirstSingle, 1);
+            _os.Write(iFirstGroup, 2);
+            _os.Write(sFirstTips, 3);
+            _os.Write(iSecondSingle, 4);
+            _os.Write(iSecondGroup, 5);
+            _os.Write(sSecondTips, 6);
+            _os.Write(iThirdSingle, 7);
+            _os.Write(iThirdGroup, 8);
+            _os.Write(sThirdTips, 9);
+            _os.Write(iWorldSingle, 10);
+            _os.Write(iWorldGroup, 11);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iFirstSingle, "iFirstSingle");
+            _ds.Display(iFirstGroup, "iFirstGroup");
+            _ds.Display(sFirstTips, "sFirstTips");
+            _ds.Display(iSecondSingle, "iSecondSingle");
+            _ds.Display(iSecondGroup, "iSecondGroup");
+            _ds.Display(sSecondTips, "sSecondTips");
+            _ds.Display(iThirdSingle, "iThirdSingle");
+            _ds.Display(iThirdGroup, "iThirdGroup");
+            _ds.Display(sThirdTips, "sThirdTips");
+            _ds.Display(iWorldSingle, "iWorldSingle");
+            _ds.Display(iWorldGroup, "iWorldGroup");
+        }
     }
 
-    public class PropView
+    public class PropView : TarsStruct
     {
+        public int id = 0;
+        public string name = "";
+        public Dictionary<long, short> uids = new Dictionary<long, short>();
+        public string tips = "";
+
         public PropView()
         {
             //
         }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            id = (int)_is.Read(id, 0, true);
+            name = (string)_is.Read(name, 1, true);
+            uids = (Dictionary<long, short>)_is.Read(uids, 2, true);
+            tips = (string)_is.Read(tips, 3, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(id, 0);
+            _os.Write(name, 1);
+            _os.Write(uids, 2);
+            _os.Write(tips, 3);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(id, "id");
+            _ds.Display(name, "name");
+            _ds.Display(uids, "uids");
+            _ds.Display(tips, "tips");
+        }
     }
 
-    public class PropsItem
+    public class PropsItem : TarsStruct
     {
         public int iPropsId = 0;
         public string sPropsName = "";
@@ -263,6 +434,133 @@ namespace HuyaLive
         public PropsItem()
         {
             //
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iPropsId = (int)_is.Read(iPropsId, 1, true);
+            sPropsName = (string)_is.Read(sPropsName, 2, true);
+            iPropsYb = (int)_is.Read(iPropsYb, 3, true);
+            iPropsGreenBean = (int)_is.Read(iPropsGreenBean, 4, true);
+            iPropsWhiteBean = (int)_is.Read(iPropsWhiteBean, 5, true);
+            iPropsGoldenBean = (int)_is.Read(iPropsGoldenBean, 6, true);
+            iPropsRed = (int)_is.Read(iPropsRed, 7, true);
+            iPropsPopular = (int)_is.Read(iPropsPopular, 8, true);
+            iPropsExpendNum = (int)_is.Read(iPropsExpendNum, 9, true);
+            iPropsFansValue = (int)_is.Read(iPropsFansValue, 10, true);
+
+            vPropsNum = (List<int>)_is.Read(vPropsNum, 11, true);
+            iPropsMaxNum = (int)_is.Read(iPropsMaxNum, 12, true);
+            iPropsBatterFlag = (int)_is.Read(iPropsBatterFlag, 13, true);
+            vPropsChannel = (List<int>)_is.Read(vPropsChannel, 14, true);
+            sPropsToolTip = (string)_is.Read(sPropsToolTip, 15, true);
+            vPropsIdentity = (List<PropsIdentity>)_is.Read(vPropsIdentity, 16, true);
+            iPropsWeights = (int)_is.Read(iPropsWeights, 17, true);
+            iPropsLevel = (int)_is.Read(iPropsLevel, 18, true);
+            tDisplayInfo = (DisplayInfo)_is.Read(tDisplayInfo, 19, true);
+            tSpecialInfo = (SpecialInfo)_is.Read(tSpecialInfo, 20, true);
+
+            iPropsGrade = (int)_is.Read(iPropsGrade, 21, true);
+            iPropsGroupNum = (int)_is.Read(iPropsGroupNum, 22, true);
+            sPropsCommBannerResource = (string)_is.Read(sPropsCommBannerResource, 23, true);
+            sPropsOwnBannerResource = (string)_is.Read(sPropsOwnBannerResource, 24, true);
+            iPropsShowFlag = (int)_is.Read(iPropsShowFlag, 25, true);
+            iTemplateType = (int)_is.Read(iTemplateType, 26, true);
+            iShelfStatus = (int)_is.Read(iShelfStatus, 27, true);
+            sAndroidLogo = (string)_is.Read(sAndroidLogo, 28, true);
+            sIpadLogo = (string)_is.Read(sIpadLogo, 29, true);
+            sIphoneLogo = (string)_is.Read(sIphoneLogo, 30, true);
+
+            sPropsCommBannerResourceEx = (string)_is.Read(sPropsCommBannerResourceEx, 31, true);
+            sPropsOwnBannerResourceEx = (string)_is.Read(sPropsOwnBannerResourceEx, 32, true);
+            vPresenterUid = (List<long>)_is.Read(vPresenterUid, 33, true);
+            vPropView = (List<PropView>)_is.Read(vPropView, 34, true);
+            iFaceUSwitch = (int)_is.Read(iFaceUSwitch, 35, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iPropsId, 1);
+            _os.Write(sPropsName, 2);
+            _os.Write(iPropsYb, 3);
+            _os.Write(iPropsGreenBean, 4);
+            _os.Write(iPropsWhiteBean, 5);
+            _os.Write(iPropsGoldenBean, 6);
+            _os.Write(iPropsRed, 7);
+            _os.Write(iPropsPopular, 8);
+            _os.Write(iPropsExpendNum, 9);
+            _os.Write(iPropsFansValue, 10);
+
+            _os.Write(vPropsNum, 11);
+            _os.Write(iPropsMaxNum, 12);
+            _os.Write(iPropsBatterFlag, 13);
+            _os.Write(vPropsChannel, 14);
+            _os.Write(sPropsToolTip, 15);
+            _os.Write(vPropsIdentity, 16);
+            _os.Write(iPropsWeights, 17);
+            _os.Write(iPropsLevel, 18);
+            _os.Write(tDisplayInfo, 19);
+            _os.Write(tSpecialInfo, 20);
+
+            _os.Write(iPropsGrade, 21);
+            _os.Write(iPropsGroupNum, 22);
+            _os.Write(sPropsCommBannerResource, 23);
+            _os.Write(sPropsOwnBannerResource, 24);
+            _os.Write(iPropsShowFlag, 25);
+            _os.Write(iTemplateType, 26);
+            _os.Write(iShelfStatus, 27);
+            _os.Write(sAndroidLogo, 28);
+            _os.Write(sIpadLogo, 29);
+            _os.Write(sIphoneLogo, 30);
+
+            _os.Write(sPropsCommBannerResourceEx, 31);
+            _os.Write(sPropsOwnBannerResourceEx, 32);
+            _os.Write(vPresenterUid, 33);
+            _os.Write(vPropView, 34);
+            _os.Write(iFaceUSwitch, 35);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iPropsId, "iPropsId");
+            _ds.Display(sPropsName, "sPropsName");
+            _ds.Display(iPropsYb, "iPropsYb");
+            _ds.Display(iPropsGreenBean, "iPropsGreenBean");
+            _ds.Display(iPropsWhiteBean, "iPropsWhiteBean");
+            _ds.Display(iPropsGoldenBean, "iPropsGoldenBean");
+            _ds.Display(iPropsRed, "iPropsRed");
+            _ds.Display(iPropsPopular, "iPropsPopular");
+            _ds.Display(iPropsExpendNum, "iPropsExpendNum");
+            _ds.Display(iPropsFansValue, "iPropsFansValue");
+
+            _ds.Display(vPropsNum, "vPropsNum");
+            _ds.Display(iPropsMaxNum, "iPropsMaxNum");
+            _ds.Display(iPropsBatterFlag, "iPropsBatterFlag");
+            _ds.Display(vPropsChannel, "vPropsChannel");
+            _ds.Display(sPropsToolTip, "sPropsToolTip");
+            _ds.Display(vPropsIdentity, "vPropsIdentity");
+            _ds.Display(iPropsWeights, "iPropsWeights");
+            _ds.Display(iPropsLevel, "iPropsLevel");
+            _ds.Display(tDisplayInfo, "tDisplayInfo");
+            _ds.Display(tSpecialInfo, "tSpecialInfo");
+
+            _ds.Display(iPropsGrade, "iPropsGrade");
+            _ds.Display(iPropsGroupNum, "iPropsGroupNum");
+            _ds.Display(sPropsCommBannerResource, "sPropsCommBannerResource");
+            _ds.Display(sPropsOwnBannerResource, "sPropsOwnBannerResource");
+            _ds.Display(iPropsShowFlag, "iPropsShowFlag");
+            _ds.Display(iTemplateType, "iTemplateType");
+            _ds.Display(iShelfStatus, "iShelfStatus");
+            _ds.Display(sAndroidLogo, "sAndroidLogo");
+            _ds.Display(sIpadLogo, "sIpadLogo");
+            _ds.Display(sIphoneLogo, "sIphoneLogo");
+
+            _ds.Display(sPropsCommBannerResourceEx, "sPropsCommBannerResourceEx");
+            _ds.Display(sPropsOwnBannerResourceEx, "sPropsOwnBannerResourceEx");
+            _ds.Display(vPresenterUid, "vPresenterUid");
+            _ds.Display(vPropView, "vPropView");
+            _ds.Display(iFaceUSwitch, "iFaceUSwitch");
         }
     }
 

@@ -9,7 +9,7 @@ namespace HuyaLiveHelper
     public partial class MainForm : Form, ClientListener
     {
         private HuyaLiveClient client = null;
-        private Logger logger = new Logger(new HuyaLive.Consoler());
+        private Logger logger = new Logger(new HuyaLive.Debugger());
 
         public MainForm()
         {
@@ -32,23 +32,24 @@ namespace HuyaLiveHelper
             logger?.WriteLine("--------------------------------------------------------");
             logger?.WriteLine("  MainForm::OnClientError()");
             logger?.WriteLine("  Eexception: " + exception.ToString());
+            logger?.WriteLine("");
             logger?.WriteLine("  Message: " + message);
             logger?.WriteLine("--------------------------------------------------------");
         }
 
-        public void OnUserEnter(object sender, EnterMessage message)
+        public void OnNobleEnter(object sender, NobleEnterMessage message)
         {
-            logger?.WriteLine("  MainForm::OnUserEnter()");
+            logger?.WriteLine("  MainForm::OnNobleEnter()");
         }
 
-        public void OnUserChat(object sender, ChatMessage message)
+        public void OnUserChat(object sender, UserChatMessage message)
         {
             logger?.WriteLine("  MainForm::OnUserChat()");
-            logger?.WriteLine("  uid = {0}, nickname = {1}, timestamp = {2}, content = {3}, length = {4}.",
-                message.uid, message.nickname, message.timestamp, message.content, message.length);
+            logger?.WriteLine("  timestamp = {0}, uid = {1}, nickname = \"{2}\", content = \"{3}\", length = {4}.",
+                message.timestamp, message.uid, message.nickname, message.content, message.length);
         }
 
-        public void OnUserGift(object sender, GiftMessage message)
+        public void OnUserGift(object sender, UserGiftMessage message)
         {
             logger?.WriteLine("  MainForm::OnUserGift()");
         }
@@ -70,9 +71,11 @@ namespace HuyaLiveHelper
                 client = new HuyaLiveClient(this);
                 client.SetLogger(logger);
                 // Shen tu
-                client.Start("666007");
+                //client.Start("666007");
                 // Yang qi huang
-                //client.Start("18001");
+                client.Start("18001");
+                // Uzi
+                //client.Start("666888");
             }
             catch (Exception ex)
             {

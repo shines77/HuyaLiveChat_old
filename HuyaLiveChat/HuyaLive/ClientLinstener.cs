@@ -26,9 +26,9 @@ namespace HuyaLive
         void OnClientStop(object sender);
         void OnClientError(object sender, Exception exception, string message);
 
-        void OnUserEnter(object sender, EnterMessage message);
-        void OnUserChat(object sender, ChatMessage message);
-        void OnUserGift(object sender, GiftMessage message);
+        void OnNobleEnter(object sender, NobleEnterMessage message);
+        void OnUserChat(object sender, UserChatMessage message);
+        void OnUserGift(object sender, UserGiftMessage message);
         void OnFreshGiftList(object sender, GiftListMessage message);
         void OnRoomOnlineUser(object sender, OnlineUserMessage message);
     }

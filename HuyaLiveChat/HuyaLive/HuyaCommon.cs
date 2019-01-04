@@ -59,6 +59,32 @@ namespace HuyaLive
         UserMove = 3,
     }
 
+    public class HuyaChatInfo
+    {
+        public long subsid = 0;
+        public long topsid = 0;
+        public long yyuid = 0;
+
+        public HuyaChatInfo()
+        {
+            Reset();
+        }
+
+        public void SetInfo(long subsid, long topsid, long yyuid)
+        {
+            this.subsid = subsid;
+            this.topsid = topsid;
+            this.yyuid = yyuid;
+        }
+
+        public void Reset()
+        {
+            subsid = 0;
+            topsid = 0;
+            yyuid = 0;
+        }
+    }
+
     public class GiftInfo
     {
         public string name;
