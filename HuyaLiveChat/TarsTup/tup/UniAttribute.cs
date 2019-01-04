@@ -26,11 +26,11 @@ namespace Tup
     public class UniAttribute : TarsStruct
     {
         /**
-         * PACKET_TYPE_TUP Type
+         * For TUP_VERSION_2 Type
          */
         protected Dictionary<string, Dictionary<string, byte[]>> _data = null;
         /**
-         * Lite version Tup，PACKET_TYPE_TUP3 Type.
+         * Lite version Tup，for TUP_VERSION_3 Type.
          */
         protected Dictionary<string, byte[]> _new_data = null;
         /**
@@ -216,7 +216,39 @@ namespace Tup
         }
 
         /**
+          * Get an element, only for tup version 2, if the data to be acquired is version tup3,
+          * throw an exception.
+          * @param <T>
+          * @param Name1
+          * @param Name2
+          * @return
+          * @throws ObjectCreateException
+          */
+        public T Get2<T>(string Name1, string Name2)
+        {
+            try
+            {
+                object result = null; ;
+
+                // Compatible with tup2.
+                result = Get<T>(Name1);
+
+                if (result == null && Name2 != null)
+                {
+                    result = Get<T>(Name2);
+                }
+
+                return (T)result;
+            }
+            catch
+            {
+                return default(T);
+            }
+        }
+
+        /**
           * Get an element, tup new and old versions are compatible.
+          * @param <T>
           * @param Name
           * @param DefaultObj
           * @return
@@ -240,10 +272,56 @@ namespace Tup
                 }
 
                 if (result == null)
-                {
                     return DefaultObj;
+                else
+                    return (T)result;
+            }
+            catch
+            {
+                return DefaultObj;
+            }
+        }
+
+        /**
+          * Get an element, tup new and old versions are compatible.
+          * @param <T>
+          * @param Name1
+          * @param Name2
+          * @param DefaultObj
+          * @return
+          * @throws ObjectCreateException
+          */
+        public T Get2<T>(string Name1, string Name2, T DefaultObj)
+        {
+            try
+            {
+                object result = null; ;
+
+                if (_iVer == Const.TUP_VERSION_3)
+                {
+                    // For tup3 version.
+                    result = GetByClass<T>(Name1, DefaultObj);
+
+                    if (result == null && Name2 != null)
+                    {
+                        result = GetByClass<T>(Name2, DefaultObj);
+                    }
                 }
-                return (T)result;
+                else
+                {
+                    // Compatible with tup2.
+                    result = Get<T>(Name1);
+
+                    if (result == null && Name2 != null)
+                    {
+                        result = Get<T>(Name2);
+                    }
+                }
+
+                if (result == null)
+                    return DefaultObj;
+                else
+                    return (T)result;
             }
             catch
             {

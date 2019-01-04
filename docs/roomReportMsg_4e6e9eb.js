@@ -37,7 +37,7 @@ function(require, exports, module) {
         try {
             ya.reportProductEvent({
                 eid: "click/videotext/report",
-                eid_desc: "\u70b9\u51fb/\u89c6\u9891\u533a\u5f39\u5e55/\u4e3e\u62a5"
+                eid_desc: "点击/视频区弹幕/举报"
             })
         } catch(o) {}
     }

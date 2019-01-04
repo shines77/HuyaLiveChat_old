@@ -18,6 +18,7 @@ namespace HuyaLive
     public class UserChatMessage
     {
         public long uid;
+        public long imid;
         public string nickname;
         public string content;
         public int length;

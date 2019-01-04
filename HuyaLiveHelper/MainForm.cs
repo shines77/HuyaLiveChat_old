@@ -19,49 +19,54 @@ namespace HuyaLiveHelper
 
         public void OnClientStart(object sender)
         {
-            logger?.WriteLine("  MainForm::OnClientStart()");
+            logger?.WriteLine(">>>  MainForm::OnClientStart()");
         }
 
         public void OnClientStop(object sender)
         {
-            logger?.WriteLine("  MainForm::OnClientStop()");
+            logger?.WriteLine(">>>  MainForm::OnClientStop()");
         }
 
         public void OnClientError(object sender, Exception exception, string message)
         {
             logger?.WriteLine("--------------------------------------------------------");
-            logger?.WriteLine("  MainForm::OnClientError()");
-            logger?.WriteLine("  Eexception: " + exception.ToString());
+            logger?.WriteLine(">>>  MainForm::OnClientError()");
             logger?.WriteLine("");
-            logger?.WriteLine("  Message: " + message);
+            logger?.WriteLine(">>>  Message: " + message);
+            logger?.WriteLine("");
+            logger?.WriteLine(">>>  Eexception: " + exception.ToString());
+            logger?.WriteLine("");            
             logger?.WriteLine("--------------------------------------------------------");
         }
 
         public void OnNobleEnter(object sender, NobleEnterMessage message)
         {
-            logger?.WriteLine("  MainForm::OnNobleEnter()");
+            logger?.WriteLine(">>>  MainForm::OnNobleEnter()");
         }
 
         public void OnUserChat(object sender, UserChatMessage message)
         {
-            logger?.WriteLine("  MainForm::OnUserChat()");
-            logger?.WriteLine("  timestamp = {0}, uid = {1}, nickname = \"{2}\", content = \"{3}\", length = {4}.",
-                message.timestamp, message.uid, message.nickname, message.content, message.length);
+            logger?.WriteLine(">>>  MainForm::OnUserChat()");
+            logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
+            logger?.WriteLine(">>>  uid = {0}, imid = {1}, nickname = \"{2}\"",
+                              message.uid, message.imid, message.nickname);
+            logger?.WriteLine(">>>  content = \"{0}\", length = {1}",
+                              message.content, message.length);
         }
 
         public void OnUserGift(object sender, UserGiftMessage message)
         {
-            logger?.WriteLine("  MainForm::OnUserGift()");
+            logger?.WriteLine(">>>  MainForm::OnUserGift()");
         }
 
         public void OnFreshGiftList(object sender, GiftListMessage message)
         {
-            logger?.WriteLine("  MainForm::OnFreshGiftList()");
+            logger?.WriteLine(">>>  MainForm::OnFreshGiftList()");
         }
 
         public void OnRoomOnlineUser(object sender, OnlineUserMessage message)
         {
-            logger?.WriteLine("  MainForm::OnRoomOnlineUser()");
+            logger?.WriteLine(">>>  MainForm::OnRoomOnlineUser()");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -73,9 +78,11 @@ namespace HuyaLiveHelper
                 // Shen tu
                 //client.Start("666007");
                 // Yang qi huang
-                client.Start("18001");
+                //client.Start("18001");
                 // Uzi
                 //client.Start("666888");
+                // Da sheng gui lai
+                client.Start("931827");
             }
             catch (Exception ex)
             {

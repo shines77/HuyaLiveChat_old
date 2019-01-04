@@ -735,8 +735,8 @@ function(e) {
             if ("" == d && !i) return NAV_UTIL.login(),
             !1;
             if (e.silenced && e.silencedTips_display) return void e.noticeMe(e.silencedTips);
-            if (!t) return void e.noticeMe("\u8bf7\u8f93\u5165\u8981\u53d1\u8a00\u7684\u5185\u5bb9\uff01");
-            if (t.length > e.maxInputSize) return void e.noticeMe("\u8f93\u5165\u5b57\u6570\u6700\u5927\u4e0d\u80fd\u8d85\u8fc7" + e.maxInputSize);
+            if (!t) return void e.noticeMe("请输入要发言的内容！");
+            if (t.length > e.maxInputSize) return void e.noticeMe("输入字数最大不能超过" + e.maxInputSize);
             n(T.parseAlt(t,
             function(e, n) {
                 return n ? n.code: e
@@ -744,7 +744,7 @@ function(e) {
             try {
                 ya.reportProductEvent($.extend({
                     eid: "click/zhibo/sendwords",
-                    eid_desc: "\u70b9\u51fb/\u76f4\u64ad\u95f4/\u53d1\u8a00\u6309\u94ae",
+                    eid_desc: "点击/直播间/发言按钮",
                     ayyuid: o.lp,
                     gameId: a.gid
                 },
@@ -1041,7 +1041,7 @@ function(e) {
                 try {
                     ya.reportProductEvent({
                         eid: "click/zhibo/shield/" + t + "/" + n,
-                        eid_desc: "\u70b9\u51fb/\u76f4\u64ad/\u5c4f\u853d/" + v.desc[t] + "/" + (n ? "\u9009\u4e2d": "\u53d6\u6d88")
+                        eid_desc: "点击/直播/屏蔽/" + v.desc[t] + "/" + (n ? "\u9009\u4e2d": "\u53d6\u6d88")
                     })
                 } catch(e) {}
             })
@@ -1060,7 +1060,7 @@ function(e) {
                 try {
                     ya.reportProductEvent({
                         eid: "click/zhibo/shield/all/" + o,
-                        eid_desc: "\u70b9\u51fb/\u76f4\u64ad/\u5c4f\u853d/\u6240\u6709/" + (o ? "\u9009\u4e2d": "\u53d6\u6d88")
+                        eid_desc: "点击/直播/屏蔽/\u6240\u6709/" + (o ? "\u9009\u4e2d": "\u53d6\u6d88")
                     })
                 } catch(e) {}
             })

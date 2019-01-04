@@ -505,11 +505,12 @@ namespace HuyaLive
             {
                 if (WsIsAlive())
                 {
-                    string jsonStr;
+                    string jsonStr, dataType;
                     int dataLen = 0;
                     if (eventArgs.IsBinary)
                     {
                         jsonStr = Encoding.UTF8.GetString(eventArgs.RawData);
+                        dataType = "IsBinary";
                         dataLen = eventArgs.RawData.Length;
                         TarsInputStream stream = new TarsInputStream(eventArgs.RawData);
                         WebSocketCommand command = new WebSocketCommand();
@@ -521,17 +522,25 @@ namespace HuyaLive
                     else if (eventArgs.IsText)
                     {
                         jsonStr = eventArgs.Data;
+                        dataType = "IsText";
                         dataLen = eventArgs.Data.Length;
                     }
                     else if (eventArgs.IsPing)
                     {
+                        jsonStr = "ping";
+                        dataType = "IsPing";
                         dataLen = eventArgs.RawData.Length;
-                        //return;
                     }
                     else
                     {
-                        jsonStr = "ping";
+                        jsonStr = "other";
+                        dataType = "Other";
                         dataLen = eventArgs.Data.Length;
+                    }
+
+                    if (logger != null)
+                    {
+                        logger.WriteLine(">>>  dataType = " + dataType + ", dataLen = " + dataLen);
                     }
                 }
             }
@@ -576,6 +585,17 @@ namespace HuyaLive
         {
             switch (command.iCmdType)
             {
+                case CommandType.RegisterResponse:
+                    {
+                        TarsInputStream stream = new TarsInputStream(command.vData);
+                        RegisterResponse response = new RegisterResponse();
+                        response.ReadFrom(stream);
+                        //logger?.WriteLine("CommandType = RegisterResponse, msg.iUri: " + msg.iUri);
+
+                        OnRegisterResponse(response);
+                    }
+                    break;
+
                 case CommandType.WupResponse:
                     {
                         TarsUniPacket wup = new TarsUniPacket();
@@ -587,14 +607,31 @@ namespace HuyaLive
                     }
                     break;
 
+                case CommandType.HeartBeatAck:
+                    {
+                        logger?.WriteLine("CommandType = HeartBeatAck");
+                    }
+                    break;
+
                 case CommandType.MsgPushRequest:
                     {
-                        TarsInputStream inStream = new TarsInputStream(command.vData);
-                        WSPushMessage msg = new WSPushMessage();
-                        msg.ReadFrom(inStream);
+                        TarsInputStream stream = new TarsInputStream(command.vData);
+                        PushMessageResponse msg = new PushMessageResponse();
+                        msg.ReadFrom(stream);
                         //logger?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + msg.iUri);
 
                         OnMsgPushRequest(msg);
+                    }
+                    break;
+
+                case CommandType.VerifyCookieResponse:
+                    {
+                        TarsInputStream stream = new TarsInputStream(command.vData);
+                        VerifyCookieResponse response = new VerifyCookieResponse();
+                        response.ReadFrom(stream);
+                        //logger?.WriteLine("CommandType = VerifyCookieResponse, msg.iUri: " + msg.iUri);
+
+                        OnVerifyCookieResponse(response);
                     }
                     break;
 
@@ -606,60 +643,88 @@ namespace HuyaLive
             }
         }
 
+        private void OnRegisterResponse(RegisterResponse response)
+        {
+            logger?.WriteLine("CommandType = RegisterResponse, res.iResCode = " + response.iResCode + ", " +
+                              "res.lRequestId: " + response.lRequestId + ", " +
+                              "res.sMessage: \"" + response.sMessage + "\".");
+        }
+
         private void OnWupResponse(TarsUniPacket wup)
         {
-            bool hasTraced = false;
+            bool hasTraced = true;
             string funcName = wup.FuncName;
             switch (funcName)
             {
                 case "doLaunch":
                     {
-                        LiveLaunchResponse response = wup.Get<LiveLaunchResponse>("tRsp", new LiveLaunchResponse());
+                        logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
+
+                        LiveLaunchResponse response = wup.Get2<LiveLaunchResponse>("tRsp", "tResp", new LiveLaunchResponse());
+                        if (response != null)
+                        {
+                            logger?.WriteLine("res.sGuid = " + response.sGuid + ", res.sGuid = ", response.sGuid);
+                        }
                     }
                     break;
 
                 case "speak":
                     {
-                        NobleSpeakResponse response = wup.Get<NobleSpeakResponse>("tRsp", new NobleSpeakResponse());
+                        hasTraced = false;
+                        NobleSpeakResponse response = wup.Get2<NobleSpeakResponse>("tRsp", "tResp", new NobleSpeakResponse());
                     }
                     break;
 
                 case "OnUserEvent":
                     {
-                        //UserEventResponse response = wup.Get<UserEventResponse>("tRsp", new UserEventResponse());
+                        hasTraced = false;
+                        //UserEventResponse response = wup.Get2<UserEventResponse>("tRsp", "tResp", new UserEventResponse());
                     }
                     break;
 
                 case "getPropsList":
                     {
-                        hasTraced = true;
                         logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
 
-                        GetPropsListResponse response = wup.Get<GetPropsListResponse>("tRsp", new GetPropsListResponse());
-                        giftInfoList.Clear();
-                        foreach (var propsItem in response.vPropsItemList)
+                        GetPropsListResponse response = wup.Get2<GetPropsListResponse>("tRsp", "tResp", new GetPropsListResponse());
+                        if (response != null)
                         {
-                            GiftInfo giftInfo = new GiftInfo(propsItem.sPropsName, propsItem.iPropsYb / 100);
-                            giftInfoList.Add(propsItem.iPropsId, giftInfo);
+                            giftInfoList.Clear();
+                            foreach (var propsItem in response.vPropsItemList)
+                            {
+                                GiftInfo giftInfo = new GiftInfo(propsItem.sPropsName, propsItem.iPropsYb / 100);
+                                giftInfoList.Add(propsItem.iPropsId, giftInfo);
+                            }
                         }
                     }
                     break;
 
                 case "OnUserHeartBeat":
                     {
-                        UserHeartBeatResponse response = wup.Get<UserHeartBeatResponse>("tRsp", new UserHeartBeatResponse());
+                        logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
+
+                        UserHeartBeatResponse response = wup.Get2<UserHeartBeatResponse>("tRsp", "tResp", new UserHeartBeatResponse());
+                        if (response != null)
+                        {
+                            logger?.WriteLine("response.iRet = " + response.iRet);
+                        }
                     }
                     break;
 
                 case "getLivingInfo":
                     {
-                        //GetLivingInfoResponse response = wup.Get<GetLivingInfoResponse>("tRsp", new GetLivingInfoResponse());
+                        logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
+
+                        GetLivingInfoResponse response = wup.Get2<GetLivingInfoResponse>("tRsp", "tResp", new GetLivingInfoResponse());
+                        if (response != null)
+                        {
+                            logger?.WriteLine("response.iId = " + response.iId);
+                        }
                     }
                     break;
 
                 default:
                     {
-                        hasTraced = true;
                         logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName + " (**)");
                     }
                     break;
@@ -671,22 +736,21 @@ namespace HuyaLive
             }
         }
 
-        private void OnMsgPushRequest(WSPushMessage msg)
+        private void OnMsgPushRequest(PushMessageResponse msg)
         {
-            bool hasTraced = false;
+            bool hasTraced = true;
             TarsInputStream stream = new TarsInputStream(msg.sMsg);
             int iUri = msg.iUri;
             switch (iUri)
             {
                 case UriType.NobleEnterNotice:
                     {
-                        //
+                        hasTraced = false;
                         break;
                     }
 
                 case UriType.MessageNotice:
                     {
-                        hasTraced = true;
                         logger?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + iUri);
 
                         MessageNotice noticeMsg = new MessageNotice();
@@ -694,10 +758,12 @@ namespace HuyaLive
 
                         UserChatMessage chatMsg = new UserChatMessage();
                         chatMsg.uid = noticeMsg.tUserInfo.lUid;
+                        chatMsg.imid = noticeMsg.tUserInfo.lImid;
                         chatMsg.nickname = noticeMsg.tUserInfo.sNickName;
                         chatMsg.content = noticeMsg.sContent;
                         chatMsg.length = noticeMsg.sContent.Length;
                         chatMsg.timestamp = TimeStamp.now_ms();
+
                         lock (locker)
                         {
                             listener?.OnUserChat(this, chatMsg);
@@ -707,7 +773,6 @@ namespace HuyaLive
 
                 default:
                     {
-                        hasTraced = true;
                         logger?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + iUri + " (**)");
                         break;
                     }
@@ -717,6 +782,11 @@ namespace HuyaLive
             {
                 logger?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + iUri);
             }
+        }
+
+        private void OnVerifyCookieResponse(VerifyCookieResponse response)
+        {
+            logger?.WriteLine("CommandType = VerifyCookieResponse, res.iValidate: " + response.iValidate);
         }
     }
 }

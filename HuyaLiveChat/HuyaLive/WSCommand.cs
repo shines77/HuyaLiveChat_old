@@ -34,10 +34,10 @@ namespace HuyaLive
         public const int NobleLeaveNotice = 1005;
         public const int MessageNotice = 1400;
 
-        public const int SendItemSubBroadcastPacket = 6501;
-        public const int SendItemNoticeWordBroadcastPacket = 6552;
+        public const int OnNobleEnter = 6110;
 
         public const int EnterPushInfo = 6200;
+        public const int GameAdNotice = 6201;
         public const int VipBarListResponse = 6210;
         public const int WeekRankListResponse = 6220;
         public const int WeekRankEnterBanner = 6221;
@@ -47,6 +47,9 @@ namespace HuyaLive
         public const int FansInfoNotice = 6233;
         public const int UserGiftNotice = 6234;
         public const int GiftBarResponse = 6250;
+
+        public const int SendItemSubBroadcastPacket = 6501;
+        public const int SendItemNoticeWordBroadcastPacket = 6552;
 
         public const int AttendeeCountNotice = 8006;
         public const int AttendeeCountNoticeResponse = 8007;
@@ -239,7 +242,6 @@ namespace HuyaLive
 
         public DisplayInfo()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)
@@ -305,7 +307,6 @@ namespace HuyaLive
 
         public SpecialInfo()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)
@@ -364,7 +365,6 @@ namespace HuyaLive
 
         public PropView()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)
@@ -433,7 +433,6 @@ namespace HuyaLive
 
         public PropsItem()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)
@@ -853,14 +852,47 @@ namespace HuyaLive
         }
     }
 
-    public class WSPushMessage : TarsStruct
+    public class RegisterResponse : TarsStruct
+    {
+        public int iResCode = 0;
+        public long lRequestId = 0;
+        public string sMessage = "";
+
+        public RegisterResponse()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iResCode = (int)_is.Read(iResCode, 0, true);
+            lRequestId = (long)_is.Read(lRequestId, 1, true);
+            sMessage = (string)_is.Read(sMessage, 2, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iResCode, 0);
+            _os.Write(lRequestId, 1);
+            _os.Write(sMessage, 2);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iResCode, "iResCode");
+            _ds.Display(lRequestId, "lRequestId");
+            _ds.Display(sMessage, "sMessage");
+        }
+    }
+
+    public class PushMessageResponse : TarsStruct
     {
         public int iPushType = 0;
         public int iUri = 0;
         public byte[] sMsg = new byte[0];
         public int iProtocolType = 0;
 
-        public WSPushMessage()
+        public PushMessageResponse()
         {
         }
 
@@ -888,5 +920,31 @@ namespace HuyaLive
             _ds.Display(sMsg, "sMsg");
             _ds.Display(iProtocolType, "iProtocolType");
         }
-    }   
+    }
+
+    public class VerifyCookieResponse : TarsStruct
+    {
+        public int iValidate = 0;
+
+        public VerifyCookieResponse()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iValidate = (int)_is.Read(iValidate, 0, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iValidate, 0);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iValidate, "iValidate");
+        }
+    }
+
 }
