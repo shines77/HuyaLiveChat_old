@@ -9,7 +9,7 @@ namespace HuyaLiveHelper
     public partial class MainForm : Form, ClientListener
     {
         private HuyaLiveClient client = null;
-        private Logger logger = new Logger(new HuyaLive.Debugger());
+        private Logger logger = new Logger(new HuyaLive.Consoler());
 
         public MainForm()
         {

@@ -48,8 +48,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HuyaLiveChat">
-      <HintPath>..\HuyaLiveChat\bin\Debug\HuyaLiveChat.dll</HintPath>
+    <Reference Include="HuyaLiveChat, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\HuyaLiveChat\bin\Release\HuyaLiveChat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
