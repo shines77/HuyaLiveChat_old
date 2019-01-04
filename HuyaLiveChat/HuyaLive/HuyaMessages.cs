@@ -38,10 +38,10 @@ namespace HuyaLive
         public uint earn;
     }
 
-    public class OnlineMessage
+    public class OnlineUserMessage
     {
         public string roomid;
         public string name;
-        public uint online;
+        public uint onlineUsers;
     }
 }

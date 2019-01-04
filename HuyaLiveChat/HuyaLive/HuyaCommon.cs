@@ -59,6 +59,18 @@ namespace HuyaLive
         UserMove = 3,
     }
 
+    public class GiftInfo
+    {
+        public string name;
+        public int price;
+
+        public GiftInfo(string name, int price)
+        {
+            this.name = name;
+            this.price = price;
+        }
+    }
+
     public class UserId : TarsStruct
     {
         public long lUid = 0;

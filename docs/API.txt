@@ -1,0 +1,7 @@
+
+JS 在线格式化
+http://tool.oschina.net/codeformat/js/
+
+
+API：
+http://user.huya.com/user/getUserInfo?uid=123456112

@@ -36,31 +36,31 @@ namespace HuyaLiveHelper
             logger?.WriteLine("--------------------------------------------------------");
         }
 
-        public void OnClientEnter(object sender, EnterMessage message)
+        public void OnUserEnter(object sender, EnterMessage message)
         {
-            logger?.WriteLine("  MainForm::OnClientEnter()");
+            logger?.WriteLine("  MainForm::OnUserEnter()");
         }
 
-        public void OnClientChat(object sender, ChatMessage message)
+        public void OnUserChat(object sender, ChatMessage message)
         {
-            logger?.WriteLine("  MainForm::OnClientChat()");
+            logger?.WriteLine("  MainForm::OnUserChat()");
             logger?.WriteLine("  uid = {0}, nickname = {1}, timestamp = {2}, content = {3}, length = {4}.",
                 message.uid, message.nickname, message.timestamp, message.content, message.length);
         }
 
-        public void OnClientGift(object sender, GiftMessage message)
+        public void OnUserGift(object sender, GiftMessage message)
         {
-            logger?.WriteLine("  MainForm::OnClientGift()");
+            logger?.WriteLine("  MainForm::OnUserGift()");
         }
 
-        public void OnClientGiftList(object sender, GiftListMessage message)
+        public void OnFreshGiftList(object sender, GiftListMessage message)
         {
-            logger?.WriteLine("  MainForm::OnClientGiftList()");
+            logger?.WriteLine("  MainForm::OnFreshGiftList()");
         }
 
-        public void OnClientOnline(object sender, OnlineMessage message)
+        public void OnRoomOnlineUser(object sender, OnlineUserMessage message)
         {
-            logger?.WriteLine("  MainForm::OnClientOnline()");
+            logger?.WriteLine("  MainForm::OnRoomOnlineUser()");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
