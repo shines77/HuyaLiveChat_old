@@ -58,7 +58,6 @@ namespace HuyaLive
 
         public SenderInfo()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)
@@ -95,7 +94,6 @@ namespace HuyaLive
 
         public ContentFormat()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)
@@ -131,7 +129,6 @@ namespace HuyaLive
 
         public BulletFormat()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)
@@ -171,7 +168,6 @@ namespace HuyaLive
 
         public DecorationInfo()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)
@@ -204,7 +200,6 @@ namespace HuyaLive
 
         public UidNickName()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)
@@ -244,7 +239,6 @@ namespace HuyaLive
 
         public MessageNotice()
         {
-            //
         }
 
         public override void ReadFrom(TarsInputStream _is)

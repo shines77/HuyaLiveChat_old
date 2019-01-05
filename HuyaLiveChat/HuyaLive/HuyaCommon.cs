@@ -64,17 +64,19 @@ namespace HuyaLive
         public long subsid = 0;
         public long topsid = 0;
         public long yyuid = 0;
+        public string room_name = "";
 
         public HuyaChatInfo()
         {
             Reset();
         }
 
-        public void SetInfo(long subsid, long topsid, long yyuid)
+        public void SetInfo(long subsid, long topsid, long yyuid, string room_name)
         {
             this.subsid = subsid;
             this.topsid = topsid;
             this.yyuid = yyuid;
+            this.room_name = room_name;
         }
 
         public void Reset()
@@ -82,6 +84,7 @@ namespace HuyaLive
             subsid = 0;
             topsid = 0;
             yyuid = 0;
+            room_name = "";
         }
     }
 

@@ -11,6 +11,7 @@ namespace HuyaLive
 {
     public struct CommandType
     {
+        // Base commands
         public const int None = 0;
         public const int RegisterRequest = 1;
         public const int RegisterResponse = 2;
@@ -19,12 +20,22 @@ namespace HuyaLive
         public const int HeartBeat = 5;
         public const int HeartBeatAck = 6;
         public const int MsgPushRequest = 7;
-        public const int UnregisterRequest = 8;
-        public const int UnregisterResponse = 9;
+        public const int UnRegisterRequest = 8;
+        public const int UnRegisterResponse = 9;
         public const int VerifyCookieRequest = 10;
         public const int VerifyCookieResponse = 11;
         public const int VerifyTokenRequest = 12;
         public const int VerifyTokenResponse = 13;
+        // Extended commands
+        public const int UNVerifyRequest = 14;
+        public const int UNVerifyResponse = 15;
+        public const int RegisterGroupRequest = 16;
+        public const int RegisterGroupResponse = 17;
+        public const int UnRegisterGroupRequest = 18;
+        public const int UnRegisterGroupResponse = 19;
+        public const int HeartBeatRequest = 20;
+        public const int HeartBeatResponse = 21;
+        public const int MsgPushRequest_V2 = 22;
     }
 
     public struct UriType
@@ -55,56 +66,45 @@ namespace HuyaLive
         public const int AttendeeCountNoticeResponse = 8007;
     }
 
-    public class GetPropsListRequest : TarsStruct
+    public class WebSocketCommand : TarsStruct
     {
-        public UserId tUserId = new UserId();
-        public string sMd5 = "";
-        public int iTemplateType = 64;
-        public string sVersion = "";
-        public int iAppId = 0;
-        public long lPresenterUid = 0;
-        public long lSid = 0;
-        public long lSubSid = 0;
+        public int iCmdType = 0;
+        public byte[] vData = null;
 
-        public GetPropsListRequest()
+        public WebSocketCommand()
         {
         }
 
+        /*
+        static public void Read(TarsInputStream _is, ref WebSocketCommand command,
+                                int tag, bool require = true)
+        {
+            command = (WebSocketCommand)_is.Read(command, tag, require);
+        }
+
+        static public void Write(TarsOutputStream _os, WebSocketCommand command, int tag)
+        {
+            _os.Write(command, tag);
+        }
+        //*/
+
         public override void ReadFrom(TarsInputStream _is)
         {
-            tUserId = (UserId)_is.Read(tUserId, 0, true);
-            sMd5 = (string)_is.Read(sMd5, 1, true);
-            iTemplateType = (int)_is.Read(iTemplateType, 2, true);
-            sVersion = (string)_is.Read(sVersion, 3, true);
-            iAppId = (int)_is.Read(iAppId, 4, true);
-            lPresenterUid = (long)_is.Read(lPresenterUid, 5, true);
-            lSid = (long)_is.Read(lSid, 6, true);
-            lSubSid = (long)_is.Read(lSubSid, 7, true);
+            iCmdType = (int)_is.Read(iCmdType, 0, true);
+            vData = (byte[])_is.Read(vData, 1, true);
         }
 
         public override void WriteTo(TarsOutputStream _os)
         {
-            _os.Write(tUserId, 0);
-            _os.Write(sMd5, 1);
-            _os.Write(iTemplateType, 2);
-            _os.Write(sVersion, 3);
-            _os.Write(iAppId, 4);
-            _os.Write(lPresenterUid, 5);
-            _os.Write(lSid, 6);
-            _os.Write(lSubSid, 7);
+            _os.Write(iCmdType, 0);
+            _os.Write(vData, 1);
         }
 
         public override void Display(StringBuilder sb, int level)
         {
             TarsDisplayer _ds = new TarsDisplayer(sb, level);
-            _ds.Display(tUserId, "tUserId");
-            _ds.Display(sMd5, "sMd5");
-            _ds.Display(iTemplateType, "iTemplateType");
-            _ds.Display(sVersion, "sVersion");
-            _ds.Display(iAppId, "iAppId");
-            _ds.Display(lPresenterUid, "lPresenterUid");
-            _ds.Display(lSid, "lSid");
-            _ds.Display(lSubSid, "lSubSid");
+            _ds.Display(iCmdType, "iCmdType");
+            _ds.Display(vData, "vData");
         }
     }
 
@@ -563,6 +563,59 @@ namespace HuyaLive
         }
     }
 
+    public class GetPropsListRequest : TarsStruct
+    {
+        public UserId tUserId = new UserId();
+        public string sMd5 = "";
+        public int iTemplateType = 64;
+        public string sVersion = "";
+        public int iAppId = 0;
+        public long lPresenterUid = 0;
+        public long lSid = 0;
+        public long lSubSid = 0;
+
+        public GetPropsListRequest()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            tUserId = (UserId)_is.Read(tUserId, 1, true);
+            sMd5 = (string)_is.Read(sMd5, 2, true);
+            iTemplateType = (int)_is.Read(iTemplateType, 3, true);
+            sVersion = (string)_is.Read(sVersion, 4, true);
+            iAppId = (int)_is.Read(iAppId, 5, true);
+            lPresenterUid = (long)_is.Read(lPresenterUid, 6, true);
+            lSid = (long)_is.Read(lSid, 7, true);
+            lSubSid = (long)_is.Read(lSubSid, 8, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(tUserId, 1);
+            _os.Write(sMd5, 2);
+            _os.Write(iTemplateType, 3);
+            _os.Write(sVersion, 4);
+            _os.Write(iAppId, 5);
+            _os.Write(lPresenterUid, 6);
+            _os.Write(lSid, 7);
+            _os.Write(lSubSid, 8);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(tUserId, "tUserId");
+            _ds.Display(sMd5, "sMd5");
+            _ds.Display(iTemplateType, "iTemplateType");
+            _ds.Display(sVersion, "sVersion");
+            _ds.Display(iAppId, "iAppId");
+            _ds.Display(lPresenterUid, "lPresenterUid");
+            _ds.Display(lSid, "lSid");
+            _ds.Display(lSubSid, "lSubSid");
+        }
+    }
+
     public class GetPropsListResponse : TarsStruct
     {
         public List<PropsItem> vPropsItemList = new List<PropsItem>();
@@ -604,28 +657,130 @@ namespace HuyaLive
         }
     }
 
-    public class UserHeartBeatResponse : TarsStruct
+    public class HeartBeatResponse : TarsStruct
     {
-        public int iRet = 0;
+        public int iState = 0;
 
-        public UserHeartBeatResponse()
+        public HeartBeatResponse()
         {
         }
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iRet = (int)_is.Read(iRet, 0, true);
+            iState = (int)_is.Read(iState, 0, true);
         }
 
         public override void WriteTo(TarsOutputStream _os)
         {
-            _os.Write(iRet, 0);
+            _os.Write(iState, 0);
         }
 
         public override void Display(StringBuilder sb, int level)
         {
             TarsDisplayer _ds = new TarsDisplayer(sb, level);
-            _ds.Display(iRet, "iRet");
+            _ds.Display(iState, "iState");
+        }
+    }
+
+    public class UserEventRequest : TarsStruct
+    {
+        public UserId tId = new UserId();
+        public long lTid = 0;
+        public long lSid = 0;
+        public long lShortTid = 0;
+        public int eOp = 0;
+        public string sChan = "";
+        public int eSource = 0;
+        public long lPid = 0;
+        public bool bWatchVideo = false;
+        public bool bAnonymous = false;
+        public int eTemplateType = (int)TemplateType.Primary;
+
+        public UserEventRequest()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            tId = (UserId)_is.Read(tId, 0, true);
+            lTid = (long)_is.Read(lTid, 1, true);
+            lSid = (long)_is.Read(lSid, 2, true);
+            lShortTid = (long)_is.Read(lShortTid, 3, true);
+            eOp = (int)_is.Read(eOp, 4, true);
+            sChan = (string)_is.Read(sChan, 5, true);
+            eSource = (int)_is.Read(eSource, 6, true);
+            lPid = (long)_is.Read(lPid, 7, true);
+            bWatchVideo = (bool)_is.Read(bWatchVideo, 8, true);
+            bAnonymous = (bool)_is.Read(bAnonymous, 9, true);
+            eTemplateType = (int)_is.Read(eTemplateType, 10, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(tId, 0);
+            _os.Write(lTid, 1);
+            _os.Write(lSid, 2);
+            _os.Write(lShortTid, 3);
+            _os.Write(eOp, 4);
+            _os.Write(sChan, 5);
+            _os.Write(eSource, 6);
+            _os.Write(lPid, 7);
+            _os.Write(bWatchVideo, 8);
+            _os.Write(bAnonymous, 9);
+            _os.Write(eTemplateType, 10);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(tId, "tId");
+            _ds.Display(lTid, "lTid");
+            _ds.Display(lSid, "lSid");
+            _ds.Display(lShortTid, "lShortTid");
+            _ds.Display(eOp, "eOp");
+            _ds.Display(sChan, "sChan");
+            _ds.Display(eSource, "eSource");
+            _ds.Display(lPid, "lPid");
+            _ds.Display(bWatchVideo, "bWatchVideo");
+            _ds.Display(bAnonymous, "bAnonymous");
+            _ds.Display(eTemplateType, "eTemplateType");
+        }
+    }
+
+    public class UserEventResponse: TarsStruct
+    {
+        public long lTid = 0;
+        public long lSid = 0;
+        public int iUserHeartBeatInterval = 60;
+        public int iPresentHeartBeatInterval = 60;
+
+        public UserEventResponse()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            lTid = (long)_is.Read(lTid, 0, true);
+            lSid = (long)_is.Read(lSid, 1, true);
+            iUserHeartBeatInterval = (int)_is.Read(iUserHeartBeatInterval, 2, true);
+            iPresentHeartBeatInterval = (int)_is.Read(iPresentHeartBeatInterval, 3, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(lTid, 0);
+            _os.Write(lSid, 1);
+            _os.Write(iUserHeartBeatInterval, 2);
+            _os.Write(iPresentHeartBeatInterval, 3);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(lTid, "lTid");
+            _ds.Display(lSid, "lSid");
+            _ds.Display(iUserHeartBeatInterval, "iUserHeartBeatInterval");
+            _ds.Display(iPresentHeartBeatInterval, "iPresentHeartBeatInterval");
         }
     }
 
@@ -694,45 +849,28 @@ namespace HuyaLive
         }
     }
 
-    public class WebSocketCommand : TarsStruct
+    public class UserHeartBeatResponse : TarsStruct
     {
-        public int iCmdType = 0;
-        public byte[] vData = null;
+        public int iRet = 0;
 
-        public WebSocketCommand()
+        public UserHeartBeatResponse()
         {
         }
-
-        /*
-        static public void Read(TarsInputStream _is, ref WebSocketCommand command,
-                                int tag, bool require = true)
-        {
-            command = (WebSocketCommand)_is.Read(command, tag, require);
-        }
-
-        static public void Write(TarsOutputStream _os, WebSocketCommand command, int tag)
-        {
-            _os.Write(command, tag);
-        }
-        //*/
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iCmdType = (int)_is.Read(iCmdType, 0, true);
-            vData = (byte[])_is.Read(vData, 1, true);
+            iRet = (int)_is.Read(iRet, 0, true);
         }
 
         public override void WriteTo(TarsOutputStream _os)
         {
-            _os.Write(iCmdType, 0);
-            _os.Write(vData, 1);
+            _os.Write(iRet, 0);
         }
 
         public override void Display(StringBuilder sb, int level)
         {
             TarsDisplayer _ds = new TarsDisplayer(sb, level);
-            _ds.Display(iCmdType, "iCmdType");
-            _ds.Display(vData, "vData");
+            _ds.Display(iRet, "iRet");
         }
     }
 
@@ -922,6 +1060,39 @@ namespace HuyaLive
         }
     }
 
+    public class VerifyCookieRequest : TarsStruct
+    {
+        public long lUid = 0;
+        public string sUA = "";
+        public string sCookie = "";
+
+        public VerifyCookieRequest()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            lUid = (long)_is.Read(lUid, 0, true);
+            sUA = (string)_is.Read(sUA, 1, true);
+            sCookie = (string)_is.Read(sCookie, 2, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(lUid, 0);
+            _os.Write(sUA, 1);
+            _os.Write(sCookie, 2);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(lUid, "lUid");
+            _ds.Display(sUA, "sUA");
+            _ds.Display(sCookie, "sCookie");
+        }
+    }
+
     public class VerifyCookieResponse : TarsStruct
     {
         public int iValidate = 0;
@@ -947,4 +1118,57 @@ namespace HuyaLive
         }
     }
 
+    public class RegisterGroupRequest : TarsStruct
+    {
+        public List<string> vGroupId = new List<string>();
+        public string sToken = "";
+
+        public RegisterGroupRequest()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            vGroupId = (List<string>)_is.Read(vGroupId, 0, true);
+            sToken = (string)_is.Read(sToken, 1, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(vGroupId, 0);
+            _os.Write(sToken, 1);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(vGroupId, "vGroupId");
+            _ds.Display(sToken, "sToken");
+        }
+    }
+
+    public class RegisterGroupResponse : TarsStruct
+    {
+        public int iResCode = 0;
+
+        public RegisterGroupResponse()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iResCode = (int)_is.Read(iResCode, 0, true);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iResCode, 0);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iResCode, "iResCode");
+        }
+    }
 }

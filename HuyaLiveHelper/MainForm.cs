@@ -4,13 +4,24 @@ using System.Windows.Forms;
 
 using HuyaLive;
 
+/*
+ *
+ * How to make VS compile time automatically reference debug | release version of DLL.
+ *
+ * See: https://blog.csdn.net/freeboy1015/article/details/7470801
+ *
+ */
+
 namespace HuyaLiveHelper
 {
     public partial class MainForm : Form, ClientListener
     {
         private HuyaLiveClient client = null;
+#if DEBUG
+        private Logger logger = new Logger(new HuyaLive.Debugger());
+#else
         private Logger logger = new Logger(new HuyaLive.Consoler());
-
+#endif
         public MainForm()
         {
             InitializeComponent();
@@ -74,15 +85,16 @@ namespace HuyaLiveHelper
             try
             {
                 client = new HuyaLiveClient(this);
+                //client.SetMobileMode(false);
                 client.SetLogger(logger);
                 // Shen tu
-                //client.Start("666007");
+                client.Start("666007");
                 // Yang qi huang
                 //client.Start("18001");
                 // Uzi
                 //client.Start("666888");
                 // Da sheng gui lai
-                client.Start("931827");
+                //client.Start("931827");
             }
             catch (Exception ex)
             {

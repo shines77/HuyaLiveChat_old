@@ -197,6 +197,63 @@ namespace HuyaLive
         }
     }
 
+    public class DummyLogger : Loggerable
+    {
+        public DummyLogger() : base()
+        {
+        }
+
+        public void Close()
+        {
+            // Do nothing !
+        }
+
+        public void Flush()
+        {
+            // Do nothing !
+        }
+
+        public void Print(string message)
+        {
+            // Do nothing !
+        }
+
+        public void Print(string format, params object[] args)
+        {
+            // Do nothing !
+        }
+
+        public void Write(string message)
+        {
+            // Do nothing !
+        }
+
+        public void Write(string format, params object[] args)
+        {
+            // Do nothing !
+        }
+
+        public void Write(Exception ex)
+        {
+            // Do nothing !
+        }
+
+        public void WriteLine(string message)
+        {
+            // Do nothing !
+        }
+
+        public void WriteLine(string format, params object[] args)
+        {
+            // Do nothing !
+        }
+
+        public void WriteLine(Exception ex)
+        {
+            // Do nothing !
+        }
+    }
+
     public class Logger : Loggerable
     {
         private Loggerable logger = null;

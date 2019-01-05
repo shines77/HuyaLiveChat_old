@@ -31,9 +31,10 @@ namespace HuyaLive
 
         private Logger logger = null;
         private ClientListener listener = null;
-        private OnWupRspEventHandler onWupRspEmitter = null;
         private string roomId = "";
         private ClientState state = ClientState.Closed;
+
+        private bool isMobile = true;
 
         private HttpClient httpClient = null;
         private WebSocketSharp.WebSocket websocket = null;
@@ -57,7 +58,6 @@ namespace HuyaLive
         public HuyaLiveClient(ClientListener listener = null)
         {
             SetListener(listener);
-            onWupRspEmitter += OnWupResponse;
         }
 
         private void DestoryTimer()
@@ -78,6 +78,16 @@ namespace HuyaLive
         public void Dispose()
         {
             this.Stop();
+        }
+
+        public bool IsMobile()
+        {
+            return isMobile;
+        }
+
+        public void SetMobileMode(bool isMobile)
+        {
+            this.isMobile = isMobile;
         }
 
         public ClientListener GetListener()
@@ -190,6 +200,18 @@ namespace HuyaLive
             }
         }
 
+        static private string ParseMatchString(Match match)
+        {
+            if (match.Groups.Count >= 2)
+            {
+                return match.Groups[1].Value;
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         private void EnumerateHttpHeaders(HttpHeaders headers)
         {
             logger?.WriteLine("");
@@ -219,7 +241,11 @@ namespace HuyaLive
 
             if (httpClient == null)
             {
-                string roomUrl = "https://m.huya.com/" + roomId;
+                string roomUrl;
+                if (isMobile)
+                    roomUrl = "https://m.huya.com/" + roomId;
+                else
+                    roomUrl = "https://www.huya.com/" + roomId;
 
                 //
                 // See: https://www.jianshu.com/p/f8616ef87df6
@@ -230,29 +256,38 @@ namespace HuyaLive
                 //
                 httpClient.Timeout = TimeSpan.FromMilliseconds(timeout_ms);
 
-                ///*
-                httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata=verbose");
-                //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate");
-                httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
-                httpClient.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
-                httpClient.DefaultRequestHeaders.Add("User-Agent",
-                    "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) " +
-                    "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                    "Chrome/63.0.3239.84 Mobile Safari/537.36");
-                //*/
-
-                /*
-                httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata=verbose");
-                //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate");
-                httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
-                httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
-                httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-                //httpClient.DefaultRequestHeaders.Add("User-Agent",
-                //    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1");
-                httpClient.DefaultRequestHeaders.Add("User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) " +
-                    "Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36");
-                //*/
+                if (isMobile)
+                {
+                    httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+                    httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate,br");
+                    httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
+                    httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                    httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
+                    httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+                    httpClient.DefaultRequestHeaders.Add("User-Agent",
+                        "Mozilla/5.0 (Linux; Android 6.0; Nexus 7 Build/MRA58N) " +
+                        "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                        "Chrome/63.0.3239.132 Mobile Safari/537.36");
+                    //httpClient.DefaultRequestHeaders.Add("User-Agent",
+                    //    "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) " +
+                    //    "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                    //    "Chrome/63.0.3239.84 Mobile Safari/537.36");
+                }
+                else
+                {
+                    httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+                    httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "deflate,br");
+                    httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
+                    httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                    httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
+                    httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+                    httpClient.DefaultRequestHeaders.Add("User-Agent",
+                        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                        "Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36");
+                    //httpClient.DefaultRequestHeaders.Add("User-Agent",
+                    //    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                    //    "Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36");
+                }
 
                 EnumerateHttpHeaders(httpClient.DefaultRequestHeaders);
 
@@ -266,30 +301,66 @@ namespace HuyaLive
                                       response.StatusCode + " " + response.ReasonPhrase);
 
                     string html = response.Content.ReadAsStringAsync().Result;
-                    html = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(html));
 
                     logger?.WriteLine("Received payload of " + html.Length + " characters.");
-
-                    //
-                    // See: https://www.cnblogs.com/caokai520/p/4511848.html
-                    //
-                    Match topsid_set = Regex.Match(html, @"var TOPSID = '(.*)';");
-                    Match subsid_set = Regex.Match(html, @"var SUBSID = '(.*)';");
-                    Match yyuid_set = Regex.Match(html, @"ayyuid: '(.*)',");
-
-                    long topsid = ParseMatchLong(topsid_set);
-                    long subsid = ParseMatchLong(subsid_set);
-                    long yyuid = ParseMatchLong(yyuid_set);
-
                     logger?.WriteLine("Html contont:\n\n{0}", html);
 
-                    logger?.WriteLine("");
-                    logger?.WriteLine("topsid = \"{0}\"", topsid);
-                    logger?.WriteLine("subsid = \"{0}\"", subsid);
-                    logger?.WriteLine("yyuid  = \"{0}\"", yyuid);
-                    logger?.WriteLine("");
+                    if (isMobile)
+                    {
+                        //
+                        // See: https://www.cnblogs.com/caokai520/p/4511848.html
+                        //
+                        Match topsid_set = Regex.Match(html, @"var TOPSID = '(.*)';");
+                        Match subsid_set = Regex.Match(html, @"var SUBSID = '(.*)';");
+                        Match yyuid_set = Regex.Match(html, @"ayyuid: '(.*)',");
 
-                    result.SetInfo(topsid, subsid, yyuid);
+                        long topsid = ParseMatchLong(topsid_set);
+                        long subsid = ParseMatchLong(subsid_set);
+                        long yyuid = ParseMatchLong(yyuid_set);
+
+                        logger?.WriteLine("");
+                        logger?.WriteLine("topsid = \"{0}\"", topsid);
+                        logger?.WriteLine("subsid = \"{0}\"", subsid);
+                        logger?.WriteLine("yyuid  = \"{0}\"", yyuid);
+                        logger?.WriteLine("");
+
+                        result.SetInfo(topsid, subsid, yyuid, roomId);
+                    }
+                    else
+                    {
+                        //
+                        // See: https://www.cnblogs.com/caokai520/p/4511848.html
+                        //
+
+                        // var TT_ROOM_DATA = { "channel": "122222", "liveChannel": "2312323" };
+                        Match room_data_set = Regex.Match(html, @"var[\s]*TT_ROOM_DATA[\s]*=[\s]*([\s\S]+?);");
+                        string room_data = ParseMatchString(room_data_set);
+
+                        Match channel_set = Regex.Match(room_data, @"""channel"":""([0-9]*)"",");
+                        Match liveChannel_set = Regex.Match(room_data, @"""liveChannel"":""([0-9]*)"",");
+
+                        long topsid = ParseMatchLong(channel_set);
+                        long subsid = ParseMatchLong(liveChannel_set);
+
+                        // var TT_PROFILE_INFO = { "lp": "13213123", "profileRoom": "666007" };
+                        Match profile_info_set = Regex.Match(html, @"var[\s]*TT_PROFILE_INFO[\s]*=[\s]*([\s\S]+?);");
+                        string profile_info = ParseMatchString(profile_info_set);
+
+                        Match lp_set = Regex.Match(profile_info, @"""lp"":""([0-9]*)"",");
+                        Match profileRoom_set = Regex.Match(profile_info, "\"profileRoom\":\"([^ \f\n\r\t\v\"]*)\"");
+
+                        long yyuid = ParseMatchLong(lp_set);
+                        string room_name = ParseMatchString(profileRoom_set);
+
+                        logger?.WriteLine("");
+                        logger?.WriteLine("topsid    = \"{0}\"", topsid);
+                        logger?.WriteLine("subsid    = \"{0}\"", subsid);
+                        logger?.WriteLine("yyuid     = \"{0}\"", yyuid);
+                        logger?.WriteLine("room_name = \"{0}\"", room_name);
+                        logger?.WriteLine("");
+
+                        result.SetInfo(topsid, subsid, yyuid, room_name);
+                    }
 
                     EnumerateHttpHeaders(response.Headers);
                 }
@@ -315,14 +386,27 @@ namespace HuyaLive
 
             if (websocket == null)
             {
+                string apiUrl;
+                string originalUrl;
+
+                if (isMobile)
+                {
+                    apiUrl = "wss://cdnws.api.huya.com";
+                    originalUrl = "https://m.huya.com";
+                }
+                else
+                {
+                    apiUrl = "wss://cdnws.api.huya.com";
+                    originalUrl = "https://www.huya.com";
+                }
+
                 this.roomId = roomId;
 
-                string apiUrl = "ws://ws.api.huya.com";
-                string originalUrl = "http://www.huya.com";
                 try
                 {
                     websocket = new WebSocketSharp.WebSocket(apiUrl);
                     websocket.Origin = originalUrl;
+                    websocket.Compression = CompressionMethod.Deflate;
 
                     websocket.OnOpen += OnOpen;
                     websocket.OnMessage += OnMessage;
@@ -431,18 +515,19 @@ namespace HuyaLive
                 wsUserInfo.lGroupId = chatInfo.yyuid;
                 wsUserInfo.lGroupType = 3;
 
-                TarsOutputStream wsStream = new TarsOutputStream();
-                wsUserInfo.WriteTo(wsStream);
-
                 TarsOutputStream stream = new TarsOutputStream();
-                WebSocketCommand wsCommand = new WebSocketCommand();
-                wsCommand.iCmdType = CommandType.RegisterRequest;
-                wsCommand.vData = wsStream.ToByteArray();
-                wsCommand.WriteTo(stream);
+                wsUserInfo.WriteTo(stream);
+
+                WebSocketCommand command = new WebSocketCommand();
+                command.iCmdType = CommandType.RegisterRequest;
+                command.vData = stream.ToByteArray();
+
+                TarsOutputStream cmdStream = new TarsOutputStream();
+                command.WriteTo(cmdStream);
 
                 if (WsIsAlive())
                 {
-                    websocket.Send(stream.ToByteArray());
+                    websocket.Send(cmdStream.ToByteArray());
                     result = true;
                 }
             }
@@ -451,6 +536,45 @@ namespace HuyaLive
                 if (listener != null)
                 {
                     listener?.OnClientError(this, ex, "HuyaLiveClient::BindWsInfo() error.");
+                }
+            }
+
+            return result;
+        }
+
+        private bool SendRegisterGroup(long presenterUid)
+        {
+            bool result = false;
+            string chatId = string.Format("chat:{0}", presenterUid);
+
+            logger?.WriteLine("HuyaLiveClient::SendRegisterGroup(), chatId = \"" + chatId + "\"");
+
+            try
+            {
+                RegisterGroupRequest request = new RegisterGroupRequest();
+                request.vGroupId.Add(chatId);
+
+                TarsOutputStream stream = new TarsOutputStream();
+                request.WriteTo(stream);
+
+                WebSocketCommand command = new WebSocketCommand();
+                command.iCmdType = CommandType.RegisterGroupRequest;
+                command.vData = stream.ToByteArray();
+
+                TarsOutputStream cmdStream = new TarsOutputStream();
+                command.WriteTo(cmdStream);
+
+                if (WsIsAlive())
+                {
+                    websocket.Send(cmdStream.ToByteArray());
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (listener != null)
+                {
+                    listener?.OnClientError(this, ex, "HuyaLiveClient::SendRegisterGroup() error.");
                 }
             }
 
@@ -496,10 +620,15 @@ namespace HuyaLive
                 // WebSocket is connected.
                 state = ClientState.Connected;
 
+                // Sec-WebSocket-Extensions: "permessage-deflate; client_max_window_bits"
+                logger?.WriteLine("websocket.Extensions = " + websocket.Extensions);
+
                 bool success;
-                success = ReadGiftList();
+                success  = ReadGiftList();
                 success &= BindWebSocketInfo();
                 success &= Heartbeat();
+
+                success &= SendRegisterGroup(chatInfo.yyuid);
 
                 //
                 // See: https://www.cnblogs.com/arxive/p/7015853.html
@@ -609,7 +738,6 @@ namespace HuyaLive
                         TarsInputStream stream = new TarsInputStream(command.vData);
                         RegisterResponse response = new RegisterResponse();
                         response.ReadFrom(stream);
-                        //logger?.WriteLine("CommandType = RegisterResponse, msg.iUri: " + msg.iUri);
 
                         OnRegisterResponse(response);
                     }
@@ -620,15 +748,24 @@ namespace HuyaLive
                         TarsUniPacket wup = new TarsUniPacket();
                         wup.SetVersion(Const.TUP_VERSION_3);
                         wup.Decode(command.vData);
-                        //logger?.WriteLine("CommandType = WupResponse, funcName: " + wup.FuncName);
 
                         OnWupResponse(wup);
                     }
                     break;
 
+                case CommandType.HeartBeat:
+                    {
+                        TarsInputStream stream = new TarsInputStream(command.vData);
+                        HeartBeatResponse response = new HeartBeatResponse();
+                        response.ReadFrom(stream);
+
+                        logger?.WriteLine("CommandType = HeartBeat (5), res.iState = " + response.iState);
+                    }
+                    break;
+
                 case CommandType.HeartBeatAck:
                     {
-                        logger?.WriteLine("CommandType = HeartBeatAck");
+                        logger?.WriteLine("CommandType = HeartBeatAck (6)");
                     }
                     break;
 
@@ -637,7 +774,6 @@ namespace HuyaLive
                         TarsInputStream stream = new TarsInputStream(command.vData);
                         PushMessageResponse msg = new PushMessageResponse();
                         msg.ReadFrom(stream);
-                        //logger?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + msg.iUri);
 
                         OnMsgPushRequest(msg);
                     }
@@ -648,9 +784,18 @@ namespace HuyaLive
                         TarsInputStream stream = new TarsInputStream(command.vData);
                         VerifyCookieResponse response = new VerifyCookieResponse();
                         response.ReadFrom(stream);
-                        //logger?.WriteLine("CommandType = VerifyCookieResponse, msg.iUri: " + msg.iUri);
 
                         OnVerifyCookieResponse(response);
+                    }
+                    break;
+
+                case CommandType.RegisterGroupResponse:
+                    {
+                        TarsInputStream stream = new TarsInputStream(command.vData);
+                        RegisterGroupResponse response = new RegisterGroupResponse();
+                        response.ReadFrom(stream);
+
+                        OnRegisterGroupResponse(response);
                     }
                     break;
 
@@ -664,9 +809,15 @@ namespace HuyaLive
 
         private void OnRegisterResponse(RegisterResponse response)
         {
-            logger?.WriteLine("CommandType = RegisterResponse, res.iResCode = " + response.iResCode + ", " +
+            logger?.WriteLine("CommandType = RegisterResponse (2), " +
+                              "res.iResCode = " + response.iResCode + ", " +
                               "res.lRequestId: " + response.lRequestId + ", " +
                               "res.sMessage: \"" + response.sMessage + "\".");
+        }
+
+        private void OnRegisterGroupResponse(RegisterGroupResponse response)
+        {
+            logger?.WriteLine("CommandType = RegisterGroupResponse (17), res.iResCode = " + response.iResCode);
         }
 
         private void OnWupResponse(TarsUniPacket wup)
@@ -677,7 +828,7 @@ namespace HuyaLive
             {
                 case "doLaunch":
                     {
-                        logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
+                        logger?.WriteLine("CommandType = WupResponse (4), funcName: " + funcName);
 
                         LiveLaunchResponse response = wup.Get2<LiveLaunchResponse>("tRsp", "tResp", new LiveLaunchResponse());
                         if (response != null)
@@ -689,25 +840,40 @@ namespace HuyaLive
 
                 case "speak":
                     {
-                        hasTraced = false;
+                        logger?.WriteLine("CommandType = WupResponse (4), funcName: " + funcName);
+
                         NobleSpeakResponse response = wup.Get2<NobleSpeakResponse>("tRsp", "tResp", new NobleSpeakResponse());
+                        if (response != null)
+                        {
+                            //
+                        }
                     }
                     break;
 
                 case "OnUserEvent":
                     {
-                        hasTraced = false;
-                        //UserEventResponse response = wup.Get2<UserEventResponse>("tRsp", "tResp", new UserEventResponse());
+                        logger?.WriteLine("CommandType = WupResponse (4), funcName: " + funcName);
+
+                        UserEventResponse response = wup.Get2<UserEventResponse>("tRsp", "tResp", new UserEventResponse());
+                        if (response != null)
+                        {
+                            logger?.WriteLine("res.lTid =  " + response.lTid);
+                            logger?.WriteLine("res.lSid =  " + response.lSid);
+                            logger?.WriteLine("res.iUserHeartBeatInterval =  " + response.iUserHeartBeatInterval);
+                            logger?.WriteLine("res.iPresentHeartBeatInterval =  " + response.iPresentHeartBeatInterval);
+                        }
                     }
                     break;
 
                 case "getPropsList":
                     {
-                        logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
+                        logger?.WriteLine("CommandType = WupResponse (4), funcName: " + funcName);
 
                         GetPropsListResponse response = wup.Get2<GetPropsListResponse>("tRsp", "tResp", new GetPropsListResponse());
                         if (response != null)
                         {
+                            logger?.WriteLine("res.vPropsItemList.Count() =  " + response.vPropsItemList.Count());
+
                             giftInfoList.Clear();
                             foreach (var propsItem in response.vPropsItemList)
                             {
@@ -720,7 +886,7 @@ namespace HuyaLive
 
                 case "OnUserHeartBeat":
                     {
-                        logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
+                        logger?.WriteLine("CommandType = WupResponse (4), funcName: " + funcName);
 
                         UserHeartBeatResponse response = wup.Get2<UserHeartBeatResponse>("tRsp", "tResp", new UserHeartBeatResponse());
                         if (response != null)
@@ -732,7 +898,7 @@ namespace HuyaLive
 
                 case "getLivingInfo":
                     {
-                        logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
+                        logger?.WriteLine("CommandType = WupResponse (4), funcName: " + funcName);
 
                         GetLivingInfoResponse response = wup.Get2<GetLivingInfoResponse>("tRsp", "tResp", new GetLivingInfoResponse());
                         if (response != null)
@@ -744,14 +910,14 @@ namespace HuyaLive
 
                 default:
                     {
-                        logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName + " (**)");
+                        logger?.WriteLine("CommandType = WupResponse (4), funcName: " + funcName + " (**)");
                     }
                     break;
             }
 
             if (!hasTraced)
             {
-                logger?.WriteLine("CommandType = WupResponse, funcName: " + funcName);
+                logger?.WriteLine("CommandType = WupResponse (4), funcName: " + funcName);
             }
         }
 
@@ -764,13 +930,13 @@ namespace HuyaLive
             {
                 case UriType.NobleEnterNotice:
                     {
-                        hasTraced = false;
-                        break;
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: " + iUri);
                     }
+                    break;
 
                 case UriType.MessageNotice:
                     {
-                        logger?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + iUri);
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: " + iUri);
 
                         MessageNotice noticeMsg = new MessageNotice();
                         noticeMsg.ReadFrom(stream);
@@ -787,25 +953,25 @@ namespace HuyaLive
                         {
                             listener?.OnUserChat(this, chatMsg);
                         }
-                        break;
                     }
+                    break;
 
                 default:
                     {
-                        logger?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + iUri + " (**)");
-                        break;
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: " + iUri + " (**)");
                     }
+                    break;
             }
 
             if (!hasTraced)
             {
-                logger?.WriteLine("CommandType = MsgPushRequest, msg.iUri: " + iUri);
+                logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: " + iUri);
             }
         }
 
         private void OnVerifyCookieResponse(VerifyCookieResponse response)
         {
-            logger?.WriteLine("CommandType = VerifyCookieResponse, res.iValidate: " + response.iValidate);
+            logger?.WriteLine("CommandType = VerifyCookieResponse (11), res.iValidate: " + response.iValidate);
         }
     }
 }
