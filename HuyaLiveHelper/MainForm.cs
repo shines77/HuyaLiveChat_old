@@ -96,13 +96,13 @@ namespace HuyaLiveHelper
                 //client.SetMobileMode(false);
                 client.SetLogger(logger);
                 // Shen tu
-                client.Start("666007");
+                //client.Start("666007");
                 // Yang qi huang
                 //client.Start("18001");
                 // Uzi
                 //client.Start("666888");
                 // Da sheng gui lai
-                //client.Start("931827");
+                client.Start("931827");
                 // Shen mi gou
                 //client.Start("399910");
             }

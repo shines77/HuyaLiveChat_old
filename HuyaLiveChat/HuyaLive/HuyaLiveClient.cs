@@ -406,7 +406,7 @@ namespace HuyaLive
                 {
                     websocket = new WebSocketSharp.WebSocket(apiUrl);
                     websocket.Origin = originalUrl;
-                    websocket.Compression = CompressionMethod.Deflate;
+                    //websocket.Compression = CompressionMethod.Deflate;
 
                     websocket.OnOpen += OnOpen;
                     websocket.OnMessage += OnMessage;
@@ -435,12 +435,8 @@ namespace HuyaLive
         {
             bool result = false;
 
-            if (logger != null)
-            {
-                string text = string.Format("HuyaLiveClient::SendWup(), action = {0}, callback = {1}.",
-                                            action, callback);
-                logger?.WriteLine(text);
-            }
+            logger?.WriteLine("HuyaLiveClient::SendWup(), action = {0}, callback = {1}.",
+                              action, callback);
 
             try
             {
@@ -628,7 +624,7 @@ namespace HuyaLive
                 success &= BindWebSocketInfo();
                 success &= Heartbeat();
 
-                success &= SendRegisterGroup(chatInfo.yyuid);
+                //success &= SendRegisterGroup(chatInfo.yyuid);
 
                 //
                 // See: https://www.cnblogs.com/arxive/p/7015853.html
@@ -877,7 +873,7 @@ namespace HuyaLive
                             giftInfoList.Clear();
                             foreach (var propsItem in response.vPropsItemList)
                             {
-                                GiftInfo giftInfo = new GiftInfo(propsItem.sPropsName, propsItem.iPropsYb / 100);
+                                GiftInfo giftInfo = new GiftInfo(propsItem.sPropsName, propsItem.iPropsYb);
                                 giftInfoList.Add(propsItem.iPropsId, giftInfo);
                             }
                         }
@@ -956,6 +952,12 @@ namespace HuyaLive
                     }
                     break;
 
+                case UriType.OnNobleEnter:
+                    {
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - OnNobleEnter", iUri);
+                    }
+                    break;
+
                 case UriType.SendItemSubBroadcastPacket:
                     {
                         logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - SendItemSubBroadcastPacket", iUri);
@@ -965,21 +967,24 @@ namespace HuyaLive
 
                         if (packet.lPresenterUid == chatInfo.yyuid)
                         {
-                            GiftInfo giftInfo = giftInfoList[packet.iItemType];
-
-                            UserGiftMessage giftMsg = new UserGiftMessage();
-                            giftMsg.presenterUid = packet.lPresenterUid;
-                            giftMsg.uid = packet.lSenderUid;
-                            giftMsg.imid = packet.lSenderUid; ;
-                            giftMsg.nickname = packet.sSenderNick;
-                            giftMsg.itemName = giftInfo.name;
-                            giftMsg.itemCount = packet.iItemCount;
-                            giftMsg.itemPrice = packet.iItemCount * giftInfo.price;
-                            giftMsg.timestamp = TimeStamp.now_ms();
-
-                            lock (locker)
+                            if (giftInfoList.ContainsKey(packet.iItemType))
                             {
-                                listener?.OnUserGift(this, giftMsg);
+                                GiftInfo giftInfo = giftInfoList[packet.iItemType];
+
+                                UserGiftMessage giftMsg = new UserGiftMessage();
+                                giftMsg.presenterUid = packet.lPresenterUid;
+                                giftMsg.uid = packet.lSenderUid;
+                                giftMsg.imid = packet.lSenderUid; ;
+                                giftMsg.nickname = packet.sSenderNick;
+                                giftMsg.itemName = giftInfo.name;
+                                giftMsg.itemCount = packet.iItemCount;
+                                giftMsg.itemPrice = packet.iItemCount * giftInfo.price;
+                                giftMsg.timestamp = TimeStamp.now_ms();
+
+                                lock (locker)
+                                {
+                                    listener?.OnUserGift(this, giftMsg);
+                                }
                             }
                         }
                     }
