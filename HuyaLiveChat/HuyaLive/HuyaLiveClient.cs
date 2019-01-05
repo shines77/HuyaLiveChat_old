@@ -229,14 +229,30 @@ namespace HuyaLive
                 // See: https://stackoverflow.com/questions/10547895/how-can-i-tell-when-httpclient-has-timed-out
                 //
                 httpClient.Timeout = TimeSpan.FromMilliseconds(timeout_ms);
+
+                ///*
                 httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata=verbose");
-                httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate");
+                //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate");
                 httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
                 httpClient.DefaultRequestHeaders.Add("Cache-Control", "max-age=0");
                 httpClient.DefaultRequestHeaders.Add("User-Agent",
                     "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) " +
                     "AppleWebKit/537.36 (KHTML, like Gecko) " +
                     "Chrome/63.0.3239.84 Mobile Safari/537.36");
+                //*/
+
+                /*
+                httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata=verbose");
+                //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate");
+                httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
+                httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+                //httpClient.DefaultRequestHeaders.Add("User-Agent",
+                //    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1");
+                httpClient.DefaultRequestHeaders.Add("User-Agent",
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                    "Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36");
+                //*/
 
                 EnumerateHttpHeaders(httpClient.DefaultRequestHeaders);
 
@@ -250,6 +266,7 @@ namespace HuyaLive
                                       response.StatusCode + " " + response.ReasonPhrase);
 
                     string html = response.Content.ReadAsStringAsync().Result;
+                    html = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(html));
 
                     logger?.WriteLine("Received payload of " + html.Length + " characters.");
 
@@ -301,9 +318,11 @@ namespace HuyaLive
                 this.roomId = roomId;
 
                 string apiUrl = "ws://ws.api.huya.com";
+                string originalUrl = "http://www.huya.com";
                 try
                 {
                     websocket = new WebSocketSharp.WebSocket(apiUrl);
+                    websocket.Origin = originalUrl;
 
                     websocket.OnOpen += OnOpen;
                     websocket.OnMessage += OnMessage;
@@ -328,13 +347,13 @@ namespace HuyaLive
             return result;
         }
 
-        private bool SendWUP(string action, string callback, TarsStruct request)
+        private bool SendWup(string action, string callback, TarsStruct request)
         {
             bool result = false;
 
             if (logger != null)
             {
-                string text = string.Format("HuyaLiveClient::SendWUP(), action = {0}, callback = {1}.",
+                string text = string.Format("HuyaLiveClient::SendWup(), action = {0}, callback = {1}.",
                                             action, callback);
                 logger?.WriteLine(text);
             }
@@ -364,7 +383,7 @@ namespace HuyaLive
             {
                 if (listener != null)
                 {
-                    listener?.OnClientError(this, ex, "HuyaLiveClient::SendWUP() error.");
+                    listener?.OnClientError(this, ex, "HuyaLiveClient::SendWup() error.");
                 }
             }
 
@@ -382,7 +401,7 @@ namespace HuyaLive
                 propRequest.tUserId = mainUserId;
                 propRequest.iTemplateType = (int)ClientTemplateMask.Mirror;
 
-                result = SendWUP("PropsUIServer", "getPropsList", propRequest);
+                result = SendWup("PropsUIServer", "getPropsList", propRequest);
             }
             catch (Exception ex)
             {
@@ -452,7 +471,7 @@ namespace HuyaLive
             heartbeatRequest.lPid = chatInfo.yyuid;
             heartbeatRequest.iLineType = (int)StreamLineType.WebSocket;
 
-            bool result = SendWUP("onlineui", "OnUserHeartBeat", heartbeatRequest);
+            bool result = SendWup("onlineui", "OnUserHeartBeat", heartbeatRequest);
 
             logger?.Leave("HuyaLiveClient::Heartbeat()");
             return result;
