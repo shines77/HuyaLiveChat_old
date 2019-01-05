@@ -90,8 +90,8 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iCmdType = (int)_is.Read(iCmdType, 0, true);
-            vData = (byte[])_is.Read(vData, 1, true);
+            iCmdType = (int)_is.Read(iCmdType, 0, false);
+            vData = (byte[])_is.Read(vData, 1, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -142,30 +142,30 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iPropsIdType = (int)_is.Read(iPropsIdType, 1, true);
-            sPropsPic18 = (string)_is.Read(sPropsPic18, 2, true);
-            sPropsPic24 = (string)_is.Read(sPropsPic24, 3, true);
-            sPropsPicGif = (string)_is.Read(sPropsPicGif, 4, true);
-            sPropsBannerResource = (string)_is.Read(sPropsBannerResource, 5, true);
-            sPropsBannerSize = (string)_is.Read(sPropsBannerSize, 6, true);
-            sPropsBannerMaxTime = (string)_is.Read(sPropsBannerMaxTime, 7, true);
-            sPropsChatBannerResource = (string)_is.Read(sPropsChatBannerResource, 8, true);
-            sPropsChatBannerSize = (string)_is.Read(sPropsChatBannerSize, 9, true);
-            sPropsChatBannerMaxTime = (string)_is.Read(sPropsChatBannerMaxTime, 10, true);
-            iPropsChatBannerPos = (int)_is.Read(iPropsChatBannerPos, 11, true);
-            iPropsChatBannerIsCombo = (int)_is.Read(iPropsChatBannerIsCombo, 12, true);
-            sPropsRollContent = (string)_is.Read(sPropsRollContent, 13, true);
-            iPropsBannerAnimationstyle = (int)_is.Read(iPropsBannerAnimationstyle, 14, true);
-            sPropFaceu = (string)_is.Read(sPropFaceu, 15, true);
-            sPropH5Resource = (string)_is.Read(sPropH5Resource, 16, true);
-            sPropsWeb = (string)_is.Read(sPropsWeb, 17, true);
-            iWitch = (int)_is.Read(iWitch, 18, true);
-            sCornerMark = (string)_is.Read(sCornerMark, 19, true);
-            iPropViewId = (int)_is.Read(iPropViewId, 20, true);
-            sPropStreamerResource = (string)_is.Read(sPropStreamerResource, 21, true);
-            iStreamerFrameRate = (short)_is.Read(iStreamerFrameRate, 22, true);
-            sPropsPic108 = (string)_is.Read(sPropsPic108, 23, true);
-            sPcBannerResource = (string)_is.Read(sPcBannerResource, 24, true);
+            iPropsIdType = (int)_is.Read(iPropsIdType, 1, false);
+            sPropsPic18 = (string)_is.Read(sPropsPic18, 2, false);
+            sPropsPic24 = (string)_is.Read(sPropsPic24, 3, false);
+            sPropsPicGif = (string)_is.Read(sPropsPicGif, 4, false);
+            sPropsBannerResource = (string)_is.Read(sPropsBannerResource, 5, false);
+            sPropsBannerSize = (string)_is.Read(sPropsBannerSize, 6, false);
+            sPropsBannerMaxTime = (string)_is.Read(sPropsBannerMaxTime, 7, false);
+            sPropsChatBannerResource = (string)_is.Read(sPropsChatBannerResource, 8, false);
+            sPropsChatBannerSize = (string)_is.Read(sPropsChatBannerSize, 9, false);
+            sPropsChatBannerMaxTime = (string)_is.Read(sPropsChatBannerMaxTime, 10, false);
+            iPropsChatBannerPos = (int)_is.Read(iPropsChatBannerPos, 11, false);
+            iPropsChatBannerIsCombo = (int)_is.Read(iPropsChatBannerIsCombo, 12, false);
+            sPropsRollContent = (string)_is.Read(sPropsRollContent, 13, false);
+            iPropsBannerAnimationstyle = (int)_is.Read(iPropsBannerAnimationstyle, 14, false);
+            sPropFaceu = (string)_is.Read(sPropFaceu, 15, false);
+            sPropH5Resource = (string)_is.Read(sPropH5Resource, 16, false);
+            sPropsWeb = (string)_is.Read(sPropsWeb, 17, false);
+            iWitch = (int)_is.Read(iWitch, 18, false);
+            sCornerMark = (string)_is.Read(sCornerMark, 19, false);
+            iPropViewId = (int)_is.Read(iPropViewId, 20, false);
+            sPropStreamerResource = (string)_is.Read(sPropStreamerResource, 21, false);
+            iStreamerFrameRate = (short)_is.Read(iStreamerFrameRate, 22, false);
+            sPropsPic108 = (string)_is.Read(sPropsPic108, 23, false);
+            sPcBannerResource = (string)_is.Read(sPcBannerResource, 24, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -246,17 +246,17 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iMarqueeScopeMin = (int)_is.Read(iMarqueeScopeMin, 1, true);
-            iMarqueeScopeMax = (int)_is.Read(iMarqueeScopeMax, 2, true);
-            iCurrentVideoNum = (int)_is.Read(iCurrentVideoNum, 3, true);
-            iCurrentVideoMin = (int)_is.Read(iCurrentVideoMin, 4, true);
-            iCurrentVideoMax = (int)_is.Read(iCurrentVideoMax, 5, true);
-            iAllVideoNum = (int)_is.Read(iAllVideoNum, 6, true);
-            iAllVideoMin = (int)_is.Read(iAllVideoMin, 7, true);
-            iAllVideoMax = (int)_is.Read(iAllVideoMax, 8, true);
-            iCurrentScreenNum = (int)_is.Read(iCurrentScreenNum, 9, true);
-            iCurrentScreenMin = (int)_is.Read(iCurrentScreenMin, 10, true);
-            iCurrentScreenMax = (int)_is.Read(iCurrentScreenMax, 11, true);
+            iMarqueeScopeMin = (int)_is.Read(iMarqueeScopeMin, 1, false);
+            iMarqueeScopeMax = (int)_is.Read(iMarqueeScopeMax, 2, false);
+            iCurrentVideoNum = (int)_is.Read(iCurrentVideoNum, 3, false);
+            iCurrentVideoMin = (int)_is.Read(iCurrentVideoMin, 4, false);
+            iCurrentVideoMax = (int)_is.Read(iCurrentVideoMax, 5, false);
+            iAllVideoNum = (int)_is.Read(iAllVideoNum, 6, false);
+            iAllVideoMin = (int)_is.Read(iAllVideoMin, 7, false);
+            iAllVideoMax = (int)_is.Read(iAllVideoMax, 8, false);
+            iCurrentScreenNum = (int)_is.Read(iCurrentScreenNum, 9, false);
+            iCurrentScreenMin = (int)_is.Read(iCurrentScreenMin, 10, false);
+            iCurrentScreenMax = (int)_is.Read(iCurrentScreenMax, 11, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -311,17 +311,17 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iFirstSingle = (int)_is.Read(iFirstSingle, 1, true);
-            iFirstGroup = (int)_is.Read(iFirstGroup, 2, true);
-            sFirstTips = (string)_is.Read(sFirstTips, 3, true);
-            iSecondSingle = (int)_is.Read(iSecondSingle, 4, true);
-            iSecondGroup = (int)_is.Read(iSecondGroup, 5, true);
-            sSecondTips = (string)_is.Read(sSecondTips, 6, true);
-            iThirdSingle = (int)_is.Read(iThirdSingle, 7, true);
-            iThirdGroup = (int)_is.Read(iThirdGroup, 8, true);
-            sThirdTips = (string)_is.Read(sThirdTips, 9, true);
-            iWorldSingle = (int)_is.Read(iWorldSingle, 10, true);
-            iWorldGroup = (int)_is.Read(iWorldGroup, 11, true);
+            iFirstSingle = (int)_is.Read(iFirstSingle, 1, false);
+            iFirstGroup = (int)_is.Read(iFirstGroup, 2, false);
+            sFirstTips = (string)_is.Read(sFirstTips, 3, false);
+            iSecondSingle = (int)_is.Read(iSecondSingle, 4, false);
+            iSecondGroup = (int)_is.Read(iSecondGroup, 5, false);
+            sSecondTips = (string)_is.Read(sSecondTips, 6, false);
+            iThirdSingle = (int)_is.Read(iThirdSingle, 7, false);
+            iThirdGroup = (int)_is.Read(iThirdGroup, 8, false);
+            sThirdTips = (string)_is.Read(sThirdTips, 9, false);
+            iWorldSingle = (int)_is.Read(iWorldSingle, 10, false);
+            iWorldGroup = (int)_is.Read(iWorldGroup, 11, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -369,10 +369,10 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            id = (int)_is.Read(id, 0, true);
-            name = (string)_is.Read(name, 1, true);
-            uids = (Dictionary<long, short>)_is.Read(uids, 2, true);
-            tips = (string)_is.Read(tips, 3, true);
+            id = (int)_is.Read(id, 0, false);
+            name = (string)_is.Read(name, 1, false);
+            uids = (Dictionary<long, short>)_is.Read(uids, 2, false);
+            tips = (string)_is.Read(tips, 3, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -437,44 +437,44 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iPropsId = (int)_is.Read(iPropsId, 1, true);
-            sPropsName = (string)_is.Read(sPropsName, 2, true);
-            iPropsYb = (int)_is.Read(iPropsYb, 3, true);
-            iPropsGreenBean = (int)_is.Read(iPropsGreenBean, 4, true);
-            iPropsWhiteBean = (int)_is.Read(iPropsWhiteBean, 5, true);
-            iPropsGoldenBean = (int)_is.Read(iPropsGoldenBean, 6, true);
-            iPropsRed = (int)_is.Read(iPropsRed, 7, true);
-            iPropsPopular = (int)_is.Read(iPropsPopular, 8, true);
-            iPropsExpendNum = (int)_is.Read(iPropsExpendNum, 9, true);
-            iPropsFansValue = (int)_is.Read(iPropsFansValue, 10, true);
+            iPropsId = (int)_is.Read(iPropsId, 1, false);
+            sPropsName = (string)_is.Read(sPropsName, 2, false);
+            iPropsYb = (int)_is.Read(iPropsYb, 3, false);
+            iPropsGreenBean = (int)_is.Read(iPropsGreenBean, 4, false);
+            iPropsWhiteBean = (int)_is.Read(iPropsWhiteBean, 5, false);
+            iPropsGoldenBean = (int)_is.Read(iPropsGoldenBean, 6, false);
+            iPropsRed = (int)_is.Read(iPropsRed, 7, false);
+            iPropsPopular = (int)_is.Read(iPropsPopular, 8, false);
+            iPropsExpendNum = (int)_is.Read(iPropsExpendNum, 9, false);
+            iPropsFansValue = (int)_is.Read(iPropsFansValue, 10, false);
 
-            vPropsNum = (List<int>)_is.Read(vPropsNum, 11, true);
-            iPropsMaxNum = (int)_is.Read(iPropsMaxNum, 12, true);
-            iPropsBatterFlag = (int)_is.Read(iPropsBatterFlag, 13, true);
-            vPropsChannel = (List<int>)_is.Read(vPropsChannel, 14, true);
-            sPropsToolTip = (string)_is.Read(sPropsToolTip, 15, true);
-            vPropsIdentity = (List<PropsIdentity>)_is.Read(vPropsIdentity, 16, true);
-            iPropsWeights = (int)_is.Read(iPropsWeights, 17, true);
-            iPropsLevel = (int)_is.Read(iPropsLevel, 18, true);
-            tDisplayInfo = (DisplayInfo)_is.Read(tDisplayInfo, 19, true);
-            tSpecialInfo = (SpecialInfo)_is.Read(tSpecialInfo, 20, true);
+            vPropsNum = (List<int>)_is.Read(vPropsNum, 11, false);
+            iPropsMaxNum = (int)_is.Read(iPropsMaxNum, 12, false);
+            iPropsBatterFlag = (int)_is.Read(iPropsBatterFlag, 13, false);
+            vPropsChannel = (List<int>)_is.Read(vPropsChannel, 14, false);
+            sPropsToolTip = (string)_is.Read(sPropsToolTip, 15, false);
+            vPropsIdentity = (List<PropsIdentity>)_is.Read(vPropsIdentity, 16, false);
+            iPropsWeights = (int)_is.Read(iPropsWeights, 17, false);
+            iPropsLevel = (int)_is.Read(iPropsLevel, 18, false);
+            tDisplayInfo = (DisplayInfo)_is.Read(tDisplayInfo, 19, false);
+            tSpecialInfo = (SpecialInfo)_is.Read(tSpecialInfo, 20, false);
 
-            iPropsGrade = (int)_is.Read(iPropsGrade, 21, true);
-            iPropsGroupNum = (int)_is.Read(iPropsGroupNum, 22, true);
-            sPropsCommBannerResource = (string)_is.Read(sPropsCommBannerResource, 23, true);
-            sPropsOwnBannerResource = (string)_is.Read(sPropsOwnBannerResource, 24, true);
-            iPropsShowFlag = (int)_is.Read(iPropsShowFlag, 25, true);
-            iTemplateType = (int)_is.Read(iTemplateType, 26, true);
-            iShelfStatus = (int)_is.Read(iShelfStatus, 27, true);
-            sAndroidLogo = (string)_is.Read(sAndroidLogo, 28, true);
-            sIpadLogo = (string)_is.Read(sIpadLogo, 29, true);
-            sIphoneLogo = (string)_is.Read(sIphoneLogo, 30, true);
+            iPropsGrade = (int)_is.Read(iPropsGrade, 21, false);
+            iPropsGroupNum = (int)_is.Read(iPropsGroupNum, 22, false);
+            sPropsCommBannerResource = (string)_is.Read(sPropsCommBannerResource, 23, false);
+            sPropsOwnBannerResource = (string)_is.Read(sPropsOwnBannerResource, 24, false);
+            iPropsShowFlag = (int)_is.Read(iPropsShowFlag, 25, false);
+            iTemplateType = (int)_is.Read(iTemplateType, 26, false);
+            iShelfStatus = (int)_is.Read(iShelfStatus, 27, false);
+            sAndroidLogo = (string)_is.Read(sAndroidLogo, 28, false);
+            sIpadLogo = (string)_is.Read(sIpadLogo, 29, false);
+            sIphoneLogo = (string)_is.Read(sIphoneLogo, 30, false);
 
-            sPropsCommBannerResourceEx = (string)_is.Read(sPropsCommBannerResourceEx, 31, true);
-            sPropsOwnBannerResourceEx = (string)_is.Read(sPropsOwnBannerResourceEx, 32, true);
-            vPresenterUid = (List<long>)_is.Read(vPresenterUid, 33, true);
-            vPropView = (List<PropView>)_is.Read(vPropView, 34, true);
-            iFaceUSwitch = (int)_is.Read(iFaceUSwitch, 35, true);
+            sPropsCommBannerResourceEx = (string)_is.Read(sPropsCommBannerResourceEx, 31, false);
+            sPropsOwnBannerResourceEx = (string)_is.Read(sPropsOwnBannerResourceEx, 32, false);
+            vPresenterUid = (List<long>)_is.Read(vPresenterUid, 33, false);
+            vPropView = (List<PropView>)_is.Read(vPropView, 34, false);
+            iFaceUSwitch = (int)_is.Read(iFaceUSwitch, 35, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -580,14 +580,14 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            tUserId = (UserId)_is.Read(tUserId, 1, true);
-            sMd5 = (string)_is.Read(sMd5, 2, true);
-            iTemplateType = (int)_is.Read(iTemplateType, 3, true);
-            sVersion = (string)_is.Read(sVersion, 4, true);
-            iAppId = (int)_is.Read(iAppId, 5, true);
-            lPresenterUid = (long)_is.Read(lPresenterUid, 6, true);
-            lSid = (long)_is.Read(lSid, 7, true);
-            lSubSid = (long)_is.Read(lSubSid, 8, true);
+            tUserId = (UserId)_is.Read(tUserId, 1, false);
+            sMd5 = (string)_is.Read(sMd5, 2, false);
+            iTemplateType = (int)_is.Read(iTemplateType, 3, false);
+            sVersion = (string)_is.Read(sVersion, 4, false);
+            iAppId = (int)_is.Read(iAppId, 5, false);
+            lPresenterUid = (long)_is.Read(lPresenterUid, 6, false);
+            lSid = (long)_is.Read(lSid, 7, false);
+            lSubSid = (long)_is.Read(lSubSid, 8, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -630,11 +630,11 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            vPropsItemList = (List<PropsItem>)_is.Read(vPropsItemList, 1, true);
-            sMd5 = (string)_is.Read(sMd5, 2, true);
-            iNewEffectSwitch = (short)_is.Read(iNewEffectSwitch, 3, true);
-            iMirrorRoomShowNum = (short)_is.Read(iMirrorRoomShowNum, 4, true);
-            iGameRoomShowNum = (short)_is.Read(iGameRoomShowNum, 5, true);
+            vPropsItemList = (List<PropsItem>)_is.Read(vPropsItemList, 1, false);
+            sMd5 = (string)_is.Read(sMd5, 2, false);
+            iNewEffectSwitch = (short)_is.Read(iNewEffectSwitch, 3, false);
+            iMirrorRoomShowNum = (short)_is.Read(iMirrorRoomShowNum, 4, false);
+            iGameRoomShowNum = (short)_is.Read(iGameRoomShowNum, 5, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -667,7 +667,7 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iState = (int)_is.Read(iState, 0, true);
+            iState = (int)_is.Read(iState, 0, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -702,17 +702,17 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            tId = (UserId)_is.Read(tId, 0, true);
-            lTid = (long)_is.Read(lTid, 1, true);
-            lSid = (long)_is.Read(lSid, 2, true);
-            lShortTid = (long)_is.Read(lShortTid, 3, true);
-            eOp = (int)_is.Read(eOp, 4, true);
-            sChan = (string)_is.Read(sChan, 5, true);
-            eSource = (int)_is.Read(eSource, 6, true);
-            lPid = (long)_is.Read(lPid, 7, true);
-            bWatchVideo = (bool)_is.Read(bWatchVideo, 8, true);
-            bAnonymous = (bool)_is.Read(bAnonymous, 9, true);
-            eTemplateType = (int)_is.Read(eTemplateType, 10, true);
+            tId = (UserId)_is.Read(tId, 0, false);
+            lTid = (long)_is.Read(lTid, 1, false);
+            lSid = (long)_is.Read(lSid, 2, false);
+            lShortTid = (long)_is.Read(lShortTid, 3, false);
+            eOp = (int)_is.Read(eOp, 4, false);
+            sChan = (string)_is.Read(sChan, 5, false);
+            eSource = (int)_is.Read(eSource, 6, false);
+            lPid = (long)_is.Read(lPid, 7, false);
+            bWatchVideo = (bool)_is.Read(bWatchVideo, 8, false);
+            bAnonymous = (bool)_is.Read(bAnonymous, 9, false);
+            eTemplateType = (int)_is.Read(eTemplateType, 10, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -760,10 +760,10 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            lTid = (long)_is.Read(lTid, 0, true);
-            lSid = (long)_is.Read(lSid, 1, true);
-            iUserHeartBeatInterval = (int)_is.Read(iUserHeartBeatInterval, 2, true);
-            iPresentHeartBeatInterval = (int)_is.Read(iPresentHeartBeatInterval, 3, true);
+            lTid = (long)_is.Read(lTid, 0, false);
+            lSid = (long)_is.Read(lSid, 1, false);
+            iUserHeartBeatInterval = (int)_is.Read(iUserHeartBeatInterval, 2, false);
+            iPresentHeartBeatInterval = (int)_is.Read(iPresentHeartBeatInterval, 3, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -804,17 +804,17 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            tId = (UserId)_is.Read(tId, 0, true);
-            lTid = (long)_is.Read(lTid, 1, true);
-            lSid = (long)_is.Read(lSid, 2, true);
-            lShortTid = (long)_is.Read(lShortTid, 3, true);
-            lPid = (long)_is.Read(lPid, 4, true);
-            bWatchVideo = (bool)_is.Read(bWatchVideo, 5, true);
-            iLineType = (int)_is.Read(iLineType, 6, true);
-            iFps = (int)_is.Read(iFps, 7, true);
-            iAttendee = (int)_is.Read(iAttendee, 8, true);
-            iBandWidth = (int)_is.Read(iBandWidth, 9, true);
-            iLastHeartElapseTime = (int)_is.Read(iLastHeartElapseTime, 10, true);
+            tId = (UserId)_is.Read(tId, 0, false);
+            lTid = (long)_is.Read(lTid, 1, false);
+            lSid = (long)_is.Read(lSid, 2, false);
+            lShortTid = (long)_is.Read(lShortTid, 3, false);
+            lPid = (long)_is.Read(lPid, 4, false);
+            bWatchVideo = (bool)_is.Read(bWatchVideo, 5, false);
+            iLineType = (int)_is.Read(iLineType, 6, false);
+            iFps = (int)_is.Read(iFps, 7, false);
+            iAttendee = (int)_is.Read(iAttendee, 8, false);
+            iBandWidth = (int)_is.Read(iBandWidth, 9, false);
+            iLastHeartElapseTime = (int)_is.Read(iLastHeartElapseTime, 10, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -859,7 +859,7 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iRet = (int)_is.Read(iRet, 0, true);
+            iRet = (int)_is.Read(iRet, 0, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -885,8 +885,8 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iProxyType = (int)_is.Read(iProxyType, 0, true);
-            sProxy = (List<string>)_is.Read(sProxy, 1, true);
+            iProxyType = (int)_is.Read(iProxyType, 0, false);
+            sProxy = (List<string>)_is.Read(sProxy, 1, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -916,10 +916,10 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            sGuid = (string)_is.Read(sGuid, 0, true);
-            iTime = (int)_is.Read(iTime, 1, true);
-            vProxyList = (List<LiveProxyValue>)_is.Read(vProxyList, 2, true);
-            iAccess = (int)_is.Read(iAccess, 3, true);
+            sGuid = (string)_is.Read(sGuid, 0, false);
+            iTime = (int)_is.Read(iTime, 1, false);
+            vProxyList = (List<LiveProxyValue>)_is.Read(vProxyList, 2, false);
+            iAccess = (int)_is.Read(iAccess, 3, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -950,7 +950,7 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iId = (int)_is.Read(iId, 0, true);
+            iId = (int)_is.Read(iId, 0, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -975,7 +975,7 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iId = (int)_is.Read(iId, 0, true);
+            iId = (int)_is.Read(iId, 0, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -1002,9 +1002,9 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iResCode = (int)_is.Read(iResCode, 0, true);
-            lRequestId = (long)_is.Read(lRequestId, 1, true);
-            sMessage = (string)_is.Read(sMessage, 2, true);
+            iResCode = (int)_is.Read(iResCode, 0, false);
+            lRequestId = (long)_is.Read(lRequestId, 1, false);
+            sMessage = (string)_is.Read(sMessage, 2, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -1036,10 +1036,10 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iPushType = (int)_is.Read(iPushType, 0, true);
-            iUri = (int)_is.Read(iUri, 1, true);
-            sMsg = (byte[])_is.Read(sMsg, 2, true);
-            iProtocolType = (int)_is.Read(iProtocolType, 3, true);
+            iPushType = (int)_is.Read(iPushType, 0, false);
+            iUri = (int)_is.Read(iUri, 1, false);
+            sMsg = (byte[])_is.Read(sMsg, 2, false);
+            iProtocolType = (int)_is.Read(iProtocolType, 3, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -1072,9 +1072,9 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            lUid = (long)_is.Read(lUid, 0, true);
-            sUA = (string)_is.Read(sUA, 1, true);
-            sCookie = (string)_is.Read(sCookie, 2, true);
+            lUid = (long)_is.Read(lUid, 0, false);
+            sUA = (string)_is.Read(sUA, 1, false);
+            sCookie = (string)_is.Read(sCookie, 2, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -1103,7 +1103,7 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iValidate = (int)_is.Read(iValidate, 0, true);
+            iValidate = (int)_is.Read(iValidate, 0, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -1129,8 +1129,8 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            vGroupId = (List<string>)_is.Read(vGroupId, 0, true);
-            sToken = (string)_is.Read(sToken, 1, true);
+            vGroupId = (List<string>)_is.Read(vGroupId, 0, false);
+            sToken = (string)_is.Read(sToken, 1, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -1157,7 +1157,7 @@ namespace HuyaLive
 
         public override void ReadFrom(TarsInputStream _is)
         {
-            iResCode = (int)_is.Read(iResCode, 0, true);
+            iResCode = (int)_is.Read(iResCode, 0, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)

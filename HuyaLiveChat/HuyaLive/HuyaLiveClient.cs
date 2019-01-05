@@ -621,7 +621,7 @@ namespace HuyaLive
                 state = ClientState.Connected;
 
                 // Sec-WebSocket-Extensions: "permessage-deflate; client_max_window_bits"
-                logger?.WriteLine("websocket.Extensions = " + websocket.Extensions);
+                logger?.WriteLine("websocket.Extensions = \"" + websocket.Extensions + "\"");
 
                 bool success;
                 success  = ReadGiftList();
@@ -930,13 +930,13 @@ namespace HuyaLive
             {
                 case UriType.NobleEnterNotice:
                     {
-                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: " + iUri);
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - NobleEnterNotice", iUri);
                     }
                     break;
 
                 case UriType.MessageNotice:
                     {
-                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: " + iUri);
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - MessageNotice", iUri);
 
                         MessageNotice noticeMsg = new MessageNotice();
                         noticeMsg.ReadFrom(stream);
@@ -952,6 +952,55 @@ namespace HuyaLive
                         lock (locker)
                         {
                             listener?.OnUserChat(this, chatMsg);
+                        }
+                    }
+                    break;
+
+                case UriType.SendItemSubBroadcastPacket:
+                    {
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - SendItemSubBroadcastPacket", iUri);
+
+                        SendItemSubBroadcastPacket packet = new SendItemSubBroadcastPacket();
+                        packet.ReadFrom(stream);
+
+                        if (packet.lPresenterUid == chatInfo.yyuid)
+                        {
+                            GiftInfo giftInfo = giftInfoList[packet.iItemType];
+
+                            UserGiftMessage giftMsg = new UserGiftMessage();
+                            giftMsg.presenterUid = packet.lPresenterUid;
+                            giftMsg.uid = packet.lSenderUid;
+                            giftMsg.imid = packet.lSenderUid; ;
+                            giftMsg.nickname = packet.sSenderNick;
+                            giftMsg.itemName = giftInfo.name;
+                            giftMsg.itemCount = packet.iItemCount;
+                            giftMsg.itemPrice = packet.iItemCount * giftInfo.price;
+                            giftMsg.timestamp = TimeStamp.now_ms();
+
+                            lock (locker)
+                            {
+                                listener?.OnUserGift(this, giftMsg);
+                            }
+                        }
+                    }
+                    break;
+
+                case UriType.AttendeeCountNotice:
+                    {
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - AttendeeCountNotice", iUri);
+
+                        AttendeeCountNotice packet = new AttendeeCountNotice();
+                        packet.ReadFrom(stream);
+
+                        OnlineUserMessage onlineMsg = new OnlineUserMessage();
+                        onlineMsg.roomId = roomId;
+                        onlineMsg.roomName = "";
+                        onlineMsg.onlineUsers = packet.iAttendeeCount;
+                        onlineMsg.timestamp = TimeStamp.now_ms();
+
+                        lock (locker)
+                        {
+                            listener?.OnRoomOnlineUser(this, onlineMsg);
                         }
                     }
                     break;

@@ -68,6 +68,11 @@ namespace HuyaLiveHelper
         public void OnUserGift(object sender, UserGiftMessage message)
         {
             logger?.WriteLine(">>>  MainForm::OnUserGift()");
+            logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
+            logger?.WriteLine(">>>  uid = {0}, imid = {1}, nickname = \"{2}\"",
+                              message.uid, message.imid, message.nickname);
+            logger?.WriteLine(">>>  itemName = \"{0}\", itemCount = {1}, itemPrice = {2}, ",
+                              message.itemName, message.itemCount, message.itemPrice);
         }
 
         public void OnFreshGiftList(object sender, GiftListMessage message)
@@ -78,6 +83,9 @@ namespace HuyaLiveHelper
         public void OnRoomOnlineUser(object sender, OnlineUserMessage message)
         {
             logger?.WriteLine(">>>  MainForm::OnRoomOnlineUser()");
+            logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
+            logger?.WriteLine(">>>  roomId = {0}, onlineUsers = {1}",
+                              message.roomId, message.onlineUsers);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -95,6 +103,8 @@ namespace HuyaLiveHelper
                 //client.Start("666888");
                 // Da sheng gui lai
                 //client.Start("931827");
+                // Shen mi gou
+                //client.Start("399910");
             }
             catch (Exception ex)
             {
