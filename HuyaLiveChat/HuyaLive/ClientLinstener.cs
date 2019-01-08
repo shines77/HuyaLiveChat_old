@@ -26,11 +26,11 @@ namespace HuyaLive
         void OnClientStop(object sender);
         void OnClientError(object sender, Exception exception, string message);
 
-        void OnNobleOnline(object sender, NobleOnlineMessage message);
-        void OnVipEnter(object sender, VipEnterMessage message);
         void OnUserChat(object sender, UserChatMessage message);
         void OnUserGift(object sender, UserGiftMessage message);
         void OnFreshGiftList(object sender, GiftListMessage message);
         void OnRoomOnlineUser(object sender, OnlineUserMessage message);
+        void OnVipEnter(object sender, VipEnterMessage message);
+        void OnNobleOnline(object sender, NobleOnlineMessage message);
     }
 }

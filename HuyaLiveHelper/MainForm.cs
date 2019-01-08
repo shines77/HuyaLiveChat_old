@@ -50,26 +50,6 @@ namespace HuyaLiveHelper
             logger?.WriteLine("--------------------------------------------------------");
         }
 
-        public void OnNobleOnline(object sender, NobleOnlineMessage message)
-        {
-            logger?.WriteLine(">>>  MainForm::OnNobleOnline()");
-            logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
-            logger?.WriteLine(">>>  uid = {0}, imid = {1}, nickname = \"{2}\"",
-                              message.uid, message.imid, message.nickname);
-            logger?.WriteLine(">>>  name = \"{0}\", level = {1}",
-                              message.noblename, message.level);
-        }
-
-        public void OnVipEnter(object sender, VipEnterMessage message)
-        {
-            logger?.WriteLine(">>>  MainForm::OnVipEnter()");
-            logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
-            logger?.WriteLine(">>>  uid = {0}, imid = {1}, nickname = \"{2}\"",
-                              message.uid, message.imid, message.nickname);
-            logger?.WriteLine(">>>  name = \"{0}\", level = {1}",
-                              message.noblename, message.level);
-        }
-
         public void OnUserChat(object sender, UserChatMessage message)
         {
             logger?.WriteLine(">>>  MainForm::OnUserChat()");
@@ -101,6 +81,26 @@ namespace HuyaLiveHelper
             logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
             logger?.WriteLine(">>>  roomId = {0}, onlineUsers = {1}",
                               message.roomId, message.onlineUsers);
+        }
+
+        public void OnVipEnter(object sender, VipEnterMessage message)
+        {
+            logger?.WriteLine(">>>  MainForm::OnVipEnter()");
+            logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
+            logger?.WriteLine(">>>  uid = {0}, imid = {1}, nickname = \"{2}\"",
+                              message.uid, message.imid, message.nickname);
+            logger?.WriteLine(">>>  name = \"{0}\", level = {1}",
+                              message.noblename, message.level);
+        }
+
+        public void OnNobleOnline(object sender, NobleOnlineMessage message)
+        {
+            logger?.WriteLine(">>>  MainForm::OnNobleOnline()");
+            logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
+            logger?.WriteLine(">>>  uid = {0}, imid = {1}, nickname = \"{2}\"",
+                              message.uid, message.imid, message.nickname);
+            logger?.WriteLine(">>>  name = \"{0}\", level = {1}",
+                              message.noblename, message.level);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
