@@ -113,13 +113,15 @@ namespace HuyaLiveHelper
                 // Shen tu
                 //client.Start("666007");
                 // Yang qi huang
-                client.Start("18001");
+                //client.Start("18001");
                 // Uzi
                 //client.Start("666888");
                 // Da sheng gui lai
                 //client.Start("931827");
                 // Shen mi gou
                 //client.Start("399910");
+                // Anybody
+                client.Start("11807215");
             }
             catch (Exception ex)
             {

@@ -1202,6 +1202,49 @@ namespace HuyaLive
                     }
                     break;
 
+                case UriType.SendItemNoticeGameBroadcastPacket:
+                    {
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - SendItemNoticeGameBroadcastPacket", iUri);
+
+                        SendItemNoticeGameBroadcastPacket packet = new SendItemNoticeGameBroadcastPacket();
+                        packet.ReadFrom(stream);
+
+                        if (giftInfoList.ContainsKey(packet.iItemType))
+                        {
+                            GiftInfo giftInfo = giftInfoList[packet.iItemType];
+
+                            UserGiftMessage giftMsg = new UserGiftMessage();
+                            giftMsg.presenterUid = packet.lPresenterUid;
+                            giftMsg.uid = packet.lSenderUid;
+                            giftMsg.imid = packet.lSenderUid; ;
+                            giftMsg.nickname = packet.sSenderNick;
+                            giftMsg.itemName = giftInfo.name;
+                            giftMsg.itemCount = packet.iItemCount;
+                            giftMsg.itemPrice = packet.iItemCount * giftInfo.price;
+                            giftMsg.timestamp = TimeStamp.now_ms();
+
+                            lock (locker)
+                            {
+                                listener?.OnUserGift(this, giftMsg);
+                            }
+                        }
+                    }
+                    break;
+
+                case UriType.TreasureResultBroadcastPacket:
+                    {
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - TreasureResultBroadcastPacket", iUri);
+
+                        TreasureResultBroadcastPacket packet = new TreasureResultBroadcastPacket();
+                        packet.ReadFrom(stream);
+
+                        {
+                            logger?.WriteLine("packet.lStarterUid = {0}, packet.sStarterNick = {1}, packet.sTreasureName = {2}",
+                                              packet.lStarterUid, packet.sStarterNick, packet.sTreasureName);
+                        }
+                    }
+                    break;
+
                 case UriType.BeginLiveNotice:
                     {
                         logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - BeginLiveNotice", iUri);

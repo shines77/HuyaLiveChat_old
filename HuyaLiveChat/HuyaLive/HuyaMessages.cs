@@ -331,6 +331,13 @@ namespace HuyaLive
         public string sExpand = "";
         public bool bBusi = false;
         public int iColorEffectType = 0;
+        public string sPropsName = "";
+        public int iAccpet = 0;
+        public int iEventType = 0;
+        public UserIdentityInfo userInfo = new UserIdentityInfo();
+        public long lRoomId = 0;
+        public long lHomeOwnerUid = 0;
+        public StreamerNode streamerInfo = new StreamerNode();
 
         public SendItemSubBroadcastPacket()
         {
@@ -427,6 +434,11 @@ namespace HuyaLive
         public int iTemplateType = 0;
         public string sExpand = "";
         public bool bBusi = false;
+        public int iShowTime = 0;
+        public long lPresenterYY = 0;
+        public long lSid = 0;
+        public long lSubSid = 0;
+        public long lRoomId = 0;
 
         public SendItemNoticeWordBroadcastPacket()
         {
@@ -449,6 +461,11 @@ namespace HuyaLive
             iTemplateType = (int)_is.Read(iTemplateType, 12, false);
             sExpand = (string)_is.Read(sExpand, 13, false);
             bBusi = (bool)_is.Read(bBusi, 14, false);
+            iShowTime = (int)_is.Read(iShowTime, 15, false);
+            lPresenterYY = (long)_is.Read(lPresenterYY, 16, false);
+            lSid = (long)_is.Read(lSid, 17, false);
+            lSubSid = (long)_is.Read(lSubSid, 18, false);
+            lRoomId = (long)_is.Read(lRoomId, 19, false);
         }
 
         public override void WriteTo(TarsOutputStream _os)
@@ -468,6 +485,11 @@ namespace HuyaLive
             _os.Write(iTemplateType, 12);
             _os.Write(sExpand, 13);
             _os.Write(bBusi, 14);
+            _os.Write(iShowTime, 15);
+            _os.Write(lPresenterYY, 16);
+            _os.Write(lSid, 17);
+            _os.Write(lSubSid, 18);
+            _os.Write(lRoomId, 19);
         }
 
         public override void Display(StringBuilder sb, int level)
@@ -488,7 +510,159 @@ namespace HuyaLive
             _ds.Display(iTemplateType, "iTemplateType");
             _ds.Display(sExpand, "sExpand");
             _ds.Display(bBusi, "bBusi");
+            _ds.Display(iShowTime, "iShowTime");
+            _ds.Display(lPresenterYY, "lPresenterYY");
+            _ds.Display(lSid, "lSid");
+            _ds.Display(lSubSid, "lSubSid");
+            _ds.Display(lRoomId, "lRoomId");
+        }
+    }
 
+    public class SendItemNoticeGameBroadcastPacket : TarsStruct
+    {
+        public int iItemType = 0;
+        public int iItemCount = 0;
+        public long lSenderUid = 0;
+        public string sSenderNick = "";
+        public long lPresenterUid = 0;
+        public string sPresenterNick = "";
+        public long lSid = 0;
+        public long lSubSid = 0;
+        public long lRoomId = 0;
+        public int iTemplateType = 0;
+
+        public SendItemNoticeGameBroadcastPacket()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iItemType = (int)_is.Read(iItemType, 0, false);
+            iItemCount = (int)_is.Read(iItemCount, 1, false);
+            lSenderUid = (long)_is.Read(lSenderUid, 3, false);
+            sSenderNick = (string)_is.Read(sSenderNick, 4, false);
+            lPresenterUid = (long)_is.Read(lPresenterUid, 5, false);
+            sPresenterNick = (string)_is.Read(sPresenterNick, 6, false);
+            lSid = (long)_is.Read(lSid, 7, false);
+            lSubSid = (int)_is.Read(lSubSid, 8, false);
+            lRoomId = (int)_is.Read(lRoomId, 9, false);
+            iTemplateType = (int)_is.Read(iTemplateType, 10, false);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iItemType, 0);
+            _os.Write(iItemCount, 1);
+            _os.Write(lSenderUid, 3);
+            _os.Write(sSenderNick, 4);
+            _os.Write(lPresenterUid, 5);
+            _os.Write(sPresenterNick, 6);
+            _os.Write(lSid, 7);
+            _os.Write(lSubSid, 8);
+            _os.Write(lRoomId, 9);
+            _os.Write(iTemplateType, 10);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iItemType, "iItemType");
+            _ds.Display(iItemCount, "iItemCount");
+            _ds.Display(lSenderUid, "lSenderUid");
+            _ds.Display(sSenderNick, "sSenderNick");
+            _ds.Display(lPresenterUid, "lPresenterUid");
+            _ds.Display(sPresenterNick, "sPresenterNick");
+            _ds.Display(lSid, "lSid");
+            _ds.Display(lSubSid, "lSubSid");
+            _ds.Display(lRoomId, "lRoomId");
+            _ds.Display(iTemplateType, "iTemplateType");
+
+        }
+    }
+
+    public class AwardUser : TarsStruct
+    {
+        public string sUserNick = "";
+        public int iPrizeType = 0;
+        public string sPrizeName = "";
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            sUserNick = (string)_is.Read(sUserNick, 0, false);
+            iPrizeType = (int)_is.Read(iPrizeType, 1, false);
+            sPrizeName = (string)_is.Read(sPrizeName, 2, false);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(sUserNick, 0);
+            _os.Write(iPrizeType, 1);
+            _os.Write(sPrizeName, 2);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(sUserNick, "sUserNick");
+            _ds.Display(iPrizeType, "iPrizeType");
+            _ds.Display(sPrizeName, "sPrizeName");
+        }
+    }
+
+    public class TreasureResultBroadcastPacket : TarsStruct
+    {
+        public long lStarterUid = 0;
+        public string sStarterNick = "";
+        public long iShortChannelId = 0;
+        public List<AwardUser> vAwardUsers = new List<AwardUser>();
+        public long lTid = 0;
+        public long lSid = 0;
+        public long iTreasureType = 0;
+        public string sTreasureName = "";
+        public long lPid = 0;
+
+        public TreasureResultBroadcastPacket()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            lStarterUid = (long)_is.Read(lStarterUid, 0, false);
+            sStarterNick = (string)_is.Read(sStarterNick, 1, false);
+            iShortChannelId = (long)_is.Read(iShortChannelId, 2, false);
+            vAwardUsers = (List<AwardUser>)_is.Read(vAwardUsers, 3, false);
+            lTid = (long)_is.Read(lTid, 4, false);
+            lSid = (long)_is.Read(lSid, 5, false);
+            iTreasureType = (long)_is.Read(iTreasureType, 6, false);
+            sTreasureName = (string)_is.Read(sTreasureName, 7, false);
+            lPid = (long)_is.Read(lPid, 8, false);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(lStarterUid, 0);
+            _os.Write(sStarterNick, 1);
+            _os.Write(iShortChannelId, 2);
+            _os.Write(vAwardUsers, 3);
+            _os.Write(lTid, 4);
+            _os.Write(lSid, 5);
+            _os.Write(iTreasureType, 6);
+            _os.Write(sTreasureName, 7);
+            _os.Write(lPid, 8);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(lStarterUid, "lStarterUid");
+            _ds.Display(sStarterNick, "sStarterNick");
+            _ds.Display(iShortChannelId, "iShortChannelId");
+            _ds.Display(vAwardUsers, "vAwardUsers");
+            _ds.Display(lTid, "lTid");
+            _ds.Display(lSid, "lSid");
+            _ds.Display(iTreasureType, "iTreasureType");
+            _ds.Display(sTreasureName, "sTreasureName");
+            _ds.Display(lPid, "lPid");
         }
     }
 

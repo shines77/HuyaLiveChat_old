@@ -100,6 +100,9 @@ namespace HuyaLive
 
         public const int SendItemSubBroadcastPacket = 6501;
         public const int SendItemNoticeWordBroadcastPacket = 6502;
+        public const int SendItemNoticeGameBroadcastPacket = 6507;
+
+        public const int TreasureResultBroadcastPacket = 6602;
 
         public const int ShowRaffleWinnerNotice = 7054;
         public const int MatchRaffleResultNotice = 7055;

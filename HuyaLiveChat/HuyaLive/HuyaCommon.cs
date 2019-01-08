@@ -558,6 +558,68 @@ namespace HuyaLive
         }
     }
 
+    public class UserIdentityInfo : TarsStruct
+    {
+        public DecorationInfo vDecorationPrefix = new DecorationInfo();
+        public DecorationInfo vDecorationSuffix = new DecorationInfo();
+
+        public UserIdentityInfo()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            vDecorationPrefix = (DecorationInfo)_is.Read(vDecorationPrefix, 0, false);
+            vDecorationSuffix = (DecorationInfo)_is.Read(vDecorationSuffix, 1, false);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(vDecorationPrefix, 0);
+            _os.Write(vDecorationSuffix, 1);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(vDecorationPrefix, "vDecorationPrefix");
+            _ds.Display(vDecorationSuffix, "vDecorationSuffix");
+        }
+    }
+
+    public class StreamerNode : TarsStruct
+    {
+        public int iGiftLevel = 0;
+        public int iStreamerLevel = 0;
+        public int iMaterialType = 0;
+
+        public StreamerNode()
+        {
+        }
+
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            iGiftLevel = (int)_is.Read(iGiftLevel, 0, false);
+            iStreamerLevel = (int)_is.Read(iStreamerLevel, 1, false);
+            iMaterialType = (int)_is.Read(iMaterialType, 2, false);
+        }
+
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(iGiftLevel, 0);
+            _os.Write(iStreamerLevel, 1);
+            _os.Write(iMaterialType, 2);
+        }
+
+        public override void Display(StringBuilder sb, int level)
+        {
+            TarsDisplayer _ds = new TarsDisplayer(sb, level);
+            _ds.Display(iGiftLevel, "iGiftLevel");
+            _ds.Display(iStreamerLevel, "iStreamerLevel");
+            _ds.Display(iMaterialType, "iMaterialType");
+        }
+    }
+
     public class DecorationInfoResponse : TarsStruct
     {
         public List<DecorationInfo> vDecorationPrefix = new List<DecorationInfo>();
