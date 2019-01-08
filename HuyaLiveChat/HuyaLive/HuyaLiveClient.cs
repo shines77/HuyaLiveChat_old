@@ -21,9 +21,10 @@ namespace HuyaLive
     {
         Connecting = 0,
         Connected = 1,
-        Running = 2,
-        Closing = 3,
-        Closed = 4
+        Openning = 2,
+        Running = 3,
+        Closing = 4,
+        Closed = 5
     }
 
     public class HuyaLiveClient
@@ -70,8 +71,8 @@ namespace HuyaLive
 
         private object locker = new object();
 
-        HttpClientHandler httpClientHandler = new HttpClientHandler();
-        CookieContainer cookieContainer = new CookieContainer();
+        HttpClientHandler httpClientHandler = null;
+        CookieContainer cookieContainer = null;
 
         Dictionary<string, string> cookiesMap = new Dictionary<string, string>();
         Dictionary<string, string> ieCookiesMap = new Dictionary<string, string>();
@@ -212,9 +213,17 @@ namespace HuyaLive
         {
             logger?.Enter("HuyaLiveClient::Start()");
 
-            if (IsRunning())
+            Stop();
+
+            state = ClientState.Openning;
+
+            if (cookieContainer == null)
             {
-                Stop();
+                cookieContainer = new CookieContainer();
+            }
+            if (httpClientHandler == null)
+            {
+                httpClientHandler = new HttpClientHandler();
             }
 
             chatInfo = ReadChatInfo(roomId);
@@ -251,6 +260,17 @@ namespace HuyaLive
             {
                 httpClient.Dispose();
                 httpClient = null;
+            }
+
+            if (httpClientHandler != null)
+            {
+                httpClientHandler.Dispose();
+                httpClientHandler = null; ;
+            }
+
+            if (cookieContainer != null)
+            {
+                cookieContainer = null;
             }
 
             state = ClientState.Closed;
@@ -317,20 +337,6 @@ namespace HuyaLive
             }
         }
 
-        private bool SetIECookie(string url, string name, string value)
-        {
-            if (InternetSetCookie(url, name, value))
-            {
-                return true;
-            }
-            else
-            {
-                int errorCode = GetLastError();
-                logger?.WriteLine("InternetSetCookie(), errorCode = {0}", errorCode);
-                return true;
-            }
-        }
-
         private void GetInternetExplorerCookies(string domain)
         {
             string value = "";
@@ -360,13 +366,27 @@ namespace HuyaLive
             }
         }
 
+        private bool SetIECookie(string url, string name, string value)
+        {
+            if (InternetSetCookie(url, name, value))
+            {
+                return true;
+            }
+            else
+            {
+                int errorCode = GetLastError();
+                logger?.WriteLine("InternetSetCookie(), errorCode = {0}", errorCode);
+                return true;
+            }
+        }
+
         private void SetInternetExplorerCookies(string domain)
         {
             try
             {
                 foreach (var cookie in cookiesMap)
                 {
-                    if (SetIECookie(domain, cookie.Key, cookie.Value))
+                    if (SetIECookie(domain, cookie.Key, cookie.Value + "; expires=Sun, 22-Feb-2099 00:00:00 GMT; path=/; domain=.huya.com"))
                     {
                         logger?.WriteLine("IE set cookie: domain = {0}, name = {1}, value = {2}", domain, cookie.Key, cookie.Value);
                     }
@@ -442,11 +462,6 @@ namespace HuyaLive
             HuyaChatInfo result = null;
             logger?.Enter("HuyaLiveClient::ReadChatInfo()");
 
-            if (httpClient != null)
-            {
-                httpClient.Dispose();
-            }
-
             if (httpClient == null)
             {
                 string roomUrl;
@@ -466,6 +481,7 @@ namespace HuyaLive
                     domainUri = new Uri("https://m.huya.com");
                 else
                     domainUri = new Uri("https://www.huya.com");
+
                 httpClientHandler.CookieContainer = cookieContainer;
                 httpClientHandler.UseCookies = true;
 

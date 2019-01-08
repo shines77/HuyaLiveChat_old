@@ -110,7 +110,7 @@ namespace HuyaLive
         public const int BeginLiveNotice = 8000;
         // LiveStatusChange
         public const int EndLiveNotice = 8001;
-        public const int StreamSettingNotice = 8001;
+        public const int StreamSettingNotice = 8002;
         public const int LiveInfoChangedNotice = 8004;
         // WebTotalCount
         public const int AttendeeCountNotice = 8006;

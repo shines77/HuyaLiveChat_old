@@ -40,7 +40,7 @@
             this.cbBoxRoomId.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbBoxRoomId.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.cbBoxRoomId.FormattingEnabled = true;
-            this.cbBoxRoomId.Location = new System.Drawing.Point(217, 11);
+            this.cbBoxRoomId.Location = new System.Drawing.Point(217, 14);
             this.cbBoxRoomId.Name = "cbBoxRoomId";
             this.cbBoxRoomId.Size = new System.Drawing.Size(137, 22);
             this.cbBoxRoomId.TabIndex = 10;
@@ -49,7 +49,7 @@
             // btnLogin
             // 
             this.btnLogin.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnLogin.Location = new System.Drawing.Point(362, 10);
+            this.btnLogin.Location = new System.Drawing.Point(362, 13);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(75, 23);
             this.btnLogin.TabIndex = 9;
@@ -61,7 +61,7 @@
             // 
             this.lblRoomId.AutoSize = true;
             this.lblRoomId.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblRoomId.Location = new System.Drawing.Point(12, 16);
+            this.lblRoomId.Location = new System.Drawing.Point(12, 19);
             this.lblRoomId.Name = "lblRoomId";
             this.lblRoomId.Size = new System.Drawing.Size(91, 14);
             this.lblRoomId.TabIndex = 8;
@@ -70,7 +70,7 @@
             // txtBoxRoomId
             // 
             this.txtBoxRoomId.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txtBoxRoomId.Location = new System.Drawing.Point(107, 11);
+            this.txtBoxRoomId.Location = new System.Drawing.Point(107, 14);
             this.txtBoxRoomId.Name = "txtBoxRoomId";
             this.txtBoxRoomId.Size = new System.Drawing.Size(100, 23);
             this.txtBoxRoomId.TabIndex = 7;
@@ -79,7 +79,7 @@
             // 
             this.chatContent.AcceptsTab = true;
             this.chatContent.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chatContent.Location = new System.Drawing.Point(12, 45);
+            this.chatContent.Location = new System.Drawing.Point(12, 48);
             this.chatContent.Name = "chatContent";
             this.chatContent.ReadOnly = true;
             this.chatContent.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
