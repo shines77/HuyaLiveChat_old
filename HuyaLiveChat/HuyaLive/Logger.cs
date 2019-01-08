@@ -291,8 +291,9 @@ namespace HuyaLive
     public class Logger
     {
         private Loggerable logger = null;
-        private const int kMinLevel = 6;
-        private const int kMaxLevel = 14;
+
+        private const int kMinCount = 6;
+        private const int kMaxCount = 14;
 
         public Logger(Loggerable logger)
         {
@@ -432,9 +433,9 @@ namespace HuyaLive
         {
             if (logger != null)
             {
-                int level = logger.level;
-                int count = (level < kMaxLevel) ? (kMaxLevel - level) : 0;
-                count = (count >= kMinLevel) ? count : (kMaxLevel - kMinLevel);
+                int count = logger.level;
+                count = (count < kMaxCount) ? (kMaxCount - count) : 0;
+                count = (count >= kMinCount) ? count : (kMaxCount - kMinCount);
                 string separator = "";
                 for (int i = 0; i < count; i++)
                 {
@@ -451,15 +452,15 @@ namespace HuyaLive
             if (logger != null)
             {
                 logger.level--;
-                logger.WriteLine(message + " leave.");
-                int level = logger.level;
-                int count = (level < kMaxLevel) ? (kMaxLevel - level) : 0;
-                count = (count >= kMinLevel) ? count : (kMaxLevel - kMinLevel);
+                int count = logger.level;
+                count = (count < kMaxCount) ? (kMaxCount - count) : 0;
+                count = (count >= kMinCount) ? count : (kMaxCount - kMinCount);
                 string separator = "";
                 for (int i = 0; i < count; i++)
                 {
                     separator += "-----";
                 }
+                logger.WriteLine(message + " leave.");
                 logger.WriteLine(separator);
             }
         }

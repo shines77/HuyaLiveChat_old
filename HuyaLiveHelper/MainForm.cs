@@ -108,10 +108,10 @@ namespace HuyaLiveHelper
             try
             {
                 client = new HuyaLiveClient(this);
-                client.SetMobileMode(false);
+                //client.SetMobileMode(false);
                 client.SetLogger(logger);
                 // Shen tu
-                //client.Start("666007");
+                client.Start("666007");
                 // Yang qi huang
                 //client.Start("18001");
                 // Uzi
@@ -120,8 +120,8 @@ namespace HuyaLiveHelper
                 //client.Start("931827");
                 // Shen mi gou
                 //client.Start("399910");
-                // Anybody
-                client.Start("11807215");
+                // Qiqi
+                //client.Start("11807215");
             }
             catch (Exception ex)
             {
