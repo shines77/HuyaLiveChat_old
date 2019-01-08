@@ -433,8 +433,8 @@ namespace HuyaLive
             if (logger != null)
             {
                 int level = logger.level;
-                level = (level < kMaxLevel) ? (kMaxLevel - level) : 0;
-                int count = (level >= kMinLevel) ? level : (kMaxLevel - kMinLevel);
+                int count = (level < kMaxLevel) ? (kMaxLevel - level) : 0;
+                count = (count >= kMinLevel) ? count : (kMaxLevel - kMinLevel);
                 string separator = "";
                 for (int i = 0; i < count; i++)
                 {
@@ -453,8 +453,8 @@ namespace HuyaLive
                 logger.level--;
                 logger.WriteLine(message + " leave.");
                 int level = logger.level;
-                level = (level < kMaxLevel) ? (kMaxLevel - level) : 0;
-                int count = (level >= kMinLevel) ? level : (kMaxLevel - kMinLevel);
+                int count = (level < kMaxLevel) ? (kMaxLevel - level) : 0;
+                count = (count >= kMinLevel) ? count : (kMaxLevel - kMinLevel);
                 string separator = "";
                 for (int i = 0; i < count; i++)
                 {
