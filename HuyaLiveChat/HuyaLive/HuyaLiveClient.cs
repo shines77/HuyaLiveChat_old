@@ -5,14 +5,15 @@ using System.Text;
 using System.Threading;
 
 using System.Net.Http;
-using WebSocketSharp;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
-using System.Web;
+using System.Net;
+using System.Runtime.InteropServices;
+
+using WebSocketSharp;
 
 using Tup;
 using Tup.Tars;
-using System.Runtime.InteropServices;
 
 namespace HuyaLive
 {
@@ -30,6 +31,15 @@ namespace HuyaLive
         [DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern bool InternetSetCookie(string lpszUrlName, string lbszCookieName, string lpszCookieData);
 
+        [DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool InternetGetCookie(string lpszUrlName, string lbszCookieName, StringBuilder lpszCookieData, ref int lpdwSize);
+
+        [DllImport("kernel32.dll")]
+        public static extern Int32 GetLastError();
+
+        private const int ERROR_INSUFFICIENT_BUFFER = 122;
+        private const int ERROR_NO_MORE_ITEMS = 259;
+
         public delegate void OnWupRspEventHandler(TarsUniPacket wup);
 
         private Logger logger = null;
@@ -38,6 +48,7 @@ namespace HuyaLive
         private ClientState state = ClientState.Closed;
 
         private bool isMobile = true;
+        private bool isHttps = true;
 
         private HttpClient httpClient = null;
         private WebSocketSharp.WebSocket websocket = null;
@@ -57,9 +68,58 @@ namespace HuyaLive
         private Dictionary<int, GiftInfo> giftInfoList = new Dictionary<int, GiftInfo>();
         private Dictionary<int, string> petInfoList = new Dictionary<int, string>();
 
-        //private string fullCookie = "__yamid_tt1=0.17434570529241689; __yamid_new=C7DB527294E00001A3D987F0179DCD10; alphaValue=0.80; udb_guiddata=8b19eb642ae34aeaa70d104b22211133; guid=7160c3aa7cf8155ca4416a0b6b0be86b; SoundValue=0.20; udb_biztoken=AQAQMxPaf4DfKWOiGqBPs2cuRLPXs4gS3P9zmKTxBTYkQzslnfvKQu8MWQJ4zH2RWlS4NO-eq-c6DfEIqz3K68dri0CfRUimnoG8r_gydkSYnLi-St8S5IB49ylLkCbmdH0qPnYgaMSKxQTRP3nDHSf0H09_n4FYQIpUiKraeerR_T3rBXA8CzELoFkN1wYjAbCPBvzcfT311z5vfZQWni9EXORskL6DNS0S_jltZCAw-_SqZkCFWXngzkBhwltl9_Iic_9u197KwT13_yeX8Bwe4ZTeAo-Vk9ZI5OzoqfbwrwwaaSzRcM4HjJqDe2NnfVRbOCOMWarsWW7RmXgsTsJt; udb_origin=3; udb_other=%7B%22lt%22%3A%221546648515426%22%2C%22isRem%22%3A%221%22%7D; udb_passport=wokss66; udb_status=1; udb_uid=497167975; udb_version=1.0; username=wokss66; yyuid=497167975; udb_accdata=wokss66; __yasmid=0.17434570529241689; __yaoldyyuid=497167975; _yasids=__rootsid%3DC848659AE780000172C0C62018B0B900; h_unt=1546726490; isInLiveRoom=true; Hm_lvt_51700b6c722f5bb4cf39906a596ea41f=1544943741,1544966304,1546648466,1546726490; udb_passdata=3; Hm_lpvt_51700b6c722f5bb4cf39906a596ea41f=1546727912";
-        private string fullCookie = "__yamid_tt1=0.17434570529241689; __yamid_new=C7DB527294E00001A3D987F0179DCD10; alphaValue=0.80; udb_guiddata=8b19eb642ae34aeaa70d104b22211133; guid=7160c3aa7cf8155ca4416a0b6b0be86b; SoundValue=0.20; udb_biztoken=AQAQMxPaf4DfKWOiGqBPs2cuRLPXs4gS3P9zmKTxBTYkQzslnfvKQu8MWQJ4zH2RWlS4NO-eq-c6DfEIqz3K68dri0CfRUimnoG8r_gydkSYnLi-St8S5IB49ylLkCbmdH0qPnYgaMSKxQTRP3nDHSf0H09_n4FYQIpUiKraeerR_T3rBXA8CzELoFkN1wYjAbCPBvzcfT311z5vfZQWni9EXORskL6DNS0S_jltZCAw-_SqZkCFWXngzkBhwltl9_Iic_9u197KwT13_yeX8Bwe4ZTeAo-Vk9ZI5OzoqfbwrwwaaSzRcM4HjJqDe2NnfVRbOCOMWarsWW7RmXgsTsJt; udb_origin=3; udb_other=%7B%22lt%22%3A%221546648515426%22%2C%22isRem%22%3A%221%22%7D; udb_passport=wokss66; udb_status=1; udb_uid=497167975; udb_version=1.0; username=wokss66; yyuid=497167975; udb_accdata=wokss66; __yasmid=0.17434570529241689; __yaoldyyuid=497167975; _yasids=__rootsid%3DC848659AE780000172C0C62018B0B900; isInLiveRoom=true; Hm_lvt_51700b6c722f5bb4cf39906a596ea41f=1544943741,1544966304,1546648466,1546726490; udb_passdata=3; h_unt=1546728584; Hm_lpvt_51700b6c722f5bb4cf39906a596ea41f=1546728584";
         private object locker = new object();
+
+        HttpClientHandler httpClientHandler = new HttpClientHandler();
+        CookieContainer cookieContainer = new CookieContainer();
+
+        Dictionary<string, string> cookiesMap = new Dictionary<string, string>();
+        Dictionary<string, string> ieCookiesMap = new Dictionary<string, string>();
+
+        private readonly string[] ieCookieNames = {
+            "guid",            
+            "yyuid",
+            "username",
+            "nickname",
+            "avatar",
+            "account_token",
+            "stamp",
+
+            "udb_passport",
+            "udb_uid",
+            "udb_version",
+            "udb_guiddata",
+            "udb_origin",
+            "udb_other",
+            "udb_status",
+            "udb_accdata",
+            "udb_passdata",
+            "udb_biztoken",
+            "udb_l",
+            "udb_n",
+            "udb_oar",
+
+            "h_unt",
+
+            "Hm_lvt_51700b6c722f5bb4cf39906a596ea41f",
+            "Hm_lpvt_51700b6c722f5bb4cf39906a596ea41f",
+
+            "__yamid_tt1",
+            "__yamid_new",
+            "__yasmid",
+            "__yaoldyyuid",
+            "_yasids",
+
+            "alphaValue",
+            "SoundValue",
+            "isInLiveRoom",
+        };
+
+        //private string fullCookie = "__yamid_tt1=0.17434570529241689; __yamid_new=C7DB527294E00001A3D987F0179DCD10; alphaValue=0.80; udb_guiddata=8b19eb642ae34aeaa70d104b22211133; guid=7160c3aa7cf8155ca4416a0b6b0be86b; SoundValue=0.20; udb_biztoken=AQAQMxPaf4DfKWOiGqBPs2cuRLPXs4gS3P9zmKTxBTYkQzslnfvKQu8MWQJ4zH2RWlS4NO-eq-c6DfEIqz3K68dri0CfRUimnoG8r_gydkSYnLi-St8S5IB49ylLkCbmdH0qPnYgaMSKxQTRP3nDHSf0H09_n4FYQIpUiKraeerR_T3rBXA8CzELoFkN1wYjAbCPBvzcfT311z5vfZQWni9EXORskL6DNS0S_jltZCAw-_SqZkCFWXngzkBhwltl9_Iic_9u197KwT13_yeX8Bwe4ZTeAo-Vk9ZI5OzoqfbwrwwaaSzRcM4HjJqDe2NnfVRbOCOMWarsWW7RmXgsTsJt; udb_origin=3; udb_other=%7B%22lt%22%3A%221546648515426%22%2C%22isRem%22%3A%221%22%7D; udb_passport=wokss66; udb_status=1; udb_uid=497167975; udb_version=1.0; username=wokss66; yyuid=497167975; udb_accdata=wokss66; __yasmid=0.17434570529241689; __yaoldyyuid=497167975; _yasids=__rootsid%3DC848659AE780000172C0C62018B0B900; h_unt=1546726490; isInLiveRoom=true; Hm_lvt_51700b6c722f5bb4cf39906a596ea41f=1544943741,1544966304,1546648466,1546726490; udb_passdata=3; Hm_lpvt_51700b6c722f5bb4cf39906a596ea41f=1546727912";
+        //private string fullCookie = "__yamid_tt1=0.17434570529241689; __yamid_new=C7DB527294E00001A3D987F0179DCD10; alphaValue=0.80; udb_guiddata=8b19eb642ae34aeaa70d104b22211133; guid=7160c3aa7cf8155ca4416a0b6b0be86b; SoundValue=0.20; udb_biztoken=AQAQMxPaf4DfKWOiGqBPs2cuRLPXs4gS3P9zmKTxBTYkQzslnfvKQu8MWQJ4zH2RWlS4NO-eq-c6DfEIqz3K68dri0CfRUimnoG8r_gydkSYnLi-St8S5IB49ylLkCbmdH0qPnYgaMSKxQTRP3nDHSf0H09_n4FYQIpUiKraeerR_T3rBXA8CzELoFkN1wYjAbCPBvzcfT311z5vfZQWni9EXORskL6DNS0S_jltZCAw-_SqZkCFWXngzkBhwltl9_Iic_9u197KwT13_yeX8Bwe4ZTeAo-Vk9ZI5OzoqfbwrwwaaSzRcM4HjJqDe2NnfVRbOCOMWarsWW7RmXgsTsJt; udb_origin=3; udb_other=%7B%22lt%22%3A%221546648515426%22%2C%22isRem%22%3A%221%22%7D; udb_passport=wokss66; udb_status=1; udb_uid=497167975; udb_version=1.0; username=wokss66; yyuid=497167975; udb_accdata=wokss66; __yasmid=0.17434570529241689; __yaoldyyuid=497167975; _yasids=__rootsid%3DC848659AE780000172C0C62018B0B900; isInLiveRoom=true; Hm_lvt_51700b6c722f5bb4cf39906a596ea41f=1544943741,1544966304,1546648466,1546726490; udb_passdata=3; h_unt=1546728584; Hm_lpvt_51700b6c722f5bb4cf39906a596ea41f=1546728584";
+        //private string fullCookie = "udb_biztoken=AQCgmAQvxRpZ297JOCK-B-tV1_YzefI6aqLoPDCz_WI8ryAi6eM7cHVjJ80_Jo-Ui9lzj1pDO0V7_fReLvvTeO4fiut-NfkLRF8dlmUY9IRZfllTOACXa_8oUvUO_tc9jw3R2uSddRqWBSBdOSbnpBr9cNqguEeKJ953UaZufhIWUKy6v08y0dmHMRvPXHIW9qEcY91HRQhvoStbhxWsHTbCyBVgZuPxN9qxeAKXtE6rmLLrwH7FzCVOhDTda0eFgvW-n8M-9k1J7_0qV9qlMvzrRML2yU9IR2B4MVGl_U-tHCEQtB5lY_3okIUBFEQth8K50T-ahd_lKMsZy682Zdm3; Hm_lvt_51700b6c722f5bb4cf39906a596ea41f=1546794211,1546804156,1546955687,1546971884; stamp=768153742; udb_status=1; isInLiveRoom=true; username=wokss66; udb_other=%7B%22lt%22%3A%221546955702657%22%2C%22isRem%22%3A%221%22%7D; yyuid=497167975; __yamid_tt1=0.8704622099901131; guid=b7247c9d8c6f285ce1ae565857584a4e; udb_passport=wokss66; udb_version=1.0; udb_guiddata=9d98835a54cf4de793cef1d832b958c4; udb_origin=3; h_unt=1546971882; __yamid_new=C7D9621BECF000012E53951B12013D10; udb_uid=497167975; udb_accdata=wokss66; SoundValue=0; udb_passdata=3; __yasmid=0.8704622099901131; __yaoldyyuid=497167975; _yasids=__rootsid%3DC8497634C70000017B15829A6820C2F0; Hm_lpvt_51700b6c722f5bb4cf39906a596ea41f=1546971884";
+        private readonly string fullCookie = "nickname=Cpp\u4e36\u90ed\u5b50; udb_biztoken=AQCgmAQvxRpZ297JOCK-B-tV1_YzefI6aqLoPDCz_WI8ryAi6eM7cHVjJ80_Jo-Ui9lzj1pDO0V7_fReLvvTeO4fiut-NfkLRF8dlmUY9IRZfllTOACXa_8oUvUO_tc9jw3R2uSddRqWBSBdOSbnpBr9cNqguEeKJ953UaZufhIWUKy6v08y0dmHMRvPXHIW9qEcY91HRQhvoStbhxWsHTbCyBVgZuPxN9qxeAKXtE6rmLLrwH7FzCVOhDTda0eFgvW-n8M-9k1J7_0qV9qlMvzrRML2yU9IR2B4MVGl_U-tHCEQtB5lY_3okIUBFEQth8K50T-ahd_lKMsZy682Zdm3; Hm_lvt_51700b6c722f5bb4cf39906a596ea41f=1546794211,1546804156,1546955687,1546971884; stamp=784056872; udb_status=1; isInLiveRoom=true; username=wokss66; udb_other=%7B%22lt%22%3A%221546955702657%22%2C%22isRem%22%3A%221%22%7D; yyuid=497167975; __yamid_tt1=0.8704622099901131; guid=b7247c9d8c6f285ce1ae565857584a4e; udb_passport=wokss66; udb_version=1.0; udb_guiddata=9d98835a54cf4de793cef1d832b958c4; udb_origin=3; h_unt=1546972358; __yamid_new=C7D9621BECF000012E53951B12013D10; udb_uid=497167975; udb_accdata=wokss66; SoundValue=0; udb_passdata=3; __yasmid=0.8704622099901131; __yaoldyyuid=497167975; _yasids=__rootsid%3DC8497634C70000017B15829A6820C2F0; Hm_lpvt_51700b6c722f5bb4cf39906a596ea41f=1546972359; PHPSESSID=m76hh1alh2cfp9bcv8n0jq8ck0";
+        private readonly string user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko";
 
         public HuyaLiveClient(ClientListener listener = null)
         {
@@ -74,26 +134,7 @@ namespace HuyaLive
             petInfoList.Add(6, "未知");
 
             fullCookie = fullCookie.Replace(",", "%2C");
-        }
-
-        private void DestoryTimer()
-        {
-            if (heartbeatTimer != null)
-            {
-                heartbeatTimer.Dispose();
-                heartbeatTimer = null;
-            }
-
-            if (freshGiftListTimer != null)
-            {
-                freshGiftListTimer.Dispose();
-                freshGiftListTimer = null;
-            }
-        }
-
-        public void Dispose()
-        {
-            this.Stop();
+            GetCookiesMap();
         }
 
         public bool IsMobile()
@@ -104,6 +145,16 @@ namespace HuyaLive
         public void SetMobileMode(bool isMobile)
         {
             this.isMobile = isMobile;
+        }
+
+        public bool IsHttps()
+        {
+            return isHttps;
+        }
+
+        public void SetHttps(bool isHttps)
+        {
+            this.isHttps = isHttps;
         }
 
         public ClientListener GetListener()
@@ -207,6 +258,131 @@ namespace HuyaLive
             logger?.Leave("HuyaLiveClient::Stop()");
         }
 
+        public void Dispose()
+        {
+            this.Stop();
+        }
+
+        private void DestoryTimer()
+        {
+            if (heartbeatTimer != null)
+            {
+                heartbeatTimer.Dispose();
+                heartbeatTimer = null;
+            }
+
+            if (freshGiftListTimer != null)
+            {
+                freshGiftListTimer.Dispose();
+                freshGiftListTimer = null;
+            }
+        }
+
+        private void GetCookiesMap()
+        {
+            cookiesMap.Clear();
+
+            string[] cookie_array = fullCookie.Split(';');
+            foreach (var cookie_str in cookie_array)
+            {
+                string cookie_str2 = cookie_str.Trim();
+                string[] cookie_pair = cookie_str2.Split('=');
+                if (cookie_pair.Length == 2)
+                {
+                    cookie_pair[0] = cookie_pair[0].Trim();
+                    cookie_pair[1] = WebUtility.UrlEncode(cookie_pair[1].Trim());
+                    cookiesMap.Add(cookie_pair[0], cookie_pair[1]);
+                }
+            }
+        }
+
+        private bool GetIECookie(string url, string name, ref string value)
+        {
+            int bufSize = 1024;
+            StringBuilder cookie_data = new StringBuilder(bufSize);
+            if (InternetGetCookie(url, name, cookie_data, ref bufSize))
+            {
+                value = cookie_data.ToString();
+                return true;
+            }
+            else
+            {
+                int errorCode = GetLastError();
+                if (errorCode != ERROR_NO_MORE_ITEMS && errorCode != ERROR_INSUFFICIENT_BUFFER)
+                {
+                    logger?.WriteLine("InternetGetCookie(), errorCode = {0}", errorCode);
+                }
+                value = "";
+                return false;
+            }
+        }
+
+        private bool SetIECookie(string url, string name, string value)
+        {
+            if (InternetSetCookie(url, name, value))
+            {
+                return true;
+            }
+            else
+            {
+                int errorCode = GetLastError();
+                logger?.WriteLine("InternetSetCookie(), errorCode = {0}", errorCode);
+                return true;
+            }
+        }
+
+        private void GetInternetExplorerCookies(string domain)
+        {
+            string value = "";
+            try
+            {
+                ieCookiesMap.Clear();
+                foreach (var name in ieCookieNames)
+                {
+                    if (GetIECookie(domain, name, ref value))
+                    {
+                        if (!ieCookiesMap.ContainsKey(name))
+                        {
+                            ieCookiesMap.Add(name, value);
+                        }
+                        logger?.WriteLine("IE get cookie: domain = {0}, name = {1}, value = {2}", domain, name, value);
+                    }
+                    else
+                    {
+                        logger?.WriteLine("IE get cookie: domain = {0}, name = {1}, is no exists.", domain, name);
+                    }
+                }
+                logger?.WriteLine("");
+            }
+            catch (Exception ex)
+            {
+                logger?.WriteLine(ex);
+            }
+        }
+
+        private void SetInternetExplorerCookies(string domain)
+        {
+            try
+            {
+                foreach (var cookie in cookiesMap)
+                {
+                    if (SetIECookie(domain, cookie.Key, cookie.Value))
+                    {
+                        logger?.WriteLine("IE set cookie: domain = {0}, name = {1}, value = {2}", domain, cookie.Key, cookie.Value);
+                    }
+                    else
+                    {
+                        logger?.WriteLine("IE set cookie: domain = {0}, name = {1}, value = {2}, set failed.", domain, cookie.Key);
+                    }
+                }
+                logger?.WriteLine("");
+            }
+            catch (Exception ex)
+            {
+                logger?.WriteLine(ex);
+            }
+        }
+
         static private long ParseMatchLong(Match match)
         {
             if (match.Groups.Count >= 2)
@@ -248,6 +424,19 @@ namespace HuyaLive
             logger?.WriteLine("");
         }
 
+        private int SetHttpCookies(Uri domainUri, CookieContainer _cookieContainer)
+        {
+            if (_cookieContainer != null)
+            {
+                foreach (var cookie in cookiesMap)
+                {
+                    _cookieContainer.Add(domainUri, new Cookie(cookie.Key, cookie.Value, "/", ".huya.com"));
+                }
+            }
+
+            return cookiesMap.Count;
+        }
+
         private HuyaChatInfo ReadChatInfo(string roomId)
         {
             HuyaChatInfo result = null;
@@ -266,10 +455,26 @@ namespace HuyaLive
                 else
                     roomUrl = "https://www.huya.com/" + roomId;
 
+                GetInternetExplorerCookies("https://huya.com/");
+                GetInternetExplorerCookies(roomUrl);
+
+                SetInternetExplorerCookies("https://www.huya.com/");
+                GetInternetExplorerCookies("https://www.huya.com/");
+
+                Uri domainUri;
+                if (isMobile)
+                    domainUri = new Uri("https://m.huya.com");
+                else
+                    domainUri = new Uri("https://www.huya.com");
+                httpClientHandler.CookieContainer = cookieContainer;
+                httpClientHandler.UseCookies = true;
+
+                SetHttpCookies(domainUri, cookieContainer);
+
                 //
                 // See: https://www.jianshu.com/p/f8616ef87df6
                 //
-                httpClient = new HttpClient();
+                httpClient = new HttpClient(httpClientHandler);
                 //
                 // See: https://stackoverflow.com/questions/10547895/how-can-i-tell-when-httpclient-has-timed-out
                 //
@@ -284,7 +489,7 @@ namespace HuyaLive
                     httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
                     httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-                    httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
+                    //httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
                     httpClient.DefaultRequestHeaders.Add("User-Agent",
                         "Mozilla/5.0 (Linux; Android 6.0; Nexus 7 Build/MRA58N) " +
                         "AppleWebKit/537.36 (KHTML, like Gecko) " +
@@ -304,10 +509,13 @@ namespace HuyaLive
                     httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
                     httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-                    httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
+                    //httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
+                    httpClient.DefaultRequestHeaders.Add("User-Agent", user_agent);
+                    /*
                     httpClient.DefaultRequestHeaders.Add("User-Agent",
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
                         "Chrome/63.0.3239.132 Safari/537.36");
+                    *///
                     //httpClient.DefaultRequestHeaders.Add("User-Agent",
                     //    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) " +
                     //    "Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36");
@@ -389,6 +597,13 @@ namespace HuyaLive
                         result.SetInfo(topsid, subsid, yyuid, room_name);
                     }
 
+                    IEnumerable<Cookie> responseCookies = cookieContainer.GetCookies(domainUri).Cast<Cookie>();
+                    foreach (Cookie cookie in responseCookies)
+                    {
+                        logger?.WriteLine("domain = {0}, name = {1}, value = {2}",
+                                          cookie.Domain, cookie.Name, cookie.Value);
+                    }
+
                     EnumerateHttpHeaders(response.Headers);
                 }
             }
@@ -410,19 +625,29 @@ namespace HuyaLive
             const string checkLogonURL = "https://www.huya.com/udb_web/checkLogin.php";
 
             logger?.Enter("HuyaLiveClient::CheckLogon()");
-#if false
+#if true
+            Uri domainUri;
+            if (isMobile)
+                domainUri = new Uri("https://m.huya.com");
+            else
+                domainUri = new Uri("https://www.huya.com");
+            SetHttpCookies(domainUri, cookieContainer);
+
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-            //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
-            httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "deflate, br");
+            httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+            //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "deflate, br");
             httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
             httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
             httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
             httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-            httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
+            //httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
+            httpClient.DefaultRequestHeaders.Add("User-Agent", user_agent);
+            /*
             httpClient.DefaultRequestHeaders.Add("User-Agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
                 "Chrome/63.0.3239.132 Safari/537.36");
+            //*/
 #endif
             EnumerateHttpHeaders(httpClient.DefaultRequestHeaders);
 
@@ -434,6 +659,13 @@ namespace HuyaLive
                 logger?.WriteLine("Html contont:\n\n{0}", html);
 
                 EnumerateHttpHeaders(response.Headers);
+
+                IEnumerable<Cookie> responseCookies = cookieContainer.GetCookies(domainUri).Cast<Cookie>();
+                foreach (Cookie cookie in responseCookies)
+                {
+                    logger?.WriteLine("domain = {0}, name = {1}, value = {2}",
+                                      cookie.Domain, cookie.Name, cookie.Value);
+                }
             }
 
             logger?.Leave("HuyaLiveClient::CheckLogon()");
@@ -444,19 +676,29 @@ namespace HuyaLive
             const string checkLogonURL = "https://www.huya.com/udb_web/udbport2.php?m=HuyaHome&do=checkUserNick";
 
             logger?.Enter("HuyaLiveClient::CheckUserNick()");
-#if false
+#if true
+            Uri domainUri;
+            if (isMobile)
+                domainUri = new Uri("https://m.huya.com");
+            else
+                domainUri = new Uri("https://www.huya.com");
+            SetHttpCookies(domainUri, cookieContainer);
+
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-            //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
-            httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "deflate, br");
+            httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+            //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "deflate, br");
             httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
             httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
             httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
             httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-            httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
+            //httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
+            httpClient.DefaultRequestHeaders.Add("User-Agent", user_agent);
+            /*
             httpClient.DefaultRequestHeaders.Add("User-Agent",
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
                 "Chrome/63.0.3239.132 Safari/537.36");
+            //*/
 #endif
             EnumerateHttpHeaders(httpClient.DefaultRequestHeaders);
 
@@ -468,38 +710,43 @@ namespace HuyaLive
                 logger?.WriteLine("Html contont:\n\n{0}", html);
 
                 EnumerateHttpHeaders(response.Headers);
+
+                IEnumerable<Cookie> responseCookies = cookieContainer.GetCookies(domainUri).Cast<Cookie>();
+                foreach (Cookie cookie in responseCookies)
+                {
+                    logger?.WriteLine("domain = {0}, name = {1}, value = {2}",
+                                      cookie.Domain, cookie.Name, cookie.Value);
+                }
             }
 
             logger?.Leave("HuyaLiveClient::CheckUserNick()");
         }
 
-        public int SetWebSocketCookies(WebSocket _websocket, string fullCookie)
+        public int SetWebSocketCookies(WebSocket _websocket)
         {
-            Dictionary<string, string> cookies = new Dictionary<string, string>();
-
-            string[] cookie_array = fullCookie.Split(';');
-            foreach (var cookie_str in cookie_array)
-            {
-                var cookie_str2 = cookie_str.Trim();
-                string[] cookie_pair = cookie_str2.Split('=');
-                if (cookie_pair.Length == 2)
-                {
-                    cookie_pair[0] = cookie_pair[0].Trim();
-                    cookie_pair[1] = cookie_pair[1].Trim();
-                    cookie_pair[1] = cookie_pair[1].Replace(",", "%2C");
-                    cookies.Add(cookie_pair[0], cookie_pair[1]);
-                }
-            }
-
             if (_websocket != null)
             {
-                foreach (var cookie in cookies)
+#if false
+                foreach (var cookie in cookiesMap)
                 {
                     _websocket.SetCookie(new WebSocketSharp.Net.Cookie(cookie.Key, cookie.Value, "/", "www.huya.com"));
                 }
+#else
+                Uri domainUri;
+                if (isMobile)
+                    domainUri = new Uri("https://m.huya.com");
+                else
+                    domainUri = new Uri("https://www.huya.com");
+                IEnumerable<Cookie> responseCookies = cookieContainer.GetCookies(domainUri).Cast<Cookie>();
+                foreach (var cookie in responseCookies)
+                {
+                    _websocket.SetCookie(new WebSocketSharp.Net.Cookie(cookie.Name, cookie.Value,
+                                                                       cookie.Path, cookie.Domain));
+                }
+#endif
             }
             
-            return cookies.Count;
+            return cookiesMap.Count;
         }
 
         public bool StartWebSocket(string roomId)
@@ -544,9 +791,16 @@ namespace HuyaLive
                     //
                     websocket = new WebSocketSharp.WebSocket(apiUrl);
                     websocket.Origin = originalUrl;
-                    //websocket.Compression = CompressionMethod.Deflate;
+                    websocket.Compression = CompressionMethod.Deflate;
 
-                    int nCookieCount = SetWebSocketCookies(websocket, fullCookie);
+                    ///*
+                    int nCookieCount = SetWebSocketCookies(websocket);
+                    foreach (var cookie in websocket.Cookies)
+                    {
+                        logger?.WriteLine("domain = {0}, name = {1}, value = {2}",
+                                          cookie.Domain, cookie.Name, cookie.Value);
+                    }
+                    //*/
 
                     websocket.OnOpen += OnOpen;
                     websocket.OnMessage += OnMessage;

@@ -306,7 +306,7 @@ namespace HuyaLiveHelper
             try
             {
                 client = new HuyaLiveClient(this);
-                //client.SetMobileMode(false);
+                client.SetMobileMode(false);
                 client.SetLogger(logger);
 
                 isActived = true;
