@@ -50,9 +50,9 @@ namespace HuyaLiveHelper
             logger?.WriteLine("--------------------------------------------------------");
         }
 
-        public void OnNobleEnter(object sender, NobleEnterMessage message)
+        public void OnNobleOnline(object sender, NobleOnlineMessage message)
         {
-            logger?.WriteLine(">>>  MainForm::OnNobleEnter()");
+            logger?.WriteLine(">>>  MainForm::OnNobleOnline()");
             logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
             logger?.WriteLine(">>>  uid = {0}, imid = {1}, nickname = \"{2}\"",
                               message.uid, message.imid, message.nickname);

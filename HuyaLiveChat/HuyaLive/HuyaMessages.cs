@@ -9,7 +9,7 @@ using Tup.Tars;
 
 namespace HuyaLive
 {
-    public class NobleEnterMessage
+    public class NobleOnlineMessage
     {
         public long uid;
         public long imid;

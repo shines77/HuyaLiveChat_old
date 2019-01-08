@@ -1073,7 +1073,7 @@ namespace HuyaLive
                         NobleEnterNotice noticeMsg = new NobleEnterNotice();
                         noticeMsg.ReadFrom(stream);
 
-                        NobleEnterMessage enterMsg = new NobleEnterMessage();
+                        NobleOnlineMessage enterMsg = new NobleOnlineMessage();
                         enterMsg.uid = noticeMsg.tNobleInfo.lUid;
                         enterMsg.imid = noticeMsg.tNobleInfo.lPid;
                         enterMsg.nickname = noticeMsg.tNobleInfo.sNickName;
@@ -1083,7 +1083,7 @@ namespace HuyaLive
 
                         lock (locker)
                         {
-                            listener?.OnNobleEnter(this, enterMsg);
+                            listener?.OnNobleOnline(this, enterMsg);
                         }
                     }
                     break;
