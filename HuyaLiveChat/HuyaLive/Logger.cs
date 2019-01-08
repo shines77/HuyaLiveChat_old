@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HuyaLive
 {
-    public enum LoggerType
+    public enum LogType
     {
         Debug,
         Console,
@@ -14,6 +14,8 @@ namespace HuyaLive
 
     public interface Loggerable
     {
+        int level { get; set; }
+
         void Print(string message);
         void Print(string format, params object[] args);
         void Write(string message);
@@ -28,8 +30,16 @@ namespace HuyaLive
 
     public class Debugger : Loggerable
     {
+        private int level_ = 0;
+
         public Debugger() : base()
         {
+        }
+
+        int Loggerable.level
+        {
+            get { return level_; }
+            set { level_ = value; }
         }
 
         public void Close()
@@ -85,8 +95,16 @@ namespace HuyaLive
 
     public class Consoler : Loggerable
     {
+        public int level_ = 0;
+
         public Consoler() : base()
         {
+        }
+
+        int Loggerable.level
+        {
+            get { return level_; }
+            set { level_ = value; }
         }
 
         public void Close()
@@ -142,8 +160,16 @@ namespace HuyaLive
 
     public class ConsoleOut : Loggerable
     {
+        public int level_ = 0;
+
         public ConsoleOut() : base()
         {
+        }
+
+        int Loggerable.level
+        {
+            get { return level_; }
+            set { level_ = value; }
         }
 
         public void Close()
@@ -199,8 +225,16 @@ namespace HuyaLive
 
     public class DummyLogger : Loggerable
     {
+        public int level_ = 0;
+
         public DummyLogger() : base()
         {
+        }
+
+        int Loggerable.level
+        {
+            get { return level_; }
+            set { level_ = value; }
         }
 
         public void Close()
@@ -254,9 +288,11 @@ namespace HuyaLive
         }
     }
 
-    public class Logger : Loggerable
+    public class Logger
     {
         private Loggerable logger = null;
+        private const int kMinLevel = 6;
+        private const int kMaxLevel = 14;
 
         public Logger(Loggerable logger)
         {
@@ -270,94 +306,62 @@ namespace HuyaLive
 
         public void Print(string message)
         {
-            if (logger != null)
-            {
-                logger.Print(message);
-            }
+            Logger.Print(this.logger, message);
         }
 
         public void Print(string format, params object[] args)
         {
-            if (logger != null)
-            {
-                logger.Print(format, args);
-            }
+            Logger.Print(this.logger, format, args);
         }
 
         public void Write(string message)
         {
-            if (logger != null)
-            {
-                logger.Write(message);
-            }
+            Logger.Write(this.logger, message);
         }
 
         public void Write(string format, params object[] args)
         {
-            if (logger != null)
-            {
-                logger.Write(format, args);
-            }
+            Logger.Write(this.logger, format, args);
         }
 
         public void Write(Exception ex)
         {
-            if (logger != null)
-            {
-                logger.Write(ex.ToString());
-            }
+            Logger.Write(this.logger, ex);
         }
 
         public void WriteLine(string message)
         {
-            if (logger != null)
-            {
-                logger.WriteLine(message);
-            }
+            Logger.WriteLine(this.logger, message);
         }
 
         public void WriteLine(string format, params object[] args)
         {
-            if (logger != null)
-            {
-                logger.WriteLine(format, args);
-            }
+            Logger.WriteLine(this.logger, format, args);
         }
 
         public void WriteLine(Exception ex)
         {
-            if (logger != null)
-            {
-                logger.WriteLine(ex.ToString());
-            }
+            Logger.WriteLine(this.logger, ex);
         }
 
         public void Enter(string message)
         {
-            if (logger != null)
-            {
-                logger.WriteLine("-------------------------------------------");
-                logger.WriteLine(message + " enter.");
-            }
+            Logger.Enter(this.logger, message);
         }
 
         public void Leave(string message)
         {
-            if (logger != null)
-            {
-                logger.WriteLine(message + " leave.");
-                logger.WriteLine("-------------------------------------------");
-            }
+            Logger.Leave(this.logger, message);
         }
 
         public void Flush()
         {
-            logger.Flush();
+            Logger.Flush(this.logger);
         }
 
         public void Close()
         {
-            logger.Close();
+            Logger.Close(this.logger);
         }
 
         static public void Print(Loggerable logger, string message)
@@ -424,6 +428,42 @@ namespace HuyaLive
             }
         }
 
+        static public void Enter(Loggerable logger, string message)
+        {
+            if (logger != null)
+            {
+                int level = logger.level;
+                level = (level < kMaxLevel) ? (kMaxLevel - level) : 0;
+                int count = (level >= kMinLevel) ? level : (kMaxLevel - kMinLevel);
+                string separator = "";
+                for (int i = 0; i < count; i++)
+                {
+                    separator += "-----";
+                }
+                logger.WriteLine(separator);
+                logger.WriteLine(message + " enter.");
+                logger.level++;
+            }
+        }
+
+        static public void Leave(Loggerable logger, string message)
+        {
+            if (logger != null)
+            {
+                logger.level--;
+                logger.WriteLine(message + " leave.");
+                int level = logger.level;
+                level = (level < kMaxLevel) ? (kMaxLevel - level) : 0;
+                int count = (level >= kMinLevel) ? level : (kMaxLevel - kMinLevel);
+                string separator = "";
+                for (int i = 0; i < count; i++)
+                {
+                    separator += "-----";
+                }
+                logger.WriteLine(separator);
+            }
+        }
+
         static public void Flush(Loggerable logger)
         {
             if (logger != null)
@@ -437,24 +477,6 @@ namespace HuyaLive
             if (logger != null)
             {
                 logger.Close();
-            }
-        }
-
-        static public void Enter(Loggerable logger, string message)
-        {
-            if (logger != null)
-            {
-                logger.WriteLine("-------------------------------------");
-                logger.WriteLine(message + " enter.");
-            }
-        }
-
-        static public void Leave(Loggerable logger, string message)
-        {
-            if (logger != null)
-            {
-                logger.WriteLine(message + " leave.");
-                logger.WriteLine("-------------------------------------");
             }
         }
     }
