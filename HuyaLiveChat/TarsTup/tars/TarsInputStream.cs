@@ -400,7 +400,6 @@ namespace Tup.Tars
             {
                 HeadData head = new HeadData();
                 ReadHead(head);
-
                 switch (head.type)
                 {
                     case (byte)TarsStructType.ZERO_TAG:

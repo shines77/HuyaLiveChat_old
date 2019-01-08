@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
 
 using System.Net.Http;
 using WebSocketSharp;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
+using System.Web;
 
 using Tup;
 using Tup.Tars;
+using System.Runtime.InteropServices;
 
 namespace HuyaLive
 {
@@ -27,6 +27,9 @@ namespace HuyaLive
 
     public class HuyaLiveClient
     {
+        [DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool InternetSetCookie(string lpszUrlName, string lbszCookieName, string lpszCookieData);
+
         public delegate void OnWupRspEventHandler(TarsUniPacket wup);
 
         private Logger logger = null;
@@ -52,12 +55,25 @@ namespace HuyaLive
         UserId mainUserId = null;
 
         private Dictionary<int, GiftInfo> giftInfoList = new Dictionary<int, GiftInfo>();
+        private Dictionary<int, string> petInfoList = new Dictionary<int, string>();
 
+        //private string fullCookie = "__yamid_tt1=0.17434570529241689; __yamid_new=C7DB527294E00001A3D987F0179DCD10; alphaValue=0.80; udb_guiddata=8b19eb642ae34aeaa70d104b22211133; guid=7160c3aa7cf8155ca4416a0b6b0be86b; SoundValue=0.20; udb_biztoken=AQAQMxPaf4DfKWOiGqBPs2cuRLPXs4gS3P9zmKTxBTYkQzslnfvKQu8MWQJ4zH2RWlS4NO-eq-c6DfEIqz3K68dri0CfRUimnoG8r_gydkSYnLi-St8S5IB49ylLkCbmdH0qPnYgaMSKxQTRP3nDHSf0H09_n4FYQIpUiKraeerR_T3rBXA8CzELoFkN1wYjAbCPBvzcfT311z5vfZQWni9EXORskL6DNS0S_jltZCAw-_SqZkCFWXngzkBhwltl9_Iic_9u197KwT13_yeX8Bwe4ZTeAo-Vk9ZI5OzoqfbwrwwaaSzRcM4HjJqDe2NnfVRbOCOMWarsWW7RmXgsTsJt; udb_origin=3; udb_other=%7B%22lt%22%3A%221546648515426%22%2C%22isRem%22%3A%221%22%7D; udb_passport=wokss66; udb_status=1; udb_uid=497167975; udb_version=1.0; username=wokss66; yyuid=497167975; udb_accdata=wokss66; __yasmid=0.17434570529241689; __yaoldyyuid=497167975; _yasids=__rootsid%3DC848659AE780000172C0C62018B0B900; h_unt=1546726490; isInLiveRoom=true; Hm_lvt_51700b6c722f5bb4cf39906a596ea41f=1544943741,1544966304,1546648466,1546726490; udb_passdata=3; Hm_lpvt_51700b6c722f5bb4cf39906a596ea41f=1546727912";
+        private string fullCookie = "__yamid_tt1=0.17434570529241689; __yamid_new=C7DB527294E00001A3D987F0179DCD10; alphaValue=0.80; udb_guiddata=8b19eb642ae34aeaa70d104b22211133; guid=7160c3aa7cf8155ca4416a0b6b0be86b; SoundValue=0.20; udb_biztoken=AQAQMxPaf4DfKWOiGqBPs2cuRLPXs4gS3P9zmKTxBTYkQzslnfvKQu8MWQJ4zH2RWlS4NO-eq-c6DfEIqz3K68dri0CfRUimnoG8r_gydkSYnLi-St8S5IB49ylLkCbmdH0qPnYgaMSKxQTRP3nDHSf0H09_n4FYQIpUiKraeerR_T3rBXA8CzELoFkN1wYjAbCPBvzcfT311z5vfZQWni9EXORskL6DNS0S_jltZCAw-_SqZkCFWXngzkBhwltl9_Iic_9u197KwT13_yeX8Bwe4ZTeAo-Vk9ZI5OzoqfbwrwwaaSzRcM4HjJqDe2NnfVRbOCOMWarsWW7RmXgsTsJt; udb_origin=3; udb_other=%7B%22lt%22%3A%221546648515426%22%2C%22isRem%22%3A%221%22%7D; udb_passport=wokss66; udb_status=1; udb_uid=497167975; udb_version=1.0; username=wokss66; yyuid=497167975; udb_accdata=wokss66; __yasmid=0.17434570529241689; __yaoldyyuid=497167975; _yasids=__rootsid%3DC848659AE780000172C0C62018B0B900; isInLiveRoom=true; Hm_lvt_51700b6c722f5bb4cf39906a596ea41f=1544943741,1544966304,1546648466,1546726490; udb_passdata=3; h_unt=1546728584; Hm_lpvt_51700b6c722f5bb4cf39906a596ea41f=1546728584";
         private object locker = new object();
 
         public HuyaLiveClient(ClientListener listener = null)
         {
             SetListener(listener);
+
+            petInfoList.Add(0, "剑士");
+            petInfoList.Add(1, "骑士");
+            petInfoList.Add(2, "领主");
+            petInfoList.Add(3, "公爵");
+            petInfoList.Add(4, "君王");
+            petInfoList.Add(5, "帝王");
+            petInfoList.Add(6, "未知");
+
+            fullCookie = fullCookie.Replace(",", "%2C");
         }
 
         private void DestoryTimer()
@@ -156,6 +172,9 @@ namespace HuyaLive
                 mainUserId = new UserId();
                 mainUserId.lUid = chatInfo.yyuid;
                 mainUserId.sHuyaUA = "webh5&1.0.0&websocket";
+
+                CheckLogon();
+                CheckUserNick();
 
                 bool success = StartWebSocket(roomId);
             }
@@ -258,12 +277,14 @@ namespace HuyaLive
 
                 if (isMobile)
                 {
+                    httpClient.DefaultRequestHeaders.Clear();
                     httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-                    httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip,deflate,br");
+                    httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
                     httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
                     httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
                     httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+                    httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
                     httpClient.DefaultRequestHeaders.Add("User-Agent",
                         "Mozilla/5.0 (Linux; Android 6.0; Nexus 7 Build/MRA58N) " +
                         "AppleWebKit/537.36 (KHTML, like Gecko) " +
@@ -275,15 +296,21 @@ namespace HuyaLive
                 }
                 else
                 {
+                    httpClient.DefaultRequestHeaders.Clear();
                     httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-                    httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "deflate,br");
+                    //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+                    httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "deflate, br");
                     httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
                     httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
                     httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+                    httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
                     httpClient.DefaultRequestHeaders.Add("User-Agent",
-                        "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) " +
-                        "Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36");
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                        "Chrome/63.0.3239.132 Safari/537.36");
+                    //httpClient.DefaultRequestHeaders.Add("User-Agent",
+                    //    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                    //    "Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36");
                     //httpClient.DefaultRequestHeaders.Add("User-Agent",
                     //    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) " +
                     //    "Ubuntu Chromium/70.0.3538.77 Chrome/70.0.3538.77 Safari/537.36");
@@ -370,6 +397,111 @@ namespace HuyaLive
             return result;
         }
 
+        /*
+         * Struggling trying to get cookie out of response with HttpClient in .net 4.5
+         *
+         * See: https://stackoverflow.com/questions/13318102/struggling-trying-to-get-cookie-out-of-response-with-httpclient-in-net-4-5
+         * See: https://codeday.me/bug/20170731/51674.html
+         *
+         * InternetSetCookie(url, cookie.Name, cookie.Value + "; expires=\"Sun, 22-Feb-2099 00:00:00 GMT\"");
+         */
+        public void CheckLogon()
+        {
+            const string checkLogonURL = "https://www.huya.com/udb_web/checkLogin.php";
+
+            logger?.Enter("HuyaLiveClient::CheckLogon()");
+#if false
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+            //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+            httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "deflate, br");
+            httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
+            httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+            httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
+            httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+            httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
+            httpClient.DefaultRequestHeaders.Add("User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/63.0.3239.132 Safari/537.36");
+#endif
+            EnumerateHttpHeaders(httpClient.DefaultRequestHeaders);
+
+            HttpResponseMessage response = httpClient.GetAsync(checkLogonURL).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                string html = response.Content.ReadAsStringAsync().Result;
+
+                logger?.WriteLine("Html contont:\n\n{0}", html);
+
+                EnumerateHttpHeaders(response.Headers);
+            }
+
+            logger?.Leave("HuyaLiveClient::CheckLogon()");
+        }
+
+        public void CheckUserNick()
+        {
+            const string checkLogonURL = "https://www.huya.com/udb_web/udbport2.php?m=HuyaHome&do=checkUserNick";
+
+            logger?.Enter("HuyaLiveClient::CheckUserNick()");
+#if false
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+            //httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+            httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "deflate, br");
+            httpClient.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
+            httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
+            httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
+            httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+            httpClient.DefaultRequestHeaders.Add("Cookie", fullCookie);
+            httpClient.DefaultRequestHeaders.Add("User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/63.0.3239.132 Safari/537.36");
+#endif
+            EnumerateHttpHeaders(httpClient.DefaultRequestHeaders);
+
+            HttpResponseMessage response = httpClient.GetAsync(checkLogonURL).Result;
+            if (response.IsSuccessStatusCode)
+            {
+                string html = response.Content.ReadAsStringAsync().Result;
+
+                logger?.WriteLine("Html contont:\n\n{0}", html);
+
+                EnumerateHttpHeaders(response.Headers);
+            }
+
+            logger?.Leave("HuyaLiveClient::CheckUserNick()");
+        }
+
+        public int SetWebSocketCookies(WebSocket _websocket, string fullCookie)
+        {
+            Dictionary<string, string> cookies = new Dictionary<string, string>();
+
+            string[] cookie_array = fullCookie.Split(';');
+            foreach (var cookie_str in cookie_array)
+            {
+                var cookie_str2 = cookie_str.Trim();
+                string[] cookie_pair = cookie_str2.Split('=');
+                if (cookie_pair.Length == 2)
+                {
+                    cookie_pair[0] = cookie_pair[0].Trim();
+                    cookie_pair[1] = cookie_pair[1].Trim();
+                    cookie_pair[1] = cookie_pair[1].Replace(",", "%2C");
+                    cookies.Add(cookie_pair[0], cookie_pair[1]);
+                }
+            }
+
+            if (_websocket != null)
+            {
+                foreach (var cookie in cookies)
+                {
+                    _websocket.SetCookie(new WebSocketSharp.Net.Cookie(cookie.Key, cookie.Value, "/", "www.huya.com"));
+                }
+            }
+            
+            return cookies.Count;
+        }
+
         public bool StartWebSocket(string roomId)
         {
             bool result = false;
@@ -404,9 +536,17 @@ namespace HuyaLive
 
                 try
                 {
+                    //
+                    // websocket-sharp manual
+                    //
+                    // See: https://www.jianshu.com/p/c48ce95b58d2
+                    // See: https://blog.csdn.net/lxrj2008/article/details/83025938
+                    //
                     websocket = new WebSocketSharp.WebSocket(apiUrl);
                     websocket.Origin = originalUrl;
                     //websocket.Compression = CompressionMethod.Deflate;
+
+                    int nCookieCount = SetWebSocketCookies(websocket, fullCookie);
 
                     websocket.OnOpen += OnOpen;
                     websocket.OnMessage += OnMessage;
@@ -470,32 +610,7 @@ namespace HuyaLive
             return result;
         }
 
-        private bool ReadGiftList()
-        {
-            bool result = false;
-            logger?.Enter("HuyaLiveClient::ReadGiftList()");
-
-            try
-            {
-                GetPropsListRequest propRequest = new GetPropsListRequest();
-                propRequest.tUserId = mainUserId;
-                propRequest.iTemplateType = (int)ClientTemplateMask.Mirror;
-
-                result = SendWup("PropsUIServer", "getPropsList", propRequest);
-            }
-            catch (Exception ex)
-            {
-                if (listener != null)
-                {
-                    listener?.OnClientError(this, ex, "HuyaLiveClient::ReadGiftList() error.");
-                }
-            }
-
-            logger?.Leave("HuyaLiveClient::ReadGiftList()");
-            return result;
-        }
-
-        private bool BindWebSocketInfo()
+        private bool SendRegister()
         {
             bool result = false;
 
@@ -531,7 +646,7 @@ namespace HuyaLive
             {
                 if (listener != null)
                 {
-                    listener?.OnClientError(this, ex, "HuyaLiveClient::BindWsInfo() error.");
+                    listener?.OnClientError(this, ex, "HuyaLiveClient::SendRegister() error.");
                 }
             }
 
@@ -597,6 +712,31 @@ namespace HuyaLive
             return result;
         }
 
+        private bool ReadGiftList()
+        {
+            bool result = false;
+            logger?.Enter("HuyaLiveClient::ReadGiftList()");
+
+            try
+            {
+                GetPropsListRequest propRequest = new GetPropsListRequest();
+                propRequest.tUserId = mainUserId;
+                propRequest.iTemplateType = (int)ClientTemplateMask.Mirror;
+
+                result = SendWup("PropsUIServer", "getPropsList", propRequest);
+            }
+            catch (Exception ex)
+            {
+                if (listener != null)
+                {
+                    listener?.OnClientError(this, ex, "HuyaLiveClient::ReadGiftList() error.");
+                }
+            }
+
+            logger?.Leave("HuyaLiveClient::ReadGiftList()");
+            return result;
+        }
+
         private void OnHeartbeat(object state)
         {
             bool success = Heartbeat();
@@ -621,7 +761,7 @@ namespace HuyaLive
 
                 bool success;
                 success  = ReadGiftList();
-                success &= BindWebSocketInfo();
+                success &= SendRegister();
                 success &= Heartbeat();
 
                 //success &= SendRegisterGroup(chatInfo.yyuid);
@@ -876,6 +1016,8 @@ namespace HuyaLive
                                 GiftInfo giftInfo = new GiftInfo(propsItem.sPropsName, propsItem.iPropsYb);
                                 giftInfoList.Add(propsItem.iPropsId, giftInfo);
                             }
+
+                            listener?.OnFreshGiftList(this, null);
                         }
                     }
                     break;
@@ -924,9 +1066,25 @@ namespace HuyaLive
             int iUri = msg.iUri;
             switch (iUri)
             {
-                case UriType.NobleEnterNotice:
+                case UriType.NobleNotice:
                     {
-                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - NobleEnterNotice", iUri);
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - NobleNotice", iUri);
+
+                        NobleEnterNotice noticeMsg = new NobleEnterNotice();
+                        noticeMsg.ReadFrom(stream);
+
+                        NobleEnterMessage enterMsg = new NobleEnterMessage();
+                        enterMsg.uid = noticeMsg.tNobleInfo.lUid;
+                        enterMsg.imid = noticeMsg.tNobleInfo.lPid;
+                        enterMsg.nickname = noticeMsg.tNobleInfo.sNickName;
+                        enterMsg.noblename = noticeMsg.tNobleInfo.sName;
+                        enterMsg.level = noticeMsg.tNobleInfo.iLevel;
+                        enterMsg.timestamp = TimeStamp.now_ms();
+
+                        lock (locker)
+                        {
+                            listener?.OnNobleEnter(this, enterMsg);
+                        }
                     }
                     break;
 
@@ -952,9 +1110,31 @@ namespace HuyaLive
                     }
                     break;
 
-                case UriType.OnNobleEnter:
+                case UriType.VipEnterBanner:
                     {
-                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - OnNobleEnter", iUri);
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - VipEnterBanner", iUri);
+
+                        VipEnterBanner vipMsg = new VipEnterBanner();
+                        vipMsg.ReadFrom(stream);
+
+                        VipEnterMessage enterMsg = new VipEnterMessage();
+                        enterMsg.uid = vipMsg.tNobelInfo.lUid;
+                        enterMsg.imid = vipMsg.tNobelInfo.lPid;
+                        enterMsg.nickname = vipMsg.sNickName;
+                        enterMsg.noblename = vipMsg.tNobelInfo.sNobleName;
+                        enterMsg.level = vipMsg.tNobelInfo.iNobleLevel;
+                        enterMsg.timestamp = TimeStamp.now_ms();
+
+                        lock (locker)
+                        {
+                            listener?.OnVipEnter(this, enterMsg);
+                        }
+                    }
+                    break;
+
+                case UriType.VipBarListResponse:
+                    {
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - VipBarListResponse", iUri);
                     }
                     break;
 
@@ -987,6 +1167,50 @@ namespace HuyaLive
                                 }
                             }
                         }
+                    }
+                    break;
+
+                case UriType.SendItemNoticeWordBroadcastPacket:
+                    {
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - SendItemNoticeWordBroadcastPacket", iUri);
+
+                        SendItemNoticeWordBroadcastPacket packet = new SendItemNoticeWordBroadcastPacket();
+                        packet.ReadFrom(stream);
+
+                        if (packet.lPresenterUid == chatInfo.yyuid)
+                        {
+                            if (giftInfoList.ContainsKey(packet.iItemType))
+                            {
+                                GiftInfo giftInfo = giftInfoList[packet.iItemType];
+
+                                UserGiftMessage giftMsg = new UserGiftMessage();
+                                giftMsg.presenterUid = packet.lPresenterUid;
+                                giftMsg.uid = packet.lSenderUid;
+                                giftMsg.imid = packet.lSenderUid; ;
+                                giftMsg.nickname = packet.sSenderNick;
+                                giftMsg.itemName = giftInfo.name;
+                                giftMsg.itemCount = packet.iItemCount;
+                                giftMsg.itemPrice = packet.iItemCount * giftInfo.price;
+                                giftMsg.timestamp = TimeStamp.now_ms();
+
+                                lock (locker)
+                                {
+                                    listener?.OnUserGift(this, giftMsg);
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                case UriType.BeginLiveNotice:
+                    {
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - BeginLiveNotice", iUri);
+                    }
+                    break;
+
+                case UriType.EndLiveNotice:
+                    {
+                        logger?.WriteLine("CommandType = MsgPushRequest (7), msg.iUri: {0} - EndLiveNotice", iUri);
                     }
                     break;
 

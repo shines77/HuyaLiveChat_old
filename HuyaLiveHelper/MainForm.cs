@@ -53,6 +53,21 @@ namespace HuyaLiveHelper
         public void OnNobleEnter(object sender, NobleEnterMessage message)
         {
             logger?.WriteLine(">>>  MainForm::OnNobleEnter()");
+            logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
+            logger?.WriteLine(">>>  uid = {0}, imid = {1}, nickname = \"{2}\"",
+                              message.uid, message.imid, message.nickname);
+            logger?.WriteLine(">>>  name = \"{0}\", level = {1}",
+                              message.noblename, message.level);
+        }
+
+        public void OnVipEnter(object sender, VipEnterMessage message)
+        {
+            logger?.WriteLine(">>>  MainForm::OnVipEnter()");
+            logger?.WriteLine(">>>  timestamp = {0}", message.timestamp);
+            logger?.WriteLine(">>>  uid = {0}, imid = {1}, nickname = \"{2}\"",
+                              message.uid, message.imid, message.nickname);
+            logger?.WriteLine(">>>  name = \"{0}\", level = {1}",
+                              message.noblename, message.level);
         }
 
         public void OnUserChat(object sender, UserChatMessage message)
@@ -93,16 +108,16 @@ namespace HuyaLiveHelper
             try
             {
                 client = new HuyaLiveClient(this);
-                //client.SetMobileMode(false);
+                client.SetMobileMode(false);
                 client.SetLogger(logger);
                 // Shen tu
                 //client.Start("666007");
                 // Yang qi huang
-                //client.Start("18001");
+                client.Start("18001");
                 // Uzi
                 //client.Start("666888");
                 // Da sheng gui lai
-                client.Start("931827");
+                //client.Start("931827");
                 // Shen mi gou
                 //client.Start("399910");
             }

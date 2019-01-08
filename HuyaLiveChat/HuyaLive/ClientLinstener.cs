@@ -27,6 +27,7 @@ namespace HuyaLive
         void OnClientError(object sender, Exception exception, string message);
 
         void OnNobleEnter(object sender, NobleEnterMessage message);
+        void OnVipEnter(object sender, VipEnterMessage message);
         void OnUserChat(object sender, UserChatMessage message);
         void OnUserGift(object sender, UserGiftMessage message);
         void OnFreshGiftList(object sender, GiftListMessage message);
