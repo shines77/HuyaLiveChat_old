@@ -41,6 +41,7 @@ namespace HuyaLiveHelper
             new RoomIdInfo { roomId = "0",        roomIntro = "请选择一个主播" },
             new RoomIdInfo { roomId = "18001",    roomIntro = "18001 (洋气黄)" },
             new RoomIdInfo { roomId = "399910",   roomIntro = "399910 (神秘狗)" },
+            new RoomIdInfo { roomId = "458911",   roomIntro = "458911 (向阳哥哥)" },
             new RoomIdInfo { roomId = "520880",   roomIntro = "520880 (拉风龙)" },
             new RoomIdInfo { roomId = "521000",   roomIntro = "521000 (卡尔)" },
             new RoomIdInfo { roomId = "626813",   roomIntro = "626813 (女王盐)" },

@@ -57,6 +57,8 @@ namespace HuyaLive
         private System.Threading.Timer heartbeatTimer = null;
         private System.Threading.Timer freshGiftListTimer = null;
 
+        private const string sdkVer = "1901031058";
+
         private const int timeout_ms = 30000;
         // The heartbeat interval: 60 seconds.
         private const int heartbeat_ms = 60000;
@@ -231,10 +233,10 @@ namespace HuyaLive
             {
                 mainUserId = new UserId();
                 mainUserId.lUid = chatInfo.yyuid;
-                mainUserId.sHuyaUA = "webh5&1.0.0&websocket";
+                mainUserId.sHuyaUA = "webh5&" + sdkVer + "&websocket";
 
-                CheckLogon();
-                CheckUserNick();
+                //CheckLogon();
+                //CheckUserNick();
 
                 bool success = StartWebSocket(roomId);
             }
@@ -967,7 +969,7 @@ namespace HuyaLive
             logger?.Enter("HuyaLiveClient::Heartbeat()");
 
             UserId userId = new UserId();
-            userId.sHuyaUA = "webh5&1.0.0&websocket";
+            userId.sHuyaUA = "webh5&" + sdkVer + "&websocket";
 
             UserHeartBeatRequest heartbeatRequest = new UserHeartBeatRequest();
             heartbeatRequest.tId = userId;
@@ -1032,9 +1034,8 @@ namespace HuyaLive
                 bool success;
                 success  = ReadGiftList();
                 success &= SendRegister();
-                success &= Heartbeat();
-
                 //success &= SendRegisterGroup(chatInfo.yyuid);
+                success &= Heartbeat();
 
                 //
                 // See: https://www.cnblogs.com/arxive/p/7015853.html

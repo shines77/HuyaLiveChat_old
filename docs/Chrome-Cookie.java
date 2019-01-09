@@ -25,3 +25,5 @@ Cookie: "udb_biztoken=AQCgmAQvxRpZ297JOCK-B-tV1_YzefI6aqLoPDCz_WI8ryAi6eM7cHVjJ8
 
 
 "Mozilla/5.0 (Linux; Android 6.0; Nexus 7 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Mobile Safari/537.36"
+
+"{\"success\":\"1\",\"url\":\"https:\\\/\\\/lgn.yy.com\\\/lgn\\\/oauth\\\/authorize.do?oauth_token=8a7f6134918b4b611e2682f0f046a7e6dccaff5cce9c762265e424e920f4fbeb1e09f4e21f514f4871383380258146bac0df14e5a1864ea7fef81f95f7b80846&denyCallbackURL=\",\"ttoken\":\"8a7f6134918b4b611e2682f0f046a7e6dccaff5cce9c762265e424e920f4fbeb1e09f4e21f514f4871383380258146bac0df14e5a1864ea7fef81f95f7b80846\",\"ttokensec\":\"\"}"
